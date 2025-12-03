@@ -261,7 +261,13 @@
             async copyUrl() {
                 try {
                     await navigator.clipboard.writeText(this.streamUrl);
-                    // Could add a toast notification here
+                    // Show brief visual feedback
+                    const button = document.querySelector('[title="Copy Stream URL"]');
+                    if (button) {
+                        const originalTitle = button.title;
+                        button.title = 'Copied!';
+                        setTimeout(() => { button.title = originalTitle; }, 1500);
+                    }
                 } catch (e) {
                     console.error('Failed to copy URL:', e);
                 }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\MediaDownloadJob;
 use App\Models\Episode;
 use App\Models\Movie;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,11 @@ class MediaDownloadService
      * The storage disk for media files.
      */
     protected string $disk = 'public';
+
+    /**
+     * Last progress update time to throttle database writes.
+     */
+    protected int $lastProgressUpdate = 0;
 
     /**
      * Download media from URL and store locally.
@@ -89,7 +95,7 @@ class MediaDownloadService
             'download_error' => null,
         ]);
 
-        dispatch(new \App\Jobs\MediaDownloadJob($media));
+        dispatch(new MediaDownloadJob($media));
     }
 
     /**
@@ -185,9 +191,15 @@ class MediaDownloadService
      */
     protected function updateProgress(Model $media, int $progress): void
     {
-        // Only update every 5% to reduce database writes
-        if ($progress % 5 === 0 && $media->download_progress !== $progress) {
+        // Throttle updates: every 10% or 5 seconds, and always update at 100%
+        $now = time();
+        $shouldUpdate = $progress === 100
+            || ($progress % 10 === 0 && $media->download_progress !== $progress)
+            || ($now - $this->lastProgressUpdate >= 5);
+
+        if ($shouldUpdate) {
             $media->update(['download_progress' => $progress]);
+            $this->lastProgressUpdate = $now;
         }
     }
 
