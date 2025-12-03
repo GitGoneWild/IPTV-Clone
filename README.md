@@ -27,7 +27,18 @@ A self-hosted IPTV management panel designed for homelab enthusiasts to manage l
 - 📁 **Categories & Subcategories**: Organize your streams hierarchically
 - 📺 **EPG Import**: XMLTV file upload and URL import with automatic updates
 - 🖥️ **Server Management**: Multiple streaming servers with load balancing
-- 📦 **Bouquets**: Channel packages for user assignment
+- 📦 **Enhanced Bouquet Management**: 
+  - Channel packages organized by category type (Live TV, Movies, Series)
+  - Regional categorization (UK, US, etc.)
+  - Pre-configured bouquets for UK and US content
+- 🎬 **Movie Management**: 
+  - Full movie catalog with metadata
+  - TMDB integration for automatic metadata import
+  - Poster, backdrop, and trailer support
+- 📺 **TV Series Management**:
+  - Comprehensive series and episode management
+  - Season and episode tracking
+  - TMDB integration for automatic metadata import
 
 ### User Management
 - 👤 Create users with username/password
@@ -44,20 +55,23 @@ Works with any IPTV player supporting Xtream Codes:
 - `/xmltv.php` - EPG data (XMLTV format)
 - `/enigma2.php` - Enigma2 bouquet file
 - `/live/{username}/{password}/{stream_id}` - Direct stream URLs
+- **Authentication**: Legacy XTREAM Codes-style (username + password)
 
 ### Additional Features
 - 🔒 REST API with Laravel Sanctum tokens
 - 📊 Stream status monitoring (online/offline)
 - 🚦 Rate limiting and security hardening
 - 🎨 Dark GitHub-style theme with purple accents
+- 🎭 **TMDB Integration**: Automatic metadata import for movies and TV series
 
 ## 🏗️ Tech Stack
 
 - **Backend**: Laravel 12, PHP 8.2+
 - **Admin Panel**: Filament 3
 - **Frontend**: Livewire 3, Alpine.js, Tailwind CSS 3
-- **Authentication**: Laravel Sanctum
-- **Database**: MySQL / MariaDB
+- **Authentication**: Legacy XTREAM Codes (username + password) + Laravel Sanctum for REST API
+- **Database**: MySQL / MariaDB / SQLite
+- **External APIs**: TMDB (The Movie Database)
 - **Cache**: Redis
 - **Containerization**: Docker + docker-compose
 
@@ -119,23 +133,20 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
    docker-compose exec app php artisan storage:link
    ```
 
-5. **Generate API tokens for users**
-   ```bash
-   docker-compose exec app php artisan db:seed --class=GenerateApiTokensSeeder
-   ```
-
-6. **Verify system health**
+5. **Verify system health**
    ```bash
    docker-compose exec app php artisan homelabtv:health-check
    ```
 
-7. **Access the application**
+6. **Access the application**
    - Frontend: http://localhost:8080
    - Admin Panel: http://localhost:8080/admin
 
 ### Default Credentials
 
-**🔒 Security Note**: API tokens are now used for IPTV client authentication. Find your token in the dashboard.
+### Default Credentials
+
+**🔒 Security Note**: Uses legacy XTREAM Codes authentication (username + password).
 
 | User Type | Email | Username | Password | Use Case |
 |-----------|-------|----------|----------|----------|
@@ -184,7 +195,6 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
    ```bash
    php artisan migrate --seed
    php artisan storage:link
-   php artisan db:seed --class=GenerateApiTokensSeeder
    ```
 
 5. **Build frontend assets (optional)**
@@ -217,6 +227,27 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
 | `HOMELABTV_ENABLE_RESELLER_SYSTEM` | Enable reseller features | true |
 | `RATE_LIMIT_PER_MINUTE` | Web rate limit | 60 |
 | `API_RATE_LIMIT_PER_MINUTE` | API rate limit | 100 |
+| `TMDB_API_KEY` | The Movie Database API key (optional) | - |
+
+### TMDB Integration (Optional)
+
+To enable automatic metadata import for movies and TV series:
+
+1. **Get a TMDB API Key**
+   - Sign up at [https://www.themoviedb.org/](https://www.themoviedb.org/)
+   - Go to Settings → API and request an API key
+   - Copy your API key
+
+2. **Add to .env file**
+   ```env
+   TMDB_API_KEY=your_api_key_here
+   ```
+
+3. **Features enabled with TMDB**
+   - Search movies and TV series by title
+   - Auto-import metadata (plot, cast, ratings, release dates)
+   - Download posters, backdrops, and trailers
+   - Get genre and content ratings automatically
 
 ### Health Checks
 
@@ -235,26 +266,34 @@ This checks:
 
 ## 🔐 API Usage
 
+### Authentication
+
+This system uses **legacy XTREAM Codes-style authentication** (username + password).
+
+**Default Credentials:**
+- Username: `demo`
+- Password: `demo123`
+
+**Important:** Change default passwords after first login!
+
 ### Getting User Info
 ```bash
-curl "http://localhost:8080/player_api.php?username=demo&password=YOUR_API_TOKEN"
+curl "http://localhost:8080/player_api.php?username=demo&password=demo123"
 ```
-
-**Note**: Use the API token from your dashboard, not your login password.
 
 ### Getting Live Streams
 ```bash
-curl "http://localhost:8080/player_api.php?username=demo&password=YOUR_API_TOKEN&action=get_live_streams"
+curl "http://localhost:8080/player_api.php?username=demo&password=demo123&action=get_live_streams"
 ```
 
 ### Getting M3U Playlist
 ```bash
-curl "http://localhost:8080/get.php?username=demo&password=YOUR_API_TOKEN&type=m3u_plus"
+curl "http://localhost:8080/get.php?username=demo&password=demo123&type=m3u_plus"
 ```
 
 ### Getting EPG (XMLTV)
 ```bash
-curl "http://localhost:8080/xmltv.php?username=demo&password=YOUR_API_TOKEN"
+curl "http://localhost:8080/xmltv.php?username=demo&password=demo123"
 ```
 
 ## 📅 Scheduled Tasks
@@ -331,7 +370,7 @@ npm run format:check # Check code formatting
 ## 🔒 Security
 
 - All API endpoints are rate-limited
-- **API tokens** replace password exposure (see CODE_QUALITY.md)
+- **Legacy XTREAM Codes authentication** (username + password)
 - Passwords are hashed using bcrypt
 - **Input validation** on all API endpoints
 - CSRF protection on all forms
@@ -341,7 +380,7 @@ npm run format:check # Check code formatting
 ### Security Best Practices
 
 1. **Change default passwords** immediately after installation
-2. **Use API tokens** for IPTV client authentication
+2. **Use strong passwords** for IPTV accounts
 3. **Enable HTTPS** in production
 4. **Regular updates** of dependencies
 5. **Monitor logs** for suspicious activity
