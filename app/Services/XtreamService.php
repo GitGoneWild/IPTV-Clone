@@ -53,7 +53,7 @@ class XtreamService
             if ($stream->epg_channel_id) {
                 $channelId = htmlspecialchars($stream->epg_channel_id, ENT_XML1 | ENT_QUOTES);
                 $name = htmlspecialchars($stream->name, ENT_XML1 | ENT_QUOTES);
-                
+
                 $xml .= "  <channel id=\"{$channelId}\">\n";
                 $xml .= "    <display-name>{$name}</display-name>\n";
                 if ($stream->logo_url) {
@@ -80,17 +80,17 @@ class XtreamService
 
             $xml .= "  <programme start=\"{$start}\" stop=\"{$stop}\" channel=\"{$channelId}\">\n";
             $xml .= "    <title lang=\"{$lang}\">{$title}</title>\n";
-            
+
             if ($program->description) {
                 $description = htmlspecialchars($program->description, ENT_XML1 | ENT_QUOTES);
                 $xml .= "    <desc lang=\"{$lang}\">{$description}</desc>\n";
             }
-            
+
             if ($program->category) {
                 $category = htmlspecialchars($program->category, ENT_XML1 | ENT_QUOTES);
                 $xml .= "    <category lang=\"{$lang}\">{$category}</category>\n";
             }
-            
+
             $xml .= "  </programme>\n";
         }
 
@@ -259,7 +259,7 @@ class XtreamService
     protected function getUserStreams(User $user): \Illuminate\Database\Eloquent\Collection
     {
         $cacheKey = "user_streams_{$user->id}";
-        
+
         return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user) {
             $bouquetIds = $user->bouquets()->pluck('bouquets.id');
 
@@ -281,7 +281,7 @@ class XtreamService
     protected function getUserCategories(User $user)
     {
         $cacheKey = "user_categories_{$user->id}";
-        
+
         return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user) {
             $streams = $this->getUserStreams($user);
             $categoryIds = $streams->pluck('category_id')->filter()->unique();

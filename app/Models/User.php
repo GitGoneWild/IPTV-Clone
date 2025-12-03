@@ -185,7 +185,7 @@ class User extends Authenticatable
     public function getAvailableStreams(): \Illuminate\Database\Eloquent\Collection
     {
         $bouquetIds = $this->bouquets()->pluck('bouquets.id');
-        
+
         return Stream::with(['category', 'server'])
             ->whereHas('bouquets', function ($query) use ($bouquetIds) {
                 $query->whereIn('bouquets.id', $bouquetIds);

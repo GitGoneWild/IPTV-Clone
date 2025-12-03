@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Stream;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class StreamObserver
 {
@@ -33,17 +34,16 @@ class StreamObserver
 
     /**
      * Clear cache for all users that have access to this stream.
+     * Optimized to use a direct database query instead of loading full objects.
      */
     protected function clearUserCaches(Stream $stream): void
     {
-        // Clear cache for users with bouquets containing this stream
-        $userIds = $stream->bouquets()
-            ->with('users')
-            ->get()
-            ->pluck('users')
-            ->flatten()
-            ->pluck('id')
-            ->unique();
+        // Get user IDs directly from the database without loading full objects
+        $userIds = \DB::table('user_bouquets')
+            ->join('bouquet_streams', 'user_bouquets.bouquet_id', '=', 'bouquet_streams.bouquet_id')
+            ->where('bouquet_streams.stream_id', $stream->id)
+            ->distinct()
+            ->pluck('user_bouquets.user_id');
 
         foreach ($userIds as $userId) {
             Cache::forget("user_streams_{$userId}");
