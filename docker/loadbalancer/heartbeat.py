@@ -8,10 +8,8 @@ Sends regular heartbeat messages to the main server with system statistics.
 import os
 import sys
 import time
-import json
 import signal
 import logging
-from datetime import datetime
 import requests
 
 # Configure logging
@@ -118,33 +116,26 @@ def send_heartbeat():
         if 'current_connections' in nginx_stats:
             stats['current_connections'] = nginx_stats['current_connections']
         
-        # Calculate response time by pinging main server
-        start_time = time.time()
-        try:
-            requests.get(MAIN_SERVER_URL, timeout=5)
-            response_time = int((time.time() - start_time) * 1000)
-            stats['response_time_ms'] = response_time
-        except Exception as e:
-            logger.debug(f'Could not calculate response time: {e}')
-            # Don't include response_time_ms if measurement failed
-        
-        # Send heartbeat
+        # Send heartbeat and measure response time
         endpoint = f'{MAIN_SERVER_URL}/api/lb/v1/heartbeat'
         headers = {
             'X-LB-API-Key': API_KEY,
             'Content-Type': 'application/json'
         }
         
+        start_time = time.time()
         response = requests.post(
             endpoint,
             headers=headers,
             json=stats,
             timeout=10
         )
+        response_time = int((time.time() - start_time) * 1000)
         
         if response.status_code == 200:
             logger.info(f'Heartbeat sent successfully - Connections: {stats.get("current_connections", 0)}, '
-                       f'CPU: {stats.get("cpu_usage", 0)}%, Memory: {stats.get("memory_usage", 0)}%')
+                       f'CPU: {stats.get("cpu_usage", 0)}%, Memory: {stats.get("memory_usage", 0)}%, '
+                       f'Response time: {response_time}ms')
             return True
         else:
             logger.error(f'Heartbeat failed with status {response.status_code}: {response.text}')

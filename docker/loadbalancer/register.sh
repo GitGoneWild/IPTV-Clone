@@ -87,13 +87,8 @@ if [ "$HTTP_CODE" = "201" ]; then
         echo "Set this in your environment:"
         echo "export MAIN_SERVER_API_KEY='$API_KEY'"
         echo ""
-        
-        # Save to file for reference (WARNING: not secure for production)
-        # In production, use environment variables or secrets management
-        echo "$API_KEY" > /opt/iptv-lb/.api_key
-        chmod 600 /opt/iptv-lb/.api_key
-        echo "⚠️  API key saved to: /opt/iptv-lb/.api_key (for development only)"
-        echo "⚠️  For production, use environment variables or secrets manager"
+        echo "⚠️  IMPORTANT: Store this API key securely in your secrets manager"
+        echo "⚠️  Never commit this key to version control or save it to disk"
     else
         echo "WARNING: Could not extract API key from response"
     fi

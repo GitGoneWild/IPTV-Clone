@@ -151,7 +151,7 @@ class LoadBalancer extends Model
     public function buildBaseUrl(): string
     {
         // Use explicit use_ssl field if set, otherwise fallback to port-based detection
-        $protocol = $this->use_ssl ?? ($this->port === 443) ? 'https' : 'http';
+        $protocol = ($this->use_ssl === true) ? 'https' : (($this->port === 443) ? 'https' : 'http');
         $port = in_array($this->port, [80, 443]) ? '' : ':' . $this->port;
         
         return "{$protocol}://{$this->hostname}{$port}";

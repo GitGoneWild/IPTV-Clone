@@ -126,15 +126,12 @@ class FlutterApiController extends Controller
             ->with(['category', 'server'])
             ->where('is_active', true);
 
-        // Filter by user's bouquets - optimized to avoid N+1 query
+        // Filter by user's bouquets - optimized query using join
         if ($user) {
             $streamIds = $user->bouquets()
-                ->with('streams')
-                ->get()
-                ->pluck('streams')
-                ->flatten()
-                ->pluck('id')
-                ->unique();
+                ->join('bouquet_stream', 'bouquets.id', '=', 'bouquet_stream.bouquet_id')
+                ->distinct()
+                ->pluck('bouquet_stream.stream_id');
             
             $query->whereIn('id', $streamIds);
         }

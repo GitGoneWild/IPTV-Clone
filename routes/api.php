@@ -85,13 +85,9 @@ Route::middleware(['auth:sanctum', 'throttle.api'])->prefix('flutter/v1')->group
 
 // Load Balancer Management API
 Route::prefix('lb/v1')->group(function () {
-    // Registration endpoint
-    // NOTE: In production, consider protecting this endpoint with:
-    // - IP whitelisting
-    // - API authentication
-    // - Admin-only access via Sanctum
-    // - Rate limiting (separate from API rate limit)
-    Route::post('/register', [LoadBalancerApiController::class, 'register']);
+    // Registration endpoint - PROTECTED: Requires authentication to prevent unauthorized registrations
+    // In production, this should be restricted to admin users only
+    Route::middleware(['auth:sanctum', 'throttle:10,60'])->post('/register', [LoadBalancerApiController::class, 'register']);
     
     // Load balancer endpoints (authenticated via API key)
     Route::post('/heartbeat', [LoadBalancerApiController::class, 'heartbeat']);
