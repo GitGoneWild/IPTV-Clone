@@ -116,19 +116,18 @@ class User extends Authenticatable
     /**
      * Validate password for Xtream API compatibility.
      *
-     * For security, validates against the API token if available,
-     * otherwise falls back to hashed password verification.
-     * Note: Plain-text password comparison has been removed for security.
-     * Only hashed passwords and API tokens are supported.
+     * Supports both API tokens (recommended) and password authentication.
+     * API tokens should be used to avoid exposing real passwords in URLs.
+     * Password authentication is provided for legacy XTREAM Codes compatibility.
      */
     public function validateXtreamPassword(string $password): bool
     {
-        // First check if it's an API token
+        // Prefer API token for security (avoids password in URLs)
         if ($this->api_token && hash_equals($this->api_token, $password)) {
             return true;
         }
         
-        // Fall back to hashed password verification only
+        // Fall back to password verification for legacy compatibility
         return password_verify($password, $this->password);
     }
     
@@ -167,12 +166,12 @@ class User extends Authenticatable
     
     /**
      * Get the password/token to use for API URLs.
-     * Returns API token if available, otherwise returns empty string.
-     * Users without tokens should generate one via the dashboard or seeder.
+     * Returns API token if available, otherwise returns placeholder.
+     * API tokens should be used to avoid exposing passwords in URLs.
      */
     public function getApiPasswordAttribute(): string
     {
-        return $this->api_token ?? '';
+        return $this->api_token ?? '***';
     }
 
     /**

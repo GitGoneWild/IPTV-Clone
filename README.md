@@ -27,10 +27,22 @@ A self-hosted IPTV management panel designed for homelab enthusiasts to manage l
 - 📁 **Categories & Subcategories**: Organize your streams hierarchically
 - 📺 **EPG Import**: XMLTV file upload and URL import with automatic updates
 - 🖥️ **Server Management**: Multiple streaming servers with load balancing
-- 📦 **Bouquets**: Channel packages for user assignment
+- 📦 **Enhanced Bouquet Management**: 
+  - Channel packages organized by category type (Live TV, Movies, Series)
+  - Regional categorization (UK, US, etc.)
+  - Pre-configured bouquets for UK and US content
+- 🎬 **Movie Management**: 
+  - Full movie catalog with metadata
+  - TMDB integration for automatic metadata import
+  - Poster, backdrop, and trailer support
+- 📺 **TV Series Management**:
+  - Comprehensive series and episode management
+  - Season and episode tracking
+  - TMDB integration for automatic metadata import
 
 ### User Management
 - 👤 Create users with username/password
+- 🔑 API token generation for secure IPTV client authentication
 - ⏰ Expiry dates and max connection limits
 - 📋 Allowed output formats (M3U, Xtream, Enigma2)
 - 🏷️ Assign bouquets per user
@@ -44,20 +56,23 @@ Works with any IPTV player supporting Xtream Codes:
 - `/xmltv.php` - EPG data (XMLTV format)
 - `/enigma2.php` - Enigma2 bouquet file
 - `/live/{username}/{password}/{stream_id}` - Direct stream URLs
+- **Authentication**: API tokens (recommended) or password (legacy compatibility)
 
 ### Additional Features
 - 🔒 REST API with Laravel Sanctum tokens
 - 📊 Stream status monitoring (online/offline)
 - 🚦 Rate limiting and security hardening
 - 🎨 Dark GitHub-style theme with purple accents
+- 🎭 **TMDB Integration**: Automatic metadata import for movies and TV series
 
 ## 🏗️ Tech Stack
 
 - **Backend**: Laravel 12, PHP 8.2+
 - **Admin Panel**: Filament 3
 - **Frontend**: Livewire 3, Alpine.js, Tailwind CSS 3
-- **Authentication**: Laravel Sanctum
-- **Database**: MySQL / MariaDB
+- **Authentication**: API tokens (recommended) + password fallback for legacy XTREAM Codes compatibility
+- **Database**: MySQL / MariaDB / SQLite
+- **External APIs**: TMDB (The Movie Database)
 - **Cache**: Redis
 - **Containerization**: Docker + docker-compose
 
@@ -133,9 +148,10 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
    - Frontend: http://localhost:8080
    - Admin Panel: http://localhost:8080/admin
 
+
 ### Default Credentials
 
-**🔒 Security Note**: API tokens are now used for IPTV client authentication. Find your token in the dashboard.
+**🔒 Security Note**: API tokens are recommended for IPTV client authentication. Generate tokens using the seeder or admin panel.
 
 | User Type | Email | Username | Password | Use Case |
 |-----------|-------|----------|----------|----------|
@@ -143,7 +159,9 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
 | Demo User | demo@homelabtv.local | demo | demo123 | Testing viewer features |
 | Reseller | reseller@homelabtv.local | reseller | reseller123 | Reseller features testing |
 
-**⚠️ Important**: Change these default passwords after first login!
+**⚠️ Important**: 
+- Change these default passwords after first login!
+- Generate API tokens for each user to use in IPTV clients instead of passwords
 
 ## 🛠️ Manual Installation (Without Docker)
 
@@ -217,6 +235,27 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
 | `HOMELABTV_ENABLE_RESELLER_SYSTEM` | Enable reseller features | true |
 | `RATE_LIMIT_PER_MINUTE` | Web rate limit | 60 |
 | `API_RATE_LIMIT_PER_MINUTE` | API rate limit | 100 |
+| `TMDB_API_KEY` | The Movie Database API key (optional) | - |
+
+### TMDB Integration (Optional)
+
+To enable automatic metadata import for movies and TV series:
+
+1. **Get a TMDB API Key**
+   - Sign up at [https://www.themoviedb.org/](https://www.themoviedb.org/)
+   - Go to Settings → API and request an API key
+   - Copy your API key
+
+2. **Add to .env file**
+   ```env
+   TMDB_API_KEY=your_api_key_here
+   ```
+
+3. **Features enabled with TMDB**
+   - Search movies and TV series by title
+   - Auto-import metadata (plot, cast, ratings, release dates)
+   - Download posters, backdrops, and trailers
+   - Get genre and content ratings automatically
 
 ### Health Checks
 
@@ -235,25 +274,48 @@ This checks:
 
 ## 🔐 API Usage
 
+### Authentication
+
+This system supports both API tokens (recommended) and password authentication.
+
+**⚠️ Security Warning**: For production use, always use API tokens instead of passwords in URLs. Passwords in URLs can be exposed in server logs, browser history, and referrer headers.
+
+**Using API Tokens (Recommended):**
+1. Generate an API token from the admin panel for each user
+2. Use the token instead of the password in API requests
+3. Tokens can be revoked without changing the user's password
+
+**Default Credentials:**
+- Username: `demo`
+- Password: `demo123`
+- API Token: Generate via admin panel or seeder
+
+**Important:** Change default passwords after first login!
+
 ### Getting User Info
 ```bash
+# Using API token (recommended)
 curl "http://localhost:8080/player_api.php?username=demo&password=YOUR_API_TOKEN"
-```
 
-**Note**: Use the API token from your dashboard, not your login password.
+# Using password (legacy, not recommended for production)
+curl "http://localhost:8080/player_api.php?username=demo&password=demo123"
+```
 
 ### Getting Live Streams
 ```bash
+# Using API token (recommended)
 curl "http://localhost:8080/player_api.php?username=demo&password=YOUR_API_TOKEN&action=get_live_streams"
 ```
 
 ### Getting M3U Playlist
 ```bash
+# Using API token (recommended)
 curl "http://localhost:8080/get.php?username=demo&password=YOUR_API_TOKEN&type=m3u_plus"
 ```
 
 ### Getting EPG (XMLTV)
 ```bash
+# Using API token (recommended)
 curl "http://localhost:8080/xmltv.php?username=demo&password=YOUR_API_TOKEN"
 ```
 
@@ -331,7 +393,8 @@ npm run format:check # Check code formatting
 ## 🔒 Security
 
 - All API endpoints are rate-limited
-- **API tokens** replace password exposure (see CODE_QUALITY.md)
+- **API token authentication** (recommended for production)
+- **Password fallback** for legacy XTREAM Codes compatibility
 - Passwords are hashed using bcrypt
 - **Input validation** on all API endpoints
 - CSRF protection on all forms
@@ -340,11 +403,13 @@ npm run format:check # Check code formatting
 
 ### Security Best Practices
 
-1. **Change default passwords** immediately after installation
-2. **Use API tokens** for IPTV client authentication
-3. **Enable HTTPS** in production
-4. **Regular updates** of dependencies
-5. **Monitor logs** for suspicious activity
+1. **Use API tokens** instead of passwords for IPTV clients (avoids password exposure in URLs)
+2. **Change default passwords** immediately after installation
+3. **Use strong passwords** for admin accounts
+4. **Enable HTTPS** in production to protect credentials in transit
+5. **Regular updates** of dependencies
+6. **Monitor logs** for suspicious activity
+7. **Regenerate API tokens** periodically or after suspected compromise
 
 For detailed security information, see [CODE_QUALITY.md](CODE_QUALITY.md#security-improvements)
 
