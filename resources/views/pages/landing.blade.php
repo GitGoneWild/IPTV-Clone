@@ -3,31 +3,54 @@
 @section('title', 'HomelabTV - Private IPTV Management')
 
 @section('content')
-<!-- Hero Section -->
+<!-- Hero Section with GitHub Copilot inspired design -->
 <div class="relative overflow-hidden">
+    <!-- Background gradient -->
+    <div class="absolute inset-0 bg-gradient-to-b from-homelab-900/20 to-transparent pointer-events-none"></div>
+
     <div class="max-w-7xl mx-auto">
         <div class="relative z-10 pb-8 sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
             <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
                 <div class="text-center">
+                    <!-- Animated badge -->
+                    <div class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-gh-bg-tertiary border border-gh-border mb-6">
+                        <span class="flex h-2 w-2 relative mr-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gh-success opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-gh-success"></span>
+                        </span>
+                        <span class="text-gh-text-muted">Self-hosted IPTV for your homelab</span>
+                    </div>
+
                     <h1 class="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
                         <span class="block">Your Private</span>
-                        <span class="block text-homelab-500">IPTV Management</span>
+                        <span class="block bg-gradient-to-r from-homelab-400 to-homelab-600 bg-clip-text text-transparent">IPTV Management</span>
                     </h1>
-                    <p class="mt-3 text-base text-gray-400 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl">
-                        HomelabTV is a self-hosted IPTV management panel designed for homelab enthusiasts. 
+                    <p class="mt-3 text-base text-gh-text-muted sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl">
+                        HomelabTV is a self-hosted IPTV management panel designed for homelab enthusiasts.
                         Manage your legal streams, CCTV cameras, and private channels all in one place.
                     </p>
-                    <div class="mt-5 sm:mt-8 sm:flex sm:justify-center">
+                    <div class="mt-5 sm:mt-8 sm:flex sm:justify-center gap-4">
                         @auth
                             <div class="rounded-md shadow">
-                                <a href="{{ route('dashboard') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-homelab-600 hover:bg-homelab-700 md:py-4 md:text-lg md:px-10">
+                                <a href="{{ route('dashboard') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-homelab-600 hover:bg-homelab-700 md:py-4 md:text-lg md:px-10 transition-all duration-200 glow-accent">
                                     Go to Dashboard
+                                    <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
                                 </a>
                             </div>
                         @else
                             <div class="rounded-md shadow">
-                                <a href="{{ route('login') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-homelab-600 hover:bg-homelab-700 md:py-4 md:text-lg md:px-10">
-                                    Login
+                                <a href="{{ route('login') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-homelab-600 hover:bg-homelab-700 md:py-4 md:text-lg md:px-10 transition-all duration-200 glow-accent">
+                                    Get Started
+                                    <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="mt-3 sm:mt-0">
+                                <a href="#features" class="w-full flex items-center justify-center px-8 py-3 border border-gh-border text-base font-medium rounded-md text-gh-text hover:bg-gh-bg-tertiary md:py-4 md:text-lg md:px-10 transition-colors">
+                                    Learn More
                                 </a>
                             </div>
                         @endauth
@@ -38,94 +61,139 @@
     </div>
 </div>
 
+<!-- Stats Section -->
+<div class="border-y border-gh-border bg-gh-bg-secondary py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="text-center">
+                <p class="text-3xl font-bold text-white">10-50</p>
+                <p class="text-sm text-gh-text-muted">Channels Supported</p>
+            </div>
+            <div class="text-center">
+                <p class="text-3xl font-bold text-white">∞</p>
+                <p class="text-sm text-gh-text-muted">Users</p>
+            </div>
+            <div class="text-center">
+                <p class="text-3xl font-bold text-gh-success">100%</p>
+                <p class="text-sm text-gh-text-muted">Xtream Compatible</p>
+            </div>
+            <div class="text-center">
+                <p class="text-3xl font-bold text-white">24/7</p>
+                <p class="text-sm text-gh-text-muted">Stream Monitoring</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Features Section -->
-<div class="py-12 bg-gray-800">
+<div id="features" class="py-16 bg-gh-bg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-            <h2 class="text-base text-homelab-500 font-semibold tracking-wide uppercase">Features</h2>
+            <h2 class="text-base text-gh-accent font-semibold tracking-wide uppercase">Features</h2>
             <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-white sm:text-4xl">
                 Everything you need for your homelab
             </p>
+            <p class="mt-4 max-w-2xl text-xl text-gh-text-muted mx-auto">
+                Built with best practices, optimized for performance, and designed for simplicity.
+            </p>
         </div>
 
-        <div class="mt-10">
-            <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="mt-16">
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 <!-- Feature 1 -->
-                <div class="bg-gray-900 rounded-lg p-6 border border-gray-700">
-                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-homelab-500 text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
+                <div class="relative bg-gh-bg-secondary rounded-lg p-6 border border-gh-border hover:border-gh-accent/50 transition-colors group">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 bg-homelab-600/10 rounded-full blur-2xl group-hover:bg-homelab-600/20 transition-colors"></div>
+                    <div class="relative">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-homelab-600/20 border border-homelab-600/30 text-homelab-400">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-4 text-lg font-medium text-white">Multi-Protocol Support</h3>
+                        <p class="mt-2 text-gh-text-muted">
+                            Support for HLS, MPEG-TS, RTMP, and HTTP streams. Convert RTMP to HLS on the fly.
+                        </p>
                     </div>
-                    <h3 class="mt-4 text-lg font-medium text-white">Multi-Protocol Support</h3>
-                    <p class="mt-2 text-gray-400">
-                        Support for HLS, MPEG-TS, RTMP, and HTTP streams. Convert RTMP to HLS on the fly.
-                    </p>
                 </div>
 
                 <!-- Feature 2 -->
-                <div class="bg-gray-900 rounded-lg p-6 border border-gray-700">
-                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-homelab-500 text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
+                <div class="relative bg-gh-bg-secondary rounded-lg p-6 border border-gh-border hover:border-gh-accent/50 transition-colors group">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 bg-gh-success/10 rounded-full blur-2xl group-hover:bg-gh-success/20 transition-colors"></div>
+                    <div class="relative">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-gh-success/20 border border-gh-success/30 text-gh-success">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-4 text-lg font-medium text-white">Xtream Codes Compatible</h3>
+                        <p class="mt-2 text-gh-text-muted">
+                            100% compatible with Xtream Codes API. Works with any IPTV player out of the box.
+                        </p>
                     </div>
-                    <h3 class="mt-4 text-lg font-medium text-white">Xtream Codes Compatible</h3>
-                    <p class="mt-2 text-gray-400">
-                        100% compatible with Xtream Codes API. Works with any IPTV player out of the box.
-                    </p>
                 </div>
 
                 <!-- Feature 3 -->
-                <div class="bg-gray-900 rounded-lg p-6 border border-gray-700">
-                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-homelab-500 text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
+                <div class="relative bg-gh-bg-secondary rounded-lg p-6 border border-gh-border hover:border-gh-accent/50 transition-colors group">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 bg-gh-accent/10 rounded-full blur-2xl group-hover:bg-gh-accent/20 transition-colors"></div>
+                    <div class="relative">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-gh-accent/20 border border-gh-accent/30 text-gh-accent">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-4 text-lg font-medium text-white">Role-Based Access</h3>
+                        <p class="mt-2 text-gh-text-muted">
+                            Admin, Reseller, and Viewer roles with custom dashboards and permissions for each.
+                        </p>
                     </div>
-                    <h3 class="mt-4 text-lg font-medium text-white">User Management</h3>
-                    <p class="mt-2 text-gray-400">
-                        Create users with expiry dates, connection limits, and assigned channel bouquets.
-                    </p>
                 </div>
 
                 <!-- Feature 4 -->
-                <div class="bg-gray-900 rounded-lg p-6 border border-gray-700">
-                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-homelab-500 text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
+                <div class="relative bg-gh-bg-secondary rounded-lg p-6 border border-gh-border hover:border-gh-accent/50 transition-colors group">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 bg-gh-warning/10 rounded-full blur-2xl group-hover:bg-gh-warning/20 transition-colors"></div>
+                    <div class="relative">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-gh-warning/20 border border-gh-warning/30 text-gh-warning">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-4 text-lg font-medium text-white">EPG Support</h3>
+                        <p class="mt-2 text-gh-text-muted">
+                            Import XMLTV EPG data from URL or file. Easy channel linking with automatic updates.
+                        </p>
                     </div>
-                    <h3 class="mt-4 text-lg font-medium text-white">EPG Support</h3>
-                    <p class="mt-2 text-gray-400">
-                        Import XMLTV EPG data from URL or file upload. Automatic updates via cron.
-                    </p>
                 </div>
 
                 <!-- Feature 5 -->
-                <div class="bg-gray-900 rounded-lg p-6 border border-gray-700">
-                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-homelab-500 text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
-                        </svg>
+                <div class="relative bg-gh-bg-secondary rounded-lg p-6 border border-gh-border hover:border-gh-accent/50 transition-colors group">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 bg-homelab-600/10 rounded-full blur-2xl group-hover:bg-homelab-600/20 transition-colors"></div>
+                    <div class="relative">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-homelab-600/20 border border-homelab-600/30 text-homelab-400">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-4 text-lg font-medium text-white">Server Load Balancing</h3>
+                        <p class="mt-2 text-gh-text-muted">
+                            Distribute streams across multiple servers with weighted load balancing.
+                        </p>
                     </div>
-                    <h3 class="mt-4 text-lg font-medium text-white">Server Load Balancing</h3>
-                    <p class="mt-2 text-gray-400">
-                        Distribute streams across multiple servers with weighted load balancing.
-                    </p>
                 </div>
 
                 <!-- Feature 6 -->
-                <div class="bg-gray-900 rounded-lg p-6 border border-gray-700">
-                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-homelab-500 text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
+                <div class="relative bg-gh-bg-secondary rounded-lg p-6 border border-gh-border hover:border-gh-accent/50 transition-colors group">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 bg-gh-success/10 rounded-full blur-2xl group-hover:bg-gh-success/20 transition-colors"></div>
+                    <div class="relative">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-gh-success/20 border border-gh-success/30 text-gh-success">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-4 text-lg font-medium text-white">Stream Monitoring</h3>
+                        <p class="mt-2 text-gh-text-muted">
+                            Automatic health checks with real-time status. API usage tracking and analytics.
+                        </p>
                     </div>
-                    <h3 class="mt-4 text-lg font-medium text-white">Stream Monitoring</h3>
-                    <p class="mt-2 text-gray-400">
-                        Automatic health checks for all streams with real-time status monitoring.
-                    </p>
                 </div>
             </div>
         </div>
@@ -133,28 +201,65 @@
 </div>
 
 <!-- API Info Section -->
-<div class="py-12 bg-gray-900">
+<div class="py-16 bg-gh-bg-secondary border-t border-gh-border">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-10">
-            <h2 class="text-base text-homelab-500 font-semibold tracking-wide uppercase">API Endpoints</h2>
+        <div class="text-center mb-12">
+            <h2 class="text-base text-gh-accent font-semibold tracking-wide uppercase">API Endpoints</h2>
             <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-white sm:text-4xl">
                 Xtream Codes Compatible
             </p>
         </div>
-        
-        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="font-mono text-sm text-gray-300">
-                    <p class="mb-2"><span class="text-homelab-400">/player_api.php</span> - Main API endpoint</p>
-                    <p class="mb-2"><span class="text-homelab-400">/get.php</span> - M3U playlist generation</p>
-                    <p class="mb-2"><span class="text-homelab-400">/panel_api.php</span> - Panel data</p>
+
+        <div class="bg-gh-bg rounded-lg p-6 border border-gh-border">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3 p-3 bg-gh-bg-tertiary rounded-lg border border-gh-border-muted">
+                        <span class="px-2 py-1 text-xs font-mono font-semibold rounded bg-gh-success/20 text-gh-success">GET</span>
+                        <code class="text-sm text-gh-accent">/player_api.php</code>
+                        <span class="text-xs text-gh-text-muted ml-auto">Main API</span>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 bg-gh-bg-tertiary rounded-lg border border-gh-border-muted">
+                        <span class="px-2 py-1 text-xs font-mono font-semibold rounded bg-gh-success/20 text-gh-success">GET</span>
+                        <code class="text-sm text-gh-accent">/get.php</code>
+                        <span class="text-xs text-gh-text-muted ml-auto">M3U Playlist</span>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 bg-gh-bg-tertiary rounded-lg border border-gh-border-muted">
+                        <span class="px-2 py-1 text-xs font-mono font-semibold rounded bg-gh-success/20 text-gh-success">GET</span>
+                        <code class="text-sm text-gh-accent">/panel_api.php</code>
+                        <span class="text-xs text-gh-text-muted ml-auto">Panel Data</span>
+                    </div>
                 </div>
-                <div class="font-mono text-sm text-gray-300">
-                    <p class="mb-2"><span class="text-homelab-400">/xmltv.php</span> - EPG data (XMLTV)</p>
-                    <p class="mb-2"><span class="text-homelab-400">/enigma2.php</span> - Enigma2 bouquet</p>
-                    <p class="mb-2"><span class="text-homelab-400">/live/{user}/{pass}/{id}</span> - Direct stream</p>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3 p-3 bg-gh-bg-tertiary rounded-lg border border-gh-border-muted">
+                        <span class="px-2 py-1 text-xs font-mono font-semibold rounded bg-gh-accent/20 text-gh-accent">GET</span>
+                        <code class="text-sm text-gh-accent">/xmltv.php</code>
+                        <span class="text-xs text-gh-text-muted ml-auto">EPG Data</span>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 bg-gh-bg-tertiary rounded-lg border border-gh-border-muted">
+                        <span class="px-2 py-1 text-xs font-mono font-semibold rounded bg-gh-accent/20 text-gh-accent">GET</span>
+                        <code class="text-sm text-gh-accent">/enigma2.php</code>
+                        <span class="text-xs text-gh-text-muted ml-auto">Enigma2</span>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 bg-gh-bg-tertiary rounded-lg border border-gh-border-muted">
+                        <span class="px-2 py-1 text-xs font-mono font-semibold rounded bg-homelab-600/20 text-homelab-400">GET</span>
+                        <code class="text-sm text-gh-accent">/live/{user}/{pass}/{id}</code>
+                        <span class="text-xs text-gh-text-muted ml-auto">Stream</span>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="mt-12 text-center">
+            <p class="text-gh-text-muted mb-4">Ready to get started with your private IPTV setup?</p>
+            @guest
+            <a href="{{ route('login') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-homelab-600 hover:bg-homelab-700 transition-colors glow-accent">
+                Login to Get Started
+                <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+            </a>
+            @endguest
         </div>
     </div>
 </div>
