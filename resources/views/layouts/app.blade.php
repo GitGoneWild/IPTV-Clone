@@ -52,6 +52,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- HLS.js for stream playback -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.14/dist/hls.min.js"></script>
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -75,6 +78,10 @@
         /* Glowing accent effect */
         .glow-accent {
             box-shadow: 0 0 20px rgba(88, 166, 255, 0.15);
+        }
+        /* Alpine.js cloak */
+        [x-cloak] {
+            display: none !important;
         }
     </style>
 
@@ -116,6 +123,11 @@
     <main class="min-h-[calc(100vh-8rem)]">
         @yield('content')
     </main>
+
+    {{-- Player Modal Component - only include if on streams page --}}
+    @if(Request::is('streams'))
+        @include('components.player-modal')
+    @endif
 
     <!-- Footer -->
     <footer class="bg-gh-bg-secondary border-t border-gh-border mt-auto">

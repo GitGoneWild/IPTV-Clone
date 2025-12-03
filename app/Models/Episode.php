@@ -20,6 +20,11 @@ class Episode extends Model
         'air_date',
         'still_url',
         'stream_url',
+        'local_path',
+        'download_status',
+        'download_progress',
+        'download_error',
+        'downloaded_at',
         'stream_type',
         'server_id',
         'tmdb_id',
@@ -37,6 +42,8 @@ class Episode extends Model
             'season_number' => 'integer',
             'episode_number' => 'integer',
             'sort_order' => 'integer',
+            'download_progress' => 'integer',
+            'downloaded_at' => 'datetime',
         ];
     }
 
@@ -62,5 +69,33 @@ class Episode extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Get the effective stream URL (local path if downloaded, otherwise stream_url).
+     */
+    public function getEffectiveStreamUrl(): ?string
+    {
+        if ($this->local_path && $this->download_status === 'completed') {
+            return url('storage/episodes/'.basename($this->local_path));
+        }
+
+        return $this->stream_url;
+    }
+
+    /**
+     * Check if the episode has a local file.
+     */
+    public function hasLocalFile(): bool
+    {
+        return $this->local_path && $this->download_status === 'completed';
+    }
+
+    /**
+     * Check if the episode is currently downloading.
+     */
+    public function isDownloading(): bool
+    {
+        return $this->download_status === 'downloading';
     }
 }

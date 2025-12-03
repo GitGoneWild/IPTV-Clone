@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Stream;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -85,6 +86,22 @@ class WebController extends Controller
         }
 
         return view('pages.dashboard', $viewData);
+    }
+
+    /**
+     * Display the streams page with player modal.
+     */
+    public function streams(): View
+    {
+        $user = auth()->user();
+        $streams = $user->getAvailableStreams()
+            ->where('is_hidden', false)
+            ->sortBy('sort_order');
+
+        $categoryIds = $streams->pluck('category_id')->unique()->filter();
+        $categories = Category::whereIn('id', $categoryIds)->get();
+
+        return view('pages.streams', compact('streams', 'categories'));
     }
 
     /**
