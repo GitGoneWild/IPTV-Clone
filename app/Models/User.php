@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'username',
+        'api_token',
         'is_admin',
         'is_reseller',
         'reseller_id',
@@ -115,45 +116,79 @@ class User extends Authenticatable
     /**
      * Validate password for Xtream API compatibility.
      *
-     * Supports both plain text passwords (for Xtream compatibility with IPTV players)
-     * and hashed passwords.
+     * For security, validates against the API token if available,
+     * otherwise falls back to hashed password verification.
+     * Plain-text password comparison is NOT recommended and should be phased out.
      */
     public function validateXtreamPassword(string $password): bool
     {
-        return $this->password === $password ||
-               password_verify($password, $this->password);
+        // First check if it's an API token
+        if ($this->api_token && hash_equals($this->api_token, $password)) {
+            return true;
+        }
+        
+        // Fall back to password verification (hashed only)
+        return password_verify($password, $this->password);
+    }
+    
+    /**
+     * Generate a new API token for this user.
+     * This token can be used for Xtream API authentication.
+     */
+    public function generateApiToken(): string
+    {
+        $token = bin2hex(random_bytes(32));
+        $this->api_token = $token;
+        $this->save();
+        
+        return $token;
+    }
+    
+    /**
+     * Get the password/token to use for API URLs.
+     * Returns API token if available, otherwise returns a masked password.
+     */
+    public function getApiPasswordAttribute(): string
+    {
+        return $this->api_token ?? '***hidden***';
     }
 
     /**
      * Generate M3U playlist URL for this user.
+     * Uses API token for security instead of exposing password.
      */
     public function getM3uUrlAttribute(): string
     {
         $baseUrl = rtrim(config('app.url'), '/');
+        $apiPassword = $this->api_password;
 
-        return "{$baseUrl}/get.php?username={$this->username}&password={$this->password}&type=m3u_plus";
+        return "{$baseUrl}/get.php?username={$this->username}&password={$apiPassword}&type=m3u_plus";
     }
 
     /**
      * Generate Xtream API URL for this user.
+     * Uses API token for security instead of exposing password.
      */
     public function getXtreamUrlAttribute(): string
     {
         $baseUrl = rtrim(config('app.url'), '/');
 
-        return "{$baseUrl}/player_api.php?username={$this->username}&password={$this->password}";
+        return "{$baseUrl}/player_api.php?username={$this->username}&password={$this->api_password}";
     }
 
     /**
      * Get streams available to this user through bouquets.
+     * Optimized to prevent N+1 queries by eager loading relationships.
      *
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Stream>
      */
     public function getAvailableStreams(): \Illuminate\Database\Eloquent\Collection
     {
+        $bouquetIds = $this->bouquets()->pluck('bouquets.id');
+        
         return Stream::with(['category', 'server'])
-            ->whereHas('bouquets', function ($query) {
-                $query->whereIn('bouquets.id', $this->bouquets()->pluck('bouquets.id'));
+            ->whereHas('bouquets', function ($query) use ($bouquetIds) {
+                $query->whereIn('bouquets.id', $bouquetIds);
             })
             ->where('is_active', true)
             ->get();

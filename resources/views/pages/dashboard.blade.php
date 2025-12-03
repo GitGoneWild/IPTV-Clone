@@ -187,7 +187,7 @@
                     <label class="block text-sm font-medium text-gray-400 mb-1">M3U Playlist URL</label>
                     <div class="flex">
                         <input type="text" readonly
-                               value="{{ config('app.url') }}/get.php?username={{ auth()->user()->username }}&password={{ auth()->user()->password }}&type=m3u_plus"
+                               value="{{ config('app.url') }}/get.php?username={{ auth()->user()->username }}&password={{ auth()->user()->api_password }}&type=m3u_plus"
                                class="flex-1 bg-gray-900 border border-gray-700 rounded-l-md px-3 py-2 text-sm text-gray-300 font-mono">
                         <button onclick="copyToClipboard(this.previousElementSibling)"
                                 class="bg-homelab-600 hover:bg-homelab-700 px-4 py-2 rounded-r-md text-sm font-medium">
@@ -209,7 +209,7 @@
                         </div>
                         <div>
                             <span class="text-gray-500">Password:</span>
-                            <code class="ml-2 text-homelab-400">{{ auth()->user()->password }}</code>
+                            <code class="ml-2 text-homelab-400">{{ auth()->user()->api_password }}</code>
                         </div>
                     </div>
                 </div>
@@ -218,7 +218,7 @@
                     <label class="block text-sm font-medium text-gray-400 mb-1">EPG URL (XMLTV)</label>
                     <div class="flex">
                         <input type="text" readonly
-                               value="{{ config('app.url') }}/xmltv.php?username={{ auth()->user()->username }}&password={{ auth()->user()->password }}"
+                               value="{{ config('app.url') }}/xmltv.php?username={{ auth()->user()->username }}&password={{ auth()->user()->api_password }}"
                                class="flex-1 bg-gray-900 border border-gray-700 rounded-l-md px-3 py-2 text-sm text-gray-300 font-mono">
                         <button onclick="copyToClipboard(this.previousElementSibling)"
                                 class="bg-homelab-600 hover:bg-homelab-700 px-4 py-2 rounded-r-md text-sm font-medium">

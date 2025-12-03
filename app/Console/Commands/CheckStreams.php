@@ -82,11 +82,11 @@ class CheckStreams extends Command
                 return $response->successful() ? 'online' : 'offline';
             }
 
-            // For RTMP, just check if URL is parseable (actual check requires different approach)
+            // For RTMP, validate URL structure
             if ($stream->stream_type === 'rtmp') {
                 $parsed = parse_url($url);
 
-                return $parsed !== false ? 'online' : 'offline';
+                return ($parsed !== false && isset($parsed['scheme'], $parsed['host'])) ? 'online' : 'offline';
             }
 
             // For MPEG-TS, try a HEAD request
@@ -98,7 +98,16 @@ class CheckStreams extends Command
 
             return 'unknown';
 
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            // Network/connection errors
+            return 'offline';
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            // HTTP errors (4xx, 5xx)
+            return 'offline';
         } catch (\Exception $e) {
+            // Any other errors
+            $this->warn("Error checking stream {$stream->id}: {$e->getMessage()}");
+
             return 'offline';
         }
     }

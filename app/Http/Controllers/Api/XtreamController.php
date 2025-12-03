@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\XtreamService;
+use App\Traits\XtreamAuthenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class XtreamController extends Controller
 {
+    use XtreamAuthenticatable;
+    
     protected XtreamService $xtreamService;
 
     public function __construct(XtreamService $xtreamService)
@@ -23,10 +26,10 @@ class XtreamController extends Controller
      */
     public function playerApi(Request $request): Response
     {
-        $user = $this->authenticateUser($request);
+        $user = $this->authenticateXtreamUser($request);
 
         if (! $user) {
-            return $this->unauthorizedResponse();
+            return $this->unauthorizedXtreamResponse();
         }
 
         $action = $request->get('action', 'get_live_streams');
@@ -45,10 +48,10 @@ class XtreamController extends Controller
      */
     public function getPlaylist(Request $request): Response
     {
-        $user = $this->authenticateUser($request);
+        $user = $this->authenticateXtreamUser($request);
 
         if (! $user) {
-            return $this->unauthorizedResponse();
+            return $this->unauthorizedXtreamResponse();
         }
 
         $type = $request->get('type', 'm3u_plus');
@@ -66,10 +69,10 @@ class XtreamController extends Controller
      */
     public function panelApi(Request $request): Response
     {
-        $user = $this->authenticateUser($request);
+        $user = $this->authenticateXtreamUser($request);
 
         if (! $user) {
-            return $this->unauthorizedResponse();
+            return $this->unauthorizedXtreamResponse();
         }
 
         return response()->json($this->xtreamService->getPanelData($user));
@@ -80,10 +83,10 @@ class XtreamController extends Controller
      */
     public function xmltv(Request $request): Response
     {
-        $user = $this->authenticateUser($request);
+        $user = $this->authenticateXtreamUser($request);
 
         if (! $user) {
-            return $this->unauthorizedResponse();
+            return $this->unauthorizedXtreamResponse();
         }
 
         $xmltv = $this->xtreamService->generateXmltv($user);
@@ -97,10 +100,10 @@ class XtreamController extends Controller
      */
     public function enigma2(Request $request): Response
     {
-        $user = $this->authenticateUser($request);
+        $user = $this->authenticateXtreamUser($request);
 
         if (! $user) {
-            return $this->unauthorizedResponse();
+            return $this->unauthorizedXtreamResponse();
         }
 
         $bouquetFile = $this->xtreamService->generateEnigma2Bouquet($user);
@@ -117,8 +120,8 @@ class XtreamController extends Controller
     {
         $user = User::where('username', $username)->first();
 
-        if (! $user || ! $this->validatePassword($user, $password)) {
-            return $this->unauthorizedResponse();
+        if (! $user || ! $user->validateXtreamPassword($password)) {
+            return $this->unauthorizedXtreamResponse();
         }
 
         if (! $user->canAccessStreams()) {
@@ -132,39 +135,6 @@ class XtreamController extends Controller
         }
 
         return response()->redirectTo($streamUrl, 302);
-    }
-
-    /**
-     * Authenticate user from request
-     */
-    protected function authenticateUser(Request $request): ?User
-    {
-        $username = $request->get('username');
-        $password = $request->get('password');
-
-        if (! $username || ! $password) {
-            return null;
-        }
-
-        $user = User::where('username', $username)->first();
-
-        if (! $user || ! $this->validatePassword($user, $password)) {
-            return null;
-        }
-
-        if (! $user->canAccessStreams()) {
-            return null;
-        }
-
-        return $user;
-    }
-
-    /**
-     * Validate password (supports plain text for Xtream compatibility)
-     */
-    protected function validatePassword(User $user, string $password): bool
-    {
-        return $user->validateXtreamPassword($password);
     }
 
     /**
@@ -220,19 +190,5 @@ class XtreamController extends Controller
     protected function getSimpleDataTable(User $user): Response
     {
         return response()->json($this->xtreamService->getSimpleDataTable($user));
-    }
-
-    /**
-     * Unauthorized response
-     */
-    protected function unauthorizedResponse(): Response
-    {
-        return response()->json([
-            'user_info' => [
-                'auth' => 0,
-                'status' => 'Disabled',
-                'message' => 'Invalid credentials',
-            ],
-        ], 401);
     }
 }
