@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 // Landing Page
 Route::get('/', [WebController::class, 'landing'])->name('home');
 
+// Public server status endpoint for the landing page widget
+Route::get('/api/server-status', [WebController::class, 'publicServerStatus'])->name('server.status');
+
 // User Portal - Requires authentication
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [WebController::class, 'dashboard'])->name('dashboard');
