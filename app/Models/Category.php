@@ -52,6 +52,22 @@ class Category extends Model
     }
 
     /**
+     * Get the series in this category.
+     */
+    public function series(): HasMany
+    {
+        return $this->hasMany(Series::class);
+    }
+
+    /**
+     * Get the movies in this category.
+     */
+    public function movies(): HasMany
+    {
+        return $this->hasMany(Movie::class);
+    }
+
+    /**
      * Scope for active categories.
      */
     public function scopeActive($query)

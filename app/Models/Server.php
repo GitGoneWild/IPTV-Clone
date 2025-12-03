@@ -51,6 +51,22 @@ class Server extends Model
     }
 
     /**
+     * Get the movies served by this server.
+     */
+    public function movies(): HasMany
+    {
+        return $this->hasMany(Movie::class);
+    }
+
+    /**
+     * Get the episodes served by this server.
+     */
+    public function episodes(): HasMany
+    {
+        return $this->hasMany(Episode::class);
+    }
+
+    /**
      * Build stream URL for this server.
      */
     public function buildStreamUrl(string $streamPath): string
