@@ -58,12 +58,35 @@ Works with any IPTV player supporting Xtream Codes:
 - `/live/{username}/{password}/{stream_id}` - Direct stream URLs
 - **Authentication**: API tokens (recommended) or password (legacy compatibility)
 
+### Modern Flutter API
+Production-ready RESTful API designed for Flutter applications:
+- 📺 **Live TV**: `/api/flutter/v1/live/streams` - Paginated streams with categories
+- 🎬 **Movies**: `/api/flutter/v1/movies` - VOD with filtering and search
+- 📺 **Series**: `/api/flutter/v1/series` - TV shows with seasons/episodes
+- 📅 **EPG**: `/api/flutter/v1/epg` - Electronic program guide
+- 🔍 **Search**: `/api/flutter/v1/search` - Universal content search
+- 🌐 **Load Balancing**: `/api/flutter/v1/load-balancer/optimal` - Optimal server selection
+- **Authentication**: Laravel Sanctum tokens
+- **Features**: Pagination, caching, rate limiting, comprehensive filtering
+- **Documentation**: See `/docs/FLUTTER_API.md`
+
+### Load Balancer Management
+Scalable content distribution with automatic load balancing:
+- 🌍 **Geographic Distribution**: Region-based routing
+- ⚖️ **Smart Routing**: Weight and capacity-based selection
+- 💓 **Health Monitoring**: Automatic heartbeat and health checks
+- 📊 **Real-time Stats**: CPU, memory, connections, bandwidth tracking
+- 🔧 **Admin UI**: Complete Filament integration for management
+- 📦 **Easy Deployment**: Docker-based with automated setup
+- **Documentation**: See `/docs/LOAD_BALANCER_DEPLOYMENT.md`
+
 ### Additional Features
 - 🔒 REST API with Laravel Sanctum tokens
 - 📊 Stream status monitoring (online/offline)
 - 🚦 Rate limiting and security hardening
 - 🎨 Dark GitHub-style theme with purple accents
 - 🎭 **TMDB Integration**: Automatic metadata import for movies and TV series
+- 🚀 **Production Ready**: CodeQL verified, comprehensive documentation
 
 ## 🏗️ Tech Stack
 
@@ -440,8 +463,15 @@ This project is open-sourced software licensed under the [MIT license](LICENSE).
 
 ## 📚 Documentation
 
+### API Documentation
+- **[Flutter API Guide](docs/FLUTTER_API.md)** - Complete REST API reference for Flutter apps
+- **[Load Balancer Deployment](docs/LOAD_BALANCER_DEPLOYMENT.md)** - Setup and configuration guide
+- **[Admin Operations Runbook](docs/ADMIN_OPERATIONS.md)** - Daily operations and troubleshooting
+- **[API Implementation Summary](docs/API_IMPLEMENTATION_SUMMARY.md)** - Technical overview and architecture
+
+### Additional Resources
 - [CODE_QUALITY.md](CODE_QUALITY.md) - Comprehensive code quality documentation
-- [API Documentation](#api-usage) - API endpoint usage
+- [API Documentation](#api-usage) - Legacy API endpoint usage
 - [Security Guide](CODE_QUALITY.md#security-improvements) - Security best practices
 - [Migration Guide](CODE_QUALITY.md#migration-guide) - Upgrade instructions
 
