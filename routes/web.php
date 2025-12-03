@@ -20,6 +20,7 @@ Route::get('/api/server-status', [WebController::class, 'publicServerStatus'])->
 // User Portal - Requires authentication
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [WebController::class, 'dashboard'])->name('dashboard');
+    Route::get('/streams', [WebController::class, 'streams'])->name('streams');
     Route::get('/playlist', [WebController::class, 'playlist'])->name('playlist');
     Route::get('/epg', [WebController::class, 'epg'])->name('epg');
     Route::post('/logout', [WebController::class, 'logout'])->name('logout');

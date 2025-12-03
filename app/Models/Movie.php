@@ -26,6 +26,11 @@ class Movie extends Model
         'backdrop_url',
         'trailer_url',
         'stream_url',
+        'local_path',
+        'download_status',
+        'download_progress',
+        'download_error',
+        'downloaded_at',
         'stream_type',
         'category_id',
         'server_id',
@@ -46,6 +51,8 @@ class Movie extends Model
             'release_year' => 'integer',
             'tmdb_rating' => 'decimal:1',
             'sort_order' => 'integer',
+            'download_progress' => 'integer',
+            'downloaded_at' => 'datetime',
         ];
     }
 
@@ -71,5 +78,33 @@ class Movie extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Get the effective stream URL (local path if downloaded, otherwise stream_url).
+     */
+    public function getEffectiveStreamUrl(): ?string
+    {
+        if ($this->local_path && $this->download_status === 'completed') {
+            return url('storage/movies/'.basename($this->local_path));
+        }
+
+        return $this->stream_url;
+    }
+
+    /**
+     * Check if the movie has a local file.
+     */
+    public function hasLocalFile(): bool
+    {
+        return $this->local_path && $this->download_status === 'completed';
+    }
+
+    /**
+     * Check if the movie is currently downloading.
+     */
+    public function isDownloading(): bool
+    {
+        return $this->download_status === 'downloading';
     }
 }

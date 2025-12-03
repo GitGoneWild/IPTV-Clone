@@ -39,6 +39,22 @@ return [
             'throw' => false,
         ],
 
+        'movies' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/movies'),
+            'url' => env('APP_URL').'/storage/movies',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
+        'episodes' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/episodes'),
+            'url' => env('APP_URL').'/storage/episodes',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

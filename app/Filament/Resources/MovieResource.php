@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\MovieResource\Pages;
 use App\Models\Movie;
+use App\Services\MediaDownloadService;
 use App\Services\TmdbService;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -11,6 +12,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class MovieResource extends Resource
 {
@@ -38,36 +40,38 @@ class MovieResource extends Resource
                                     ->icon('heroicon-o-magnifying-glass')
                                     ->action(function (Forms\Get $get, Forms\Set $set, $state) {
                                         $tmdb = app(TmdbService::class);
-                                        
-                                        if (!$tmdb->isConfigured()) {
+
+                                        if (! $tmdb->isConfigured()) {
                                             Notification::make()
                                                 ->title('TMDB API not configured')
                                                 ->body('Please set TMDB_API_KEY in your .env file')
                                                 ->warning()
                                                 ->send();
+
                                             return;
                                         }
 
                                         $results = $tmdb->searchMovie($state);
-                                        
+
                                         if (empty($results)) {
                                             Notification::make()
                                                 ->title('No results found')
                                                 ->warning()
                                                 ->send();
+
                                             return;
                                         }
 
                                         $set('tmdb_id', $results[0]['id']);
-                                        
+
                                         // Auto-import first result
                                         $movieData = $tmdb->getMovie($results[0]['id']);
-                                        
+
                                         if ($movieData) {
                                             foreach ($movieData as $key => $value) {
                                                 $set($key, $value);
                                             }
-                                            
+
                                             Notification::make()
                                                 ->title('Movie imported from TMDB')
                                                 ->success()
@@ -83,28 +87,29 @@ class MovieResource extends Resource
                                     ->label('Import')
                                     ->icon('heroicon-o-arrow-down-tray')
                                     ->action(function (Forms\Get $get, Forms\Set $set, $state) {
-                                        if (!$state) {
+                                        if (! $state) {
                                             return;
                                         }
 
                                         $tmdb = app(TmdbService::class);
-                                        
-                                        if (!$tmdb->isConfigured()) {
+
+                                        if (! $tmdb->isConfigured()) {
                                             Notification::make()
                                                 ->title('TMDB API not configured')
                                                 ->body('Please set TMDB_API_KEY in your .env file')
                                                 ->warning()
                                                 ->send();
+
                                             return;
                                         }
 
                                         $movieData = $tmdb->getMovie($state);
-                                        
+
                                         if ($movieData) {
                                             foreach ($movieData as $key => $value) {
                                                 $set($key, $value);
                                             }
-                                            
+
                                             Notification::make()
                                                 ->title('Movie imported from TMDB')
                                                 ->success()
@@ -172,28 +177,49 @@ class MovieResource extends Resource
                     ]),
 
                 Forms\Components\Section::make('Stream Configuration')
+                    ->description('Enter a stream URL or local file path. URLs can be downloaded for local caching.')
                     ->schema([
                         Forms\Components\Textarea::make('stream_url')
-                            ->url()
+                            ->label('Stream URL')
+                            ->helperText('Enter the direct URL to the movie file (can be downloaded locally)')
                             ->columnSpanFull(),
-                        Forms\Components\Select::make('stream_type')
-                            ->options(config('homelabtv.stream_types', [
-                                'hls' => 'HLS',
-                                'mpegts' => 'MPEG-TS',
-                                'rtmp' => 'RTMP',
-                                'http' => 'HTTP',
-                            ]))
-                            ->default('hls')
-                            ->required(),
-                        Forms\Components\Select::make('category_id')
-                            ->relationship('category', 'name')
-                            ->searchable()
-                            ->preload(),
-                        Forms\Components\Select::make('server_id')
-                            ->relationship('server', 'name')
-                            ->searchable()
-                            ->preload(),
-                    ])->columns(2),
+                        Forms\Components\TextInput::make('local_path')
+                            ->label('Local Path')
+                            ->helperText('Path to locally cached file (auto-filled when downloaded)')
+                            ->disabled()
+                            ->columnSpanFull()
+                            ->visibleOn('edit'),
+                        Forms\Components\Grid::make(4)
+                            ->schema([
+                                Forms\Components\Select::make('stream_type')
+                                    ->options(config('homelabtv.stream_types', [
+                                        'hls' => 'HLS',
+                                        'mpegts' => 'MPEG-TS',
+                                        'rtmp' => 'RTMP',
+                                        'http' => 'HTTP',
+                                    ]))
+                                    ->default('hls')
+                                    ->required(),
+                                Forms\Components\Select::make('category_id')
+                                    ->relationship('category', 'name')
+                                    ->searchable()
+                                    ->preload(),
+                                Forms\Components\Select::make('server_id')
+                                    ->relationship('server', 'name')
+                                    ->searchable()
+                                    ->preload(),
+                                Forms\Components\Placeholder::make('download_status_display')
+                                    ->label('Download Status')
+                                    ->content(fn (?Movie $record) => match ($record?->download_status) {
+                                        'pending' => '⏳ Pending',
+                                        'downloading' => '⬇️ Downloading ('.$record->download_progress.'%)',
+                                        'completed' => '✅ Downloaded',
+                                        'failed' => '❌ Failed: '.($record->download_error ?? 'Unknown error'),
+                                        default => '—',
+                                    })
+                                    ->visibleOn('edit'),
+                            ]),
+                    ]),
 
                 Forms\Components\Section::make('Settings')
                     ->schema([
@@ -234,6 +260,23 @@ class MovieResource extends Resource
                     ->color(fn ($state) => $state >= 7 ? 'success' : ($state >= 5 ? 'warning' : 'danger')),
                 Tables\Columns\TextColumn::make('category.name')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('download_status')
+                    ->label('Download')
+                    ->badge()
+                    ->color(fn (?string $state) => match ($state) {
+                        'completed' => 'success',
+                        'downloading' => 'info',
+                        'pending' => 'warning',
+                        'failed' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (?string $state, Movie $record) => match ($state) {
+                        'downloading' => 'Downloading '.$record->download_progress.'%',
+                        'completed' => 'Local',
+                        'pending' => 'Queued',
+                        'failed' => 'Failed',
+                        default => 'Remote',
+                    }),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
             ])
@@ -241,6 +284,14 @@ class MovieResource extends Resource
                 Tables\Filters\TernaryFilter::make('is_active'),
                 Tables\Filters\SelectFilter::make('category')
                     ->relationship('category', 'name'),
+                Tables\Filters\SelectFilter::make('download_status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'downloading' => 'Downloading',
+                        'completed' => 'Downloaded',
+                        'failed' => 'Failed',
+                    ])
+                    ->label('Download Status'),
                 Tables\Filters\Filter::make('release_year')
                     ->form([
                         Forms\Components\TextInput::make('year')
@@ -254,11 +305,56 @@ class MovieResource extends Resource
                     }),
             ])
             ->actions([
+                Tables\Actions\Action::make('download')
+                    ->label('Download')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('info')
+                    ->visible(fn (Movie $record) => $record->stream_url && ! in_array($record->download_status, ['downloading', 'completed', 'pending']))
+                    ->action(function (Movie $record) {
+                        app(MediaDownloadService::class)->queueDownload($record);
+                        Notification::make()
+                            ->title('Download queued')
+                            ->body("'{$record->title}' has been queued for download.")
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\Action::make('delete_local')
+                    ->label('Delete Local')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->visible(fn (Movie $record) => $record->download_status === 'completed')
+                    ->requiresConfirmation()
+                    ->action(function (Movie $record) {
+                        app(MediaDownloadService::class)->deleteLocalFile($record);
+                        Notification::make()
+                            ->title('Local file deleted')
+                            ->success()
+                            ->send();
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('download_selected')
+                        ->label('Download Selected')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->color('info')
+                        ->action(function (Collection $records) {
+                            $downloadService = app(MediaDownloadService::class);
+                            $count = 0;
+                            foreach ($records as $record) {
+                                if ($record->stream_url && ! in_array($record->download_status, ['downloading', 'completed', 'pending'])) {
+                                    $downloadService->queueDownload($record);
+                                    $count++;
+                                }
+                            }
+                            Notification::make()
+                                ->title("Queued {$count} movies for download")
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
@@ -272,4 +368,3 @@ class MovieResource extends Resource
         ];
     }
 }
-

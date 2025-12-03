@@ -129,6 +129,16 @@
         </div>
         @endif
 
+        <!-- Quick Actions -->
+        <div class="mb-8">
+            <a href="{{ route('streams') }}" class="inline-flex items-center px-6 py-3 bg-homelab-600 hover:bg-homelab-700 text-white font-medium rounded-lg transition-colors glow-accent">
+                <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+                Watch Streams
+            </a>
+        </div>
+
         <!-- Quick Stats -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
