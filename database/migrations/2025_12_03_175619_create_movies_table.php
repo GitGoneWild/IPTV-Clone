@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('original_title')->nullable();
             $table->text('plot')->nullable();
-            $table->text('cast')->nullable(); // JSON array of actors
+            $table->text('cast')->nullable(); // Stored as JSON array of actors
             $table->string('director')->nullable();
             $table->string('genre')->nullable();
             $table->integer('runtime')->nullable(); // in minutes

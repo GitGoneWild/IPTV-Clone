@@ -10,6 +10,9 @@ class TmdbService
     protected string $apiKey;
     protected string $baseUrl = 'https://api.themoviedb.org/3';
     protected string $imageBaseUrl = 'https://image.tmdb.org/t/p/';
+    
+    /** Maximum number of cast members to include */
+    protected const MAX_CAST_MEMBERS = 10;
 
     public function __construct()
     {
@@ -164,7 +167,7 @@ class TmdbService
         if (isset($data['credits']['cast'])) {
             $cast = array_slice(array_map(function ($actor) {
                 return $actor['name'];
-            }, $data['credits']['cast']), 0, 10);
+            }, $data['credits']['cast']), 0, self::MAX_CAST_MEMBERS);
         }
 
         $trailer = null;
@@ -215,7 +218,7 @@ class TmdbService
         if (isset($data['credits']['cast'])) {
             $cast = array_slice(array_map(function ($actor) {
                 return $actor['name'];
-            }, $data['credits']['cast']), 0, 10);
+            }, $data['credits']['cast']), 0, self::MAX_CAST_MEMBERS);
         }
 
         return [
