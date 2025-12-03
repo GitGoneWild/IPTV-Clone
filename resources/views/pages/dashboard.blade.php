@@ -128,14 +128,21 @@
 
 @push('scripts')
 <script>
-function copyToClipboard(input) {
-    input.select();
-    document.execCommand('copy');
-    
-    // Show feedback
+async function copyToClipboard(input) {
+    const text = input.value;
     const button = input.nextElementSibling;
     const originalText = button.textContent;
-    button.textContent = 'Copied!';
+    
+    try {
+        await navigator.clipboard.writeText(text);
+        button.textContent = 'Copied!';
+    } catch (err) {
+        // Fallback for older browsers
+        input.select();
+        document.execCommand('copy');
+        button.textContent = 'Copied!';
+    }
+    
     setTimeout(() => {
         button.textContent = originalText;
     }, 2000);
