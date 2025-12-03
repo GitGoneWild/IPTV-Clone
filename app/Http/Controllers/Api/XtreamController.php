@@ -24,8 +24,8 @@ class XtreamController extends Controller
     public function playerApi(Request $request): Response
     {
         $user = $this->authenticateUser($request);
-        
-        if (!$user) {
+
+        if (! $user) {
             return $this->unauthorizedResponse();
         }
 
@@ -46,8 +46,8 @@ class XtreamController extends Controller
     public function getPlaylist(Request $request): Response
     {
         $user = $this->authenticateUser($request);
-        
-        if (!$user) {
+
+        if (! $user) {
             return $this->unauthorizedResponse();
         }
 
@@ -67,8 +67,8 @@ class XtreamController extends Controller
     public function panelApi(Request $request): Response
     {
         $user = $this->authenticateUser($request);
-        
-        if (!$user) {
+
+        if (! $user) {
             return $this->unauthorizedResponse();
         }
 
@@ -81,8 +81,8 @@ class XtreamController extends Controller
     public function xmltv(Request $request): Response
     {
         $user = $this->authenticateUser($request);
-        
-        if (!$user) {
+
+        if (! $user) {
             return $this->unauthorizedResponse();
         }
 
@@ -98,8 +98,8 @@ class XtreamController extends Controller
     public function enigma2(Request $request): Response
     {
         $user = $this->authenticateUser($request);
-        
-        if (!$user) {
+
+        if (! $user) {
             return $this->unauthorizedResponse();
         }
 
@@ -116,18 +116,18 @@ class XtreamController extends Controller
     public function stream(Request $request, string $username, string $password, int $streamId): Response
     {
         $user = User::where('username', $username)->first();
-        
-        if (!$user || !$this->validatePassword($user, $password)) {
+
+        if (! $user || ! $this->validatePassword($user, $password)) {
             return $this->unauthorizedResponse();
         }
 
-        if (!$user->canAccessStreams()) {
+        if (! $user->canAccessStreams()) {
             return response('Account expired or inactive', 403);
         }
 
         $streamUrl = $this->xtreamService->getStreamUrl($user, $streamId);
-        
-        if (!$streamUrl) {
+
+        if (! $streamUrl) {
             return response('Stream not found', 404);
         }
 
@@ -142,17 +142,17 @@ class XtreamController extends Controller
         $username = $request->get('username');
         $password = $request->get('password');
 
-        if (!$username || !$password) {
+        if (! $username || ! $password) {
             return null;
         }
 
         $user = User::where('username', $username)->first();
 
-        if (!$user || !$this->validatePassword($user, $password)) {
+        if (! $user || ! $this->validatePassword($user, $password)) {
             return null;
         }
 
-        if (!$user->canAccessStreams()) {
+        if (! $user->canAccessStreams()) {
             return null;
         }
 
@@ -166,7 +166,7 @@ class XtreamController extends Controller
     {
         // For Xtream API, we store and compare plain passwords
         // This is required for compatibility with IPTV players
-        return $user->password === $password || 
+        return $user->password === $password ||
                password_verify($password, $user->password);
     }
 
@@ -212,6 +212,7 @@ class XtreamController extends Controller
     protected function getLiveCategories(User $user): Response
     {
         $categories = $this->xtreamService->getLiveCategories($user);
+
         return response()->json($categories);
     }
 
@@ -222,6 +223,7 @@ class XtreamController extends Controller
     {
         $categoryId = $request->get('category_id');
         $streams = $this->xtreamService->getLiveStreams($user, $categoryId);
+
         return response()->json($streams);
     }
 
@@ -233,6 +235,7 @@ class XtreamController extends Controller
         $streamId = $request->get('stream_id');
         $limit = $request->get('limit', 4);
         $epg = $this->xtreamService->getShortEpg($streamId, $limit);
+
         return response()->json(['epg_listings' => $epg]);
     }
 

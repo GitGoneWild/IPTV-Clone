@@ -58,9 +58,10 @@ class ConnectionLog extends Model
      */
     public function getDurationAttribute(): ?int
     {
-        if (!$this->ended_at) {
+        if (! $this->ended_at) {
             return $this->started_at->diffInSeconds(now());
         }
+
         return $this->started_at->diffInSeconds($this->ended_at);
     }
 }

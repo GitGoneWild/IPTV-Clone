@@ -17,9 +17,9 @@ class XtreamService
     {
         $baseUrl = rtrim(config('app.url'), '/');
         $streams = $this->getUserStreams($user);
-        
+
         $playlist = "#EXTM3U\n";
-        
+
         if ($type === 'm3u_plus') {
             $playlist .= "#EXTM3U url-tvg=\"{$baseUrl}/xmltv.php?username={$user->username}&password={$user->password}\"\n";
         }
@@ -28,7 +28,7 @@ class XtreamService
             $categoryName = $stream->category?->name ?? 'Uncategorized';
             $epgId = $stream->epg_channel_id ?? '';
             $logo = $stream->logo_url ?? $stream->stream_icon ?? '';
-            
+
             $playlist .= "#EXTINF:-1 tvg-id=\"{$epgId}\" tvg-name=\"{$stream->name}\" tvg-logo=\"{$logo}\" group-title=\"{$categoryName}\",{$stream->name}\n";
             $playlist .= "{$baseUrl}/live/{$user->username}/{$user->password}/{$stream->id}.{$output}\n";
         }
@@ -42,16 +42,16 @@ class XtreamService
     public function generateXmltv(User $user): string
     {
         $streams = $this->getUserStreams($user);
-        
+
         $xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         $xml .= "<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n";
-        $xml .= "<tv generator-info-name=\"HomelabTV\" generator-info-url=\"" . config('app.url') . "\">\n";
+        $xml .= '<tv generator-info-name="HomelabTV" generator-info-url="'.config('app.url')."\">\n";
 
         // Channels
         foreach ($streams as $stream) {
             if ($stream->epg_channel_id) {
                 $xml .= "  <channel id=\"{$stream->epg_channel_id}\">\n";
-                $xml .= "    <display-name>" . htmlspecialchars($stream->name, ENT_XML1) . "</display-name>\n";
+                $xml .= '    <display-name>'.htmlspecialchars($stream->name, ENT_XML1)."</display-name>\n";
                 if ($stream->logo_url) {
                     $xml .= "    <icon src=\"{$stream->logo_url}\" />\n";
                 }
@@ -69,19 +69,19 @@ class XtreamService
         foreach ($programs as $program) {
             $start = $program->start_time->format('YmdHis O');
             $stop = $program->end_time->format('YmdHis O');
-            
+
             $xml .= "  <programme start=\"{$start}\" stop=\"{$stop}\" channel=\"{$program->channel_id}\">\n";
-            $xml .= "    <title lang=\"{$program->lang}\">" . htmlspecialchars($program->title, ENT_XML1) . "</title>\n";
+            $xml .= "    <title lang=\"{$program->lang}\">".htmlspecialchars($program->title, ENT_XML1)."</title>\n";
             if ($program->description) {
-                $xml .= "    <desc lang=\"{$program->lang}\">" . htmlspecialchars($program->description, ENT_XML1) . "</desc>\n";
+                $xml .= "    <desc lang=\"{$program->lang}\">".htmlspecialchars($program->description, ENT_XML1)."</desc>\n";
             }
             if ($program->category) {
-                $xml .= "    <category lang=\"{$program->lang}\">" . htmlspecialchars($program->category, ENT_XML1) . "</category>\n";
+                $xml .= "    <category lang=\"{$program->lang}\">".htmlspecialchars($program->category, ENT_XML1)."</category>\n";
             }
             $xml .= "  </programme>\n";
         }
 
-        $xml .= "</tv>";
+        $xml .= '</tv>';
 
         return $xml;
     }
@@ -93,9 +93,9 @@ class XtreamService
     {
         $baseUrl = rtrim(config('app.url'), '/');
         $streams = $this->getUserStreams($user);
-        
+
         $bouquet = "#NAME HomelabTV\n";
-        
+
         foreach ($streams as $stream) {
             $streamUrl = "{$baseUrl}/live/{$user->username}/{$user->password}/{$stream->id}.ts";
             $encodedUrl = urlencode($streamUrl);
@@ -113,7 +113,7 @@ class XtreamService
     {
         $streams = $this->getUserStreams($user);
         $categories = $this->getUserCategories($user);
-        
+
         return [
             'user_info' => $this->getUserInfoArray($user),
             'server_info' => $this->getServerInfo(),
@@ -128,7 +128,7 @@ class XtreamService
     public function getLiveCategories(User $user): array
     {
         $categories = $this->getUserCategories($user);
-        
+
         return $categories->map(function ($category) {
             return [
                 'category_id' => (string) $category->id,
@@ -144,14 +144,14 @@ class XtreamService
     public function getLiveStreams(User $user, ?string $categoryId = null): array
     {
         $streams = $this->getUserStreams($user);
-        
+
         if ($categoryId) {
             $streams = $streams->where('category_id', $categoryId);
         }
 
         $baseUrl = rtrim(config('app.url'), '/');
-        
-        return $streams->map(function ($stream) use ($baseUrl) {
+
+        return $streams->map(function ($stream) {
             return [
                 'num' => $stream->id,
                 'name' => $stream->name,
@@ -175,12 +175,12 @@ class XtreamService
      */
     public function getShortEpg(?int $streamId, int $limit = 4): array
     {
-        if (!$streamId) {
+        if (! $streamId) {
             return [];
         }
 
         $stream = Stream::find($streamId);
-        if (!$stream || !$stream->epg_channel_id) {
+        if (! $stream || ! $stream->epg_channel_id) {
             return [];
         }
 
@@ -225,8 +225,8 @@ class XtreamService
     {
         $streams = $this->getUserStreams($user);
         $stream = $streams->firstWhere('id', $streamId);
-        
-        if (!$stream) {
+
+        if (! $stream) {
             return null;
         }
 
@@ -239,14 +239,14 @@ class XtreamService
     protected function getUserStreams(User $user)
     {
         $bouquetIds = $user->bouquets()->pluck('bouquets.id');
-        
+
         return Stream::whereHas('bouquets', function ($query) use ($bouquetIds) {
             $query->whereIn('bouquets.id', $bouquetIds);
         })
-        ->where('is_active', true)
-        ->where('is_hidden', false)
-        ->orderBy('sort_order')
-        ->get();
+            ->where('is_active', true)
+            ->where('is_hidden', false)
+            ->orderBy('sort_order')
+            ->get();
     }
 
     /**
@@ -256,7 +256,7 @@ class XtreamService
     {
         $streams = $this->getUserStreams($user);
         $categoryIds = $streams->pluck('category_id')->filter()->unique();
-        
+
         return Category::whereIn('id', $categoryIds)
             ->where('is_active', true)
             ->orderBy('sort_order')

@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\BouquetResource\Pages;
 
 use App\Filament\Resources\BouquetResource;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Actions;
+use Filament\Resources\Pages\ListRecords;
 
 class ListBouquets extends ListRecords
 {

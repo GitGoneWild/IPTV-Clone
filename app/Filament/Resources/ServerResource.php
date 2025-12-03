@@ -90,7 +90,7 @@ class ServerResource extends Resource
                     ->label('Connections'),
                 Tables\Columns\TextColumn::make('load_percentage')
                     ->label('Load')
-                    ->formatStateUsing(fn ($state) => $state . '%')
+                    ->formatStateUsing(fn ($state) => $state.'%')
                     ->color(fn ($state): string => match (true) {
                         $state > 80 => 'danger',
                         $state > 50 => 'warning',

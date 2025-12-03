@@ -43,8 +43,9 @@ class EpgProgram extends Model
     public function scopeCurrent($query)
     {
         $now = now();
+
         return $query->where('start_time', '<=', $now)
-                     ->where('end_time', '>=', $now);
+            ->where('end_time', '>=', $now);
     }
 
     /**
@@ -53,7 +54,7 @@ class EpgProgram extends Model
     public function scopeUpcoming($query)
     {
         return $query->where('start_time', '>', now())
-                     ->orderBy('start_time');
+            ->orderBy('start_time');
     }
 
     /**
@@ -62,6 +63,7 @@ class EpgProgram extends Model
     public function isAiring(): bool
     {
         $now = now();
+
         return $this->start_time <= $now && $this->end_time >= $now;
     }
 }

@@ -92,6 +92,7 @@ class Stream extends Model
         if ($this->server && $this->server->is_active) {
             return $this->server->buildStreamUrl($this->stream_url);
         }
+
         return $this->stream_url;
     }
 

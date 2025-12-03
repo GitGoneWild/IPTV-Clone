@@ -18,7 +18,7 @@ class StreamFactory extends Factory
     {
         return [
             'name' => fake()->words(3, true),
-            'stream_url' => fake()->url() . '/stream.m3u8',
+            'stream_url' => fake()->url().'/stream.m3u8',
             'stream_type' => fake()->randomElement(['hls', 'mpegts', 'rtmp', 'http']),
             'category_id' => Category::factory(),
             'server_id' => null,

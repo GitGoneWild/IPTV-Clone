@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\EpgSourceResource\Pages;
 
 use App\Filament\Resources\EpgSourceResource;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Actions;
+use Filament\Resources\Pages\ListRecords;
 
 class ListEpgSources extends ListRecords
 {

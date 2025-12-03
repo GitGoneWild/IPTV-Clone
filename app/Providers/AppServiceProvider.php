@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(XtreamService::class, function ($app) {
-            return new XtreamService();
+            return new XtreamService;
         });
     }
 

@@ -25,36 +25,38 @@ class ImportEpg extends Command
     public function handle(): int
     {
         $sourceId = $this->option('source');
-        
+
         $query = EpgSource::active();
         if ($sourceId) {
             $query->where('id', $sourceId);
         }
-        
+
         $sources = $query->get();
-        
+
         if ($sources->isEmpty()) {
             $this->info('No active EPG sources found.');
+
             return self::SUCCESS;
         }
 
         foreach ($sources as $source) {
             $this->info("Importing EPG from: {$source->name}");
-            
+
             try {
                 $xmlContent = $this->getXmlContent($source);
-                
-                if (!$xmlContent) {
+
+                if (! $xmlContent) {
                     $this->error("Could not retrieve content from {$source->name}");
                     $source->update([
                         'last_import_status' => 'failed',
                         'last_import_at' => now(),
                     ]);
+
                     continue;
                 }
 
                 $stats = $this->parseAndImport($xmlContent);
-                
+
                 $source->update([
                     'last_import_status' => 'success',
                     'last_import_at' => now(),
@@ -63,11 +65,11 @@ class ImportEpg extends Command
                 ]);
 
                 $this->info("Imported {$stats['programs']} programs for {$stats['channels']} channels");
-                
+
             } catch (\Exception $e) {
                 $this->error("Error importing from {$source->name}: {$e->getMessage()}");
                 $source->update([
-                    'last_import_status' => 'error: ' . substr($e->getMessage(), 0, 100),
+                    'last_import_status' => 'error: '.substr($e->getMessage(), 0, 100),
                     'last_import_at' => now(),
                 ]);
             }
@@ -86,22 +88,22 @@ class ImportEpg extends Command
     {
         if ($source->file_path && Storage::disk('epg')->exists($source->file_path)) {
             $content = Storage::disk('epg')->get($source->file_path);
-            
+
             // Handle gzipped files
             if (str_ends_with($source->file_path, '.gz')) {
                 $content = gzdecode($content);
             }
-            
+
             return $content;
         }
 
         if ($source->url) {
             $content = @file_get_contents($source->url);
-            
+
             if ($content && str_ends_with($source->url, '.gz')) {
                 $content = gzdecode($content);
             }
-            
+
             return $content ?: null;
         }
 
@@ -114,8 +116,8 @@ class ImportEpg extends Command
     protected function parseAndImport(string $xmlContent): array
     {
         $xml = simplexml_load_string($xmlContent);
-        
-        if (!$xml) {
+
+        if (! $xml) {
             throw new \Exception('Invalid XML content');
         }
 
@@ -131,15 +133,15 @@ class ImportEpg extends Command
         // Parse programs
         foreach ($xml->programme as $programme) {
             $channelId = (string) $programme['channel'];
-            
-            if (!isset($channels[$channelId])) {
+
+            if (! isset($channels[$channelId])) {
                 continue;
             }
 
             $startTime = $this->parseXmltvTime((string) $programme['start']);
             $endTime = $this->parseXmltvTime((string) $programme['stop']);
-            
-            if (!$startTime || !$endTime) {
+
+            if (! $startTime || ! $endTime) {
                 continue;
             }
 
@@ -180,10 +182,11 @@ class ImportEpg extends Command
     {
         // Format: 20240101120000 +0000
         $timeStr = trim($timeStr);
-        
+
         try {
             if (preg_match('/^(\d{14})\s*([+-]\d{4})?$/', $timeStr, $matches)) {
                 $format = strlen($matches[0]) > 14 ? 'YmdHis O' : 'YmdHis';
+
                 return \DateTime::createFromFormat($format, $timeStr) ?: null;
             }
         } catch (\Exception $e) {

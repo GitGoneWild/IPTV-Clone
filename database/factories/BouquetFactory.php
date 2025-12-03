@@ -15,7 +15,7 @@ class BouquetFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->words(2, true) . ' Package',
+            'name' => fake()->words(2, true).' Package',
             'description' => fake()->optional()->sentence(),
             'is_active' => true,
             'sort_order' => fake()->numberBetween(0, 100),

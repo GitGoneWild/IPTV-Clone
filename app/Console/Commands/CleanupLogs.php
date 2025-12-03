@@ -26,16 +26,17 @@ class CleanupLogs extends Command
         $cutoff = now()->subDays($days);
 
         $count = ConnectionLog::where('created_at', '<', $cutoff)->count();
-        
+
         if ($count === 0) {
             $this->info('No old logs to clean up.');
+
             return self::SUCCESS;
         }
 
         $this->info("Deleting {$count} connection logs older than {$days} days...");
-        
+
         ConnectionLog::where('created_at', '<', $cutoff)->delete();
-        
+
         $this->info('Cleanup completed.');
 
         return self::SUCCESS;

@@ -15,6 +15,9 @@
 !/storage/framework/sessions/.gitignore
 !/storage/framework/views/.gitignore
 !/storage/logs/.gitignore
+/database/database.sqlite
+/bootstrap/cache/packages.php
+/bootstrap/cache/services.php
 Homestead.json
 Homestead.yaml
 npm-debug.log
