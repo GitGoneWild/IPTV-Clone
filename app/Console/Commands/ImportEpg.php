@@ -123,6 +123,8 @@ class ImportEpg extends Command
 
         $channels = [];
         $programsCount = 0;
+        $batchSize = 100;
+        $programsBatch = [];
 
         // Parse channels
         foreach ($xml->channel as $channel) {
@@ -130,7 +132,7 @@ class ImportEpg extends Command
             $channels[$channelId] = (string) $channel->{'display-name'};
         }
 
-        // Parse programs
+        // Parse programs in batches
         foreach ($xml->programme as $programme) {
             $channelId = (string) $programme['channel'];
 
@@ -150,29 +152,60 @@ class ImportEpg extends Command
                 continue;
             }
 
-            EpgProgram::updateOrCreate(
-                [
-                    'channel_id' => $channelId,
-                    'start_time' => $startTime,
-                ],
-                [
-                    'title' => (string) $programme->title,
-                    'description' => (string) ($programme->desc ?? ''),
-                    'end_time' => $endTime,
-                    'category' => (string) ($programme->category ?? ''),
-                    'episode_num' => (string) ($programme->{'episode-num'} ?? ''),
-                    'icon_url' => (string) ($programme->icon['src'] ?? ''),
-                    'lang' => (string) ($programme->title['lang'] ?? 'en'),
-                ]
-            );
+            $programsBatch[] = [
+                'channel_id' => $channelId,
+                'start_time' => $startTime,
+                'title' => (string) $programme->title,
+                'description' => (string) ($programme->desc ?? ''),
+                'end_time' => $endTime,
+                'category' => (string) ($programme->category ?? ''),
+                'episode_num' => (string) ($programme->{'episode-num'} ?? ''),
+                'icon_url' => (string) ($programme->icon['src'] ?? ''),
+                'lang' => (string) ($programme->title['lang'] ?? 'en'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
 
-            $programsCount++;
+            // Insert batch when it reaches the batch size
+            if (count($programsBatch) >= $batchSize) {
+                $this->insertProgramsBatch($programsBatch);
+                $programsCount += count($programsBatch);
+                $programsBatch = [];
+            }
+        }
+
+        // Insert remaining programs
+        if (! empty($programsBatch)) {
+            $this->insertProgramsBatch($programsBatch);
+            $programsCount += count($programsBatch);
         }
 
         return [
             'channels' => count($channels),
             'programs' => $programsCount,
         ];
+    }
+
+    /**
+     * Insert programs batch using upsert for better performance.
+     * Handles potential database errors gracefully.
+     */
+    protected function insertProgramsBatch(array $programs): void
+    {
+        try {
+            EpgProgram::upsert(
+                $programs,
+                ['channel_id', 'start_time'],
+                ['title', 'description', 'end_time', 'category', 'episode_num', 'icon_url', 'lang', 'updated_at']
+            );
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->error('Database upsert failed: '.$e->getMessage());
+            // Log the error for debugging
+            \Log::error('EPG import batch insert failed', [
+                'error' => $e->getMessage(),
+                'batch_size' => count($programs),
+            ]);
+        }
     }
 
     /**

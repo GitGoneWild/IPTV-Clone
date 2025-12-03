@@ -16,12 +16,13 @@ class XtreamService
     public function generateM3uPlaylist(User $user, string $type = 'm3u_plus', string $output = 'ts'): string
     {
         $baseUrl = rtrim(config('app.url'), '/');
+        $apiPassword = $user->api_password;
         $streams = $this->getUserStreams($user);
 
         $playlist = "#EXTM3U\n";
 
         if ($type === 'm3u_plus') {
-            $playlist .= "#EXTM3U url-tvg=\"{$baseUrl}/xmltv.php?username={$user->username}&password={$user->password}\"\n";
+            $playlist .= "#EXTM3U url-tvg=\"{$baseUrl}/xmltv.php?username={$user->username}&password={$apiPassword}\"\n";
         }
 
         foreach ($streams as $stream) {
@@ -30,7 +31,7 @@ class XtreamService
             $logo = $stream->logo_url ?? $stream->stream_icon ?? '';
 
             $playlist .= "#EXTINF:-1 tvg-id=\"{$epgId}\" tvg-name=\"{$stream->name}\" tvg-logo=\"{$logo}\" group-title=\"{$categoryName}\",{$stream->name}\n";
-            $playlist .= "{$baseUrl}/live/{$user->username}/{$user->password}/{$stream->id}.{$output}\n";
+            $playlist .= "{$baseUrl}/live/{$user->username}/{$apiPassword}/{$stream->id}.{$output}\n";
         }
 
         return $playlist;
@@ -45,15 +46,19 @@ class XtreamService
 
         $xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         $xml .= "<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n";
-        $xml .= '<tv generator-info-name="HomelabTV" generator-info-url="'.config('app.url')."\">\n";
+        $xml .= '<tv generator-info-name="HomelabTV" generator-info-url="'.htmlspecialchars(config('app.url'), ENT_XML1 | ENT_QUOTES)."\">\n";
 
         // Channels
         foreach ($streams as $stream) {
             if ($stream->epg_channel_id) {
-                $xml .= "  <channel id=\"{$stream->epg_channel_id}\">\n";
-                $xml .= '    <display-name>'.htmlspecialchars($stream->name, ENT_XML1)."</display-name>\n";
+                $channelId = htmlspecialchars($stream->epg_channel_id, ENT_XML1 | ENT_QUOTES);
+                $name = htmlspecialchars($stream->name, ENT_XML1 | ENT_QUOTES);
+
+                $xml .= "  <channel id=\"{$channelId}\">\n";
+                $xml .= "    <display-name>{$name}</display-name>\n";
                 if ($stream->logo_url) {
-                    $xml .= "    <icon src=\"{$stream->logo_url}\" />\n";
+                    $logoUrl = htmlspecialchars($stream->logo_url, ENT_XML1 | ENT_QUOTES);
+                    $xml .= "    <icon src=\"{$logoUrl}\" />\n";
                 }
                 $xml .= "  </channel>\n";
             }
@@ -69,15 +74,23 @@ class XtreamService
         foreach ($programs as $program) {
             $start = $program->start_time->format('YmdHis O');
             $stop = $program->end_time->format('YmdHis O');
+            $channelId = htmlspecialchars($program->channel_id, ENT_XML1 | ENT_QUOTES);
+            $title = htmlspecialchars($program->title, ENT_XML1 | ENT_QUOTES);
+            $lang = htmlspecialchars($program->lang, ENT_XML1 | ENT_QUOTES);
 
-            $xml .= "  <programme start=\"{$start}\" stop=\"{$stop}\" channel=\"{$program->channel_id}\">\n";
-            $xml .= "    <title lang=\"{$program->lang}\">".htmlspecialchars($program->title, ENT_XML1)."</title>\n";
+            $xml .= "  <programme start=\"{$start}\" stop=\"{$stop}\" channel=\"{$channelId}\">\n";
+            $xml .= "    <title lang=\"{$lang}\">{$title}</title>\n";
+
             if ($program->description) {
-                $xml .= "    <desc lang=\"{$program->lang}\">".htmlspecialchars($program->description, ENT_XML1)."</desc>\n";
+                $description = htmlspecialchars($program->description, ENT_XML1 | ENT_QUOTES);
+                $xml .= "    <desc lang=\"{$lang}\">{$description}</desc>\n";
             }
+
             if ($program->category) {
-                $xml .= "    <category lang=\"{$program->lang}\">".htmlspecialchars($program->category, ENT_XML1)."</category>\n";
+                $category = htmlspecialchars($program->category, ENT_XML1 | ENT_QUOTES);
+                $xml .= "    <category lang=\"{$lang}\">{$category}</category>\n";
             }
+
             $xml .= "  </programme>\n";
         }
 
@@ -92,12 +105,13 @@ class XtreamService
     public function generateEnigma2Bouquet(User $user): string
     {
         $baseUrl = rtrim(config('app.url'), '/');
+        $apiPassword = $user->api_password;
         $streams = $this->getUserStreams($user);
 
         $bouquet = "#NAME HomelabTV\n";
 
         foreach ($streams as $stream) {
-            $streamUrl = "{$baseUrl}/live/{$user->username}/{$user->password}/{$stream->id}.ts";
+            $streamUrl = "{$baseUrl}/live/{$user->username}/{$apiPassword}/{$stream->id}.ts";
             $encodedUrl = urlencode($streamUrl);
             $bouquet .= "#SERVICE 4097:0:1:0:0:0:0:0:0:0:{$encodedUrl}:{$stream->name}\n";
             $bouquet .= "#DESCRIPTION {$stream->name}\n";
@@ -238,35 +252,45 @@ class XtreamService
      *
      * Eager loads category and server relationships to prevent N+1 queries.
      * Server relationship is needed for getEffectiveUrl() in getStreamUrl().
+     * Results are cached for 5 minutes to improve performance.
      *
      * @return \Illuminate\Database\Eloquent\Collection<int, Stream>
      */
     protected function getUserStreams(User $user): \Illuminate\Database\Eloquent\Collection
     {
-        $bouquetIds = $user->bouquets()->pluck('bouquets.id');
+        $cacheKey = "user_streams_{$user->id}";
 
-        return Stream::with(['category', 'server'])
-            ->whereHas('bouquets', function ($query) use ($bouquetIds) {
-                $query->whereIn('bouquets.id', $bouquetIds);
-            })
-            ->where('is_active', true)
-            ->where('is_hidden', false)
-            ->orderBy('sort_order')
-            ->get();
+        return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user) {
+            $bouquetIds = $user->bouquets()->pluck('bouquets.id');
+
+            return Stream::with(['category', 'server'])
+                ->whereHas('bouquets', function ($query) use ($bouquetIds) {
+                    $query->whereIn('bouquets.id', $bouquetIds);
+                })
+                ->where('is_active', true)
+                ->where('is_hidden', false)
+                ->orderBy('sort_order')
+                ->get();
+        });
     }
 
     /**
      * Get categories available to user
+     * Results are cached for 5 minutes to improve performance.
      */
     protected function getUserCategories(User $user)
     {
-        $streams = $this->getUserStreams($user);
-        $categoryIds = $streams->pluck('category_id')->filter()->unique();
+        $cacheKey = "user_categories_{$user->id}";
 
-        return Category::whereIn('id', $categoryIds)
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
+        return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user) {
+            $streams = $this->getUserStreams($user);
+            $categoryIds = $streams->pluck('category_id')->filter()->unique();
+
+            return Category::whereIn('id', $categoryIds)
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->get();
+        });
     }
 
     /**
@@ -276,7 +300,7 @@ class XtreamService
     {
         return [
             'username' => $user->username,
-            'password' => $user->password,
+            'password' => $user->api_password,
             'auth' => 1,
             'status' => $user->is_active ? 'Active' : 'Disabled',
             'exp_date' => $user->expires_at?->timestamp,

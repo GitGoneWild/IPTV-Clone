@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'username',
+        'api_token',
         'is_admin',
         'is_reseller',
         'reseller_id',
@@ -115,45 +116,101 @@ class User extends Authenticatable
     /**
      * Validate password for Xtream API compatibility.
      *
-     * Supports both plain text passwords (for Xtream compatibility with IPTV players)
-     * and hashed passwords.
+     * For security, validates against the API token if available,
+     * otherwise falls back to hashed password verification.
+     * Note: Plain-text password comparison has been removed for security.
+     * Only hashed passwords and API tokens are supported.
      */
     public function validateXtreamPassword(string $password): bool
     {
-        return $this->password === $password ||
-               password_verify($password, $this->password);
+        // First check if it's an API token
+        if ($this->api_token && hash_equals($this->api_token, $password)) {
+            return true;
+        }
+        
+        // Fall back to hashed password verification only
+        return password_verify($password, $this->password);
+    }
+    
+    /**
+     * Generate a new API token for this user.
+     * This token can be used for Xtream API authentication.
+     * Handles uniqueness constraint with retry logic.
+     */
+    public function generateApiToken(): string
+    {
+        $maxAttempts = 5;
+        $attempts = 0;
+        
+        do {
+            $token = bin2hex(random_bytes(32));
+            $this->api_token = $token;
+            
+            try {
+                $this->save();
+                return $token;
+            } catch (\Illuminate\Database\QueryException $e) {
+                // Check if it's a unique constraint violation on api_token
+                if (str_contains($e->getMessage(), 'api_token')) {
+                    $attempts++;
+                    if ($attempts >= $maxAttempts) {
+                        throw new \RuntimeException('Failed to generate a unique API token after ' . $maxAttempts . ' attempts.');
+                    }
+                    // Try again with a new token
+                    continue;
+                }
+                // Other DB error, rethrow
+                throw $e;
+            }
+        } while (true);
+    }
+    
+    /**
+     * Get the password/token to use for API URLs.
+     * Returns API token if available, otherwise returns empty string.
+     * Users without tokens should generate one via the dashboard or seeder.
+     */
+    public function getApiPasswordAttribute(): string
+    {
+        return $this->api_token ?? '';
     }
 
     /**
      * Generate M3U playlist URL for this user.
+     * Uses API token for security instead of exposing password.
      */
     public function getM3uUrlAttribute(): string
     {
         $baseUrl = rtrim(config('app.url'), '/');
+        $apiPassword = $this->api_password;
 
-        return "{$baseUrl}/get.php?username={$this->username}&password={$this->password}&type=m3u_plus";
+        return "{$baseUrl}/get.php?username={$this->username}&password={$apiPassword}&type=m3u_plus";
     }
 
     /**
      * Generate Xtream API URL for this user.
+     * Uses API token for security instead of exposing password.
      */
     public function getXtreamUrlAttribute(): string
     {
         $baseUrl = rtrim(config('app.url'), '/');
 
-        return "{$baseUrl}/player_api.php?username={$this->username}&password={$this->password}";
+        return "{$baseUrl}/player_api.php?username={$this->username}&password={$this->api_password}";
     }
 
     /**
      * Get streams available to this user through bouquets.
+     * Optimized to prevent N+1 queries by eager loading relationships.
      *
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Stream>
      */
     public function getAvailableStreams(): \Illuminate\Database\Eloquent\Collection
     {
+        $bouquetIds = $this->bouquets()->pluck('bouquets.id');
+
         return Stream::with(['category', 'server'])
-            ->whereHas('bouquets', function ($query) {
-                $query->whereIn('bouquets.id', $this->bouquets()->pluck('bouquets.id'));
+            ->whereHas('bouquets', function ($query) use ($bouquetIds) {
+                $query->whereIn('bouquets.id', $bouquetIds);
             })
             ->where('is_active', true)
             ->get();
