@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Episode;
+use App\Models\Movie;
+use App\Models\Stream;
 
 class Server extends Model
 {
@@ -48,6 +51,22 @@ class Server extends Model
     public function streams(): HasMany
     {
         return $this->hasMany(Stream::class);
+    }
+
+    /**
+     * Get the movies served by this server.
+     */
+    public function movies(): HasMany
+    {
+        return $this->hasMany(Movie::class);
+    }
+
+    /**
+     * Get the episodes served by this server.
+     */
+    public function episodes(): HasMany
+    {
+        return $this->hasMany(Episode::class);
     }
 
     /**
