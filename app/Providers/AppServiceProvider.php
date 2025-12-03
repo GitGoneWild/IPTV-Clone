@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Stream;
+use App\Observers\StreamObserver;
 use App\Services\XtreamService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -23,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register model observers
+        Stream::observe(StreamObserver::class);
+        
         // Define admin gate
         Gate::define('admin', function ($user) {
             return $user->is_admin;

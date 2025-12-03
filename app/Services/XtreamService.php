@@ -252,35 +252,45 @@ class XtreamService
      *
      * Eager loads category and server relationships to prevent N+1 queries.
      * Server relationship is needed for getEffectiveUrl() in getStreamUrl().
+     * Results are cached for 5 minutes to improve performance.
      *
      * @return \Illuminate\Database\Eloquent\Collection<int, Stream>
      */
     protected function getUserStreams(User $user): \Illuminate\Database\Eloquent\Collection
     {
-        $bouquetIds = $user->bouquets()->pluck('bouquets.id');
+        $cacheKey = "user_streams_{$user->id}";
+        
+        return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user) {
+            $bouquetIds = $user->bouquets()->pluck('bouquets.id');
 
-        return Stream::with(['category', 'server'])
-            ->whereHas('bouquets', function ($query) use ($bouquetIds) {
-                $query->whereIn('bouquets.id', $bouquetIds);
-            })
-            ->where('is_active', true)
-            ->where('is_hidden', false)
-            ->orderBy('sort_order')
-            ->get();
+            return Stream::with(['category', 'server'])
+                ->whereHas('bouquets', function ($query) use ($bouquetIds) {
+                    $query->whereIn('bouquets.id', $bouquetIds);
+                })
+                ->where('is_active', true)
+                ->where('is_hidden', false)
+                ->orderBy('sort_order')
+                ->get();
+        });
     }
 
     /**
      * Get categories available to user
+     * Results are cached for 5 minutes to improve performance.
      */
     protected function getUserCategories(User $user)
     {
-        $streams = $this->getUserStreams($user);
-        $categoryIds = $streams->pluck('category_id')->filter()->unique();
+        $cacheKey = "user_categories_{$user->id}";
+        
+        return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user) {
+            $streams = $this->getUserStreams($user);
+            $categoryIds = $streams->pluck('category_id')->filter()->unique();
 
-        return Category::whereIn('id', $categoryIds)
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
+            return Category::whereIn('id', $categoryIds)
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->get();
+        });
     }
 
     /**
