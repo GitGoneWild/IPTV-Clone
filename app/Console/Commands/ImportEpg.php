@@ -176,18 +176,36 @@ class ImportEpg extends Command
     }
 
     /**
-     * Parse XMLTV datetime format
+     * Parse XMLTV datetime format.
+     *
+     * Supports formats like:
+     * - 20240101120000
+     * - 20240101120000 +0000
+     * - 20240101120000 -0500
      */
     protected function parseXmltvTime(string $timeStr): ?\DateTime
     {
-        // Format: 20240101120000 +0000
         $timeStr = trim($timeStr);
 
-        try {
-            if (preg_match('/^(\d{14})\s*([+-]\d{4})?$/', $timeStr, $matches)) {
-                $format = strlen($matches[0]) > 14 ? 'YmdHis O' : 'YmdHis';
+        if (empty($timeStr)) {
+            return null;
+        }
 
-                return \DateTime::createFromFormat($format, $timeStr) ?: null;
+        try {
+            // Match timestamp with optional timezone offset
+            if (preg_match('/^(\d{14})\s*([+-]\d{4})?$/', $timeStr, $matches)) {
+                $timestamp = $matches[1];
+                $timezone = $matches[2] ?? null;
+
+                if ($timezone) {
+                    // Parse with timezone (format expects single space between timestamp and offset)
+                    $result = \DateTime::createFromFormat('YmdHis O', $timestamp.' '.$timezone);
+                } else {
+                    // Parse without timezone
+                    $result = \DateTime::createFromFormat('YmdHis', $timestamp);
+                }
+
+                return $result ?: null;
             }
         } catch (\Exception $e) {
             return null;

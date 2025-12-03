@@ -55,7 +55,7 @@
                         </div>
                         <div class="ml-3">
                             <p class="text-sm font-medium text-white">Total Users</p>
-                            <p class="text-lg font-bold text-blue-400">{{ \App\Models\User::count() }}</p>
+                            <p class="text-lg font-bold text-blue-400">{{ $totalUsers ?? 0 }}</p>
                         </div>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                         </div>
                         <div class="ml-3">
                             <p class="text-sm font-medium text-white">Active Streams</p>
-                            <p class="text-lg font-bold text-green-400">{{ \App\Models\Stream::where('is_active', true)->count() }}</p>
+                            <p class="text-lg font-bold text-green-400">{{ $activeStreams ?? 0 }}</p>
                         </div>
                     </div>
                 </div>

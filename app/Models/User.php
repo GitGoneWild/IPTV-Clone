@@ -113,6 +113,18 @@ class User extends Authenticatable
     }
 
     /**
+     * Validate password for Xtream API compatibility.
+     *
+     * Supports both plain text passwords (for Xtream compatibility with IPTV players)
+     * and hashed passwords.
+     */
+    public function validateXtreamPassword(string $password): bool
+    {
+        return $this->password === $password ||
+               password_verify($password, $this->password);
+    }
+
+    /**
      * Generate M3U playlist URL for this user.
      */
     public function getM3uUrlAttribute(): string
@@ -134,12 +146,17 @@ class User extends Authenticatable
 
     /**
      * Get streams available to this user through bouquets.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Stream>
      */
-    public function getAvailableStreams()
+    public function getAvailableStreams(): \Illuminate\Database\Eloquent\Collection
     {
-        return Stream::whereHas('bouquets', function ($query) {
-            $query->whereIn('bouquets.id', $this->bouquets()->pluck('bouquets.id'));
-        })->where('is_active', true)->get();
+        return Stream::with(['category', 'server'])
+            ->whereHas('bouquets', function ($query) {
+                $query->whereIn('bouquets.id', $this->bouquets()->pluck('bouquets.id'));
+            })
+            ->where('is_active', true)
+            ->get();
     }
 
     /**

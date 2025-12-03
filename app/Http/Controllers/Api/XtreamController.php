@@ -164,10 +164,7 @@ class XtreamController extends Controller
      */
     protected function validatePassword(User $user, string $password): bool
     {
-        // For Xtream API, we store and compare plain passwords
-        // This is required for compatibility with IPTV players
-        return $user->password === $password ||
-               password_verify($password, $user->password);
+        return $user->validateXtreamPassword($password);
     }
 
     /**
@@ -175,34 +172,12 @@ class XtreamController extends Controller
      */
     protected function getUserInfo(User $user): Response
     {
-        $serverInfo = [
-            'url' => config('app.url'),
-            'port' => config('homelabtv.port'),
-            'https_port' => '443',
-            'server_protocol' => 'http',
-            'rtmp_port' => '1935',
-            'timezone' => config('app.timezone'),
-            'timestamp_now' => now()->timestamp,
-            'time_now' => now()->format('Y-m-d H:i:s'),
-        ];
-
-        $userInfo = [
-            'username' => $user->username,
-            'password' => $user->password,
-            'message' => 'Welcome to HomelabTV',
-            'auth' => 1,
-            'status' => $user->is_active ? 'Active' : 'Disabled',
-            'exp_date' => $user->expires_at?->timestamp,
-            'is_trial' => '0',
-            'active_cons' => '0',
-            'created_at' => $user->created_at->timestamp,
-            'max_connections' => (string) $user->max_connections,
-            'allowed_output_formats' => $user->allowed_outputs ?? ['m3u8', 'ts'],
-        ];
+        $userInfo = $this->xtreamService->getUserInfoArray($user);
+        $userInfo['message'] = 'Welcome to HomelabTV';
 
         return response()->json([
             'user_info' => $userInfo,
-            'server_info' => $serverInfo,
+            'server_info' => $this->xtreamService->getServerInfo(),
         ]);
     }
 
