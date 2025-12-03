@@ -14,6 +14,7 @@ class LoadBalancer extends Model
         'hostname',
         'ip_address',
         'port',
+        'use_ssl',
         'api_key',
         'is_active',
         'weight',
@@ -37,6 +38,7 @@ class LoadBalancer extends Model
     {
         return [
             'is_active' => 'boolean',
+            'use_ssl' => 'boolean',
             'weight' => 'integer',
             'port' => 'integer',
             'max_connections' => 'integer',
@@ -148,7 +150,8 @@ class LoadBalancer extends Model
      */
     public function buildBaseUrl(): string
     {
-        $protocol = $this->port === 443 ? 'https' : 'http';
+        // Use explicit use_ssl field if set, otherwise fallback to port-based detection
+        $protocol = $this->use_ssl ?? ($this->port === 443) ? 'https' : 'http';
         $port = in_array($this->port, [80, 443]) ? '' : ':' . $this->port;
         
         return "{$protocol}://{$this->hostname}{$port}";

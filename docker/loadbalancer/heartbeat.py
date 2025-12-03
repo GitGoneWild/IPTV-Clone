@@ -120,9 +120,13 @@ def send_heartbeat():
         
         # Calculate response time by pinging main server
         start_time = time.time()
-        requests.get(MAIN_SERVER_URL, timeout=5)
-        response_time = int((time.time() - start_time) * 1000)
-        stats['response_time_ms'] = response_time
+        try:
+            requests.get(MAIN_SERVER_URL, timeout=5)
+            response_time = int((time.time() - start_time) * 1000)
+            stats['response_time_ms'] = response_time
+        except Exception as e:
+            logger.debug(f'Could not calculate response time: {e}')
+            # Don't include response_time_ms if measurement failed
         
         # Send heartbeat
         endpoint = f'{MAIN_SERVER_URL}/api/lb/v1/heartbeat'

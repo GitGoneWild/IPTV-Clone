@@ -7,6 +7,7 @@ use App\Models\LoadBalancer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -273,6 +274,13 @@ class LoadBalancerApiController extends Controller
 
     /**
      * Authenticate load balancer using API key
+     * 
+     * Note: This implementation loads all load balancers for authentication.
+     * For production with many load balancers, consider implementing a more
+     * efficient authentication mechanism such as:
+     * - Storing a hash of the API key with an indexed plain text prefix
+     * - Using Laravel Sanctum tokens for load balancers
+     * - Implementing a dedicated load balancer authentication service
      */
     private function authenticateLoadBalancer(Request $request): ?LoadBalancer
     {
@@ -282,8 +290,10 @@ class LoadBalancerApiController extends Controller
             return null;
         }
 
-        // Find load balancer by checking hashed API key
-        $loadBalancers = LoadBalancer::all();
+        // Cache load balancers to reduce database queries
+        $loadBalancers = Cache::remember('load_balancers_auth', 300, function () {
+            return LoadBalancer::all();
+        });
         
         foreach ($loadBalancers as $lb) {
             if (Hash::check($apiKey, $lb->api_key)) {

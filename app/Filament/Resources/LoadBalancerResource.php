@@ -11,6 +11,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Http;
 
 class LoadBalancerResource extends Resource
 {
@@ -49,6 +50,10 @@ class LoadBalancerResource extends Resource
                             ->default(80)
                             ->minValue(1)
                             ->maxValue(65535),
+                        Forms\Components\Toggle::make('use_ssl')
+                            ->label('Use HTTPS/SSL')
+                            ->default(false)
+                            ->helperText('Enable if load balancer uses HTTPS'),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Configuration')
@@ -214,7 +219,7 @@ class LoadBalancerResource extends Resource
                         ->action(function (LoadBalancer $record) {
                             try {
                                 $url = $record->buildBaseUrl() . '/health';
-                                $response = \Illuminate\Support\Facades\Http::timeout(5)->get($url);
+                                $response = Http::timeout(5)->get($url);
                                 
                                 if ($response->successful()) {
                                     \Filament\Notifications\Notification::make()
