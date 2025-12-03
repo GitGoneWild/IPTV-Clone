@@ -14,24 +14,52 @@ Route::get('/', function () {
     return view('pages.landing');
 })->name('home');
 
-// User Portal
+// User Portal - Requires authentication
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
-        return view('pages.dashboard');
+        $user = auth()->user();
+
+        return view('pages.dashboard', [
+            'role' => $user->role,
+        ]);
     })->name('dashboard');
-    
+
     Route::get('/playlist', function () {
         return view('pages.playlist');
     })->name('playlist');
-    
+
     Route::get('/epg', function () {
         return view('pages.epg');
     })->name('epg');
-    
+
     Route::post('/logout', function () {
         auth()->logout();
+
         return redirect('/');
     })->name('logout');
+});
+
+// Admin-only routes
+Route::middleware(['auth', 'role:admin'])->prefix('admin-api')->group(function () {
+    Route::get('/system-status', function () {
+        return response()->json([
+            'streams' => \App\Models\Stream::count(),
+            'users' => \App\Models\User::count(),
+            'online_streams' => \App\Models\Stream::where('last_check_status', 'online')->count(),
+        ]);
+    })->name('admin.system-status');
+});
+
+// Reseller routes
+Route::middleware(['auth', 'role:admin,reseller'])->prefix('reseller')->group(function () {
+    Route::get('/clients', function () {
+        $user = auth()->user();
+        $clients = $user->is_admin
+            ? \App\Models\User::where('is_admin', false)->get()
+            : $user->clients;
+
+        return response()->json($clients);
+    })->name('reseller.clients');
 });
 
 // Authentication routes
@@ -39,7 +67,7 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/login', function () {
         return view('auth.login');
     })->name('login');
-    
+
     Route::post('/login', function () {
         $credentials = request()->validate([
             'email' => ['required', 'email'],
@@ -48,6 +76,13 @@ Route::middleware(['guest'])->group(function () {
 
         if (auth()->attempt($credentials, request()->boolean('remember'))) {
             request()->session()->regenerate();
+
+            // Log the login activity
+            activity()
+                ->causedBy(auth()->user())
+                ->withProperties(['ip' => request()->ip()])
+                ->log('User logged in');
+
             return redirect()->intended('dashboard');
         }
 

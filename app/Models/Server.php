@@ -57,6 +57,7 @@ class Server extends Model
     {
         $baseUrl = rtrim($this->base_url, '/');
         $streamPath = ltrim($streamPath, '/');
+
         return "{$baseUrl}/{$streamPath}";
     }
 
@@ -65,9 +66,10 @@ class Server extends Model
      */
     public function hasCapacity(): bool
     {
-        if (!$this->max_connections) {
+        if (! $this->max_connections) {
             return true;
         }
+
         return $this->current_connections < $this->max_connections;
     }
 
@@ -92,9 +94,10 @@ class Server extends Model
      */
     public function getLoadPercentageAttribute(): float
     {
-        if (!$this->max_connections || $this->max_connections === 0) {
+        if (! $this->max_connections || $this->max_connections === 0) {
             return 0;
         }
+
         return round(($this->current_connections / $this->max_connections) * 100, 2);
     }
 }

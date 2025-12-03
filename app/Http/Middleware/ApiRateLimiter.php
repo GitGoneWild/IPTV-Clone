@@ -40,6 +40,7 @@ class ApiRateLimiter
     protected function resolveRequestSignature(Request $request): string
     {
         $username = $request->get('username') ?? 'guest';
-        return 'api:' . $username . ':' . $request->ip();
+
+        return 'api:'.$username.':'.$request->ip();
     }
 }

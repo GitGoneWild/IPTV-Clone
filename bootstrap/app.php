@@ -20,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
             'throttle.api' => \App\Http\Middleware\ApiRateLimiter::class,
             'xtream.auth' => \App\Http\Middleware\XtreamAuthentication::class,
+            'log.api' => \App\Http\Middleware\LogApiUsage::class,
+            'role' => \App\Http\Middleware\CheckRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

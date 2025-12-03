@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\StreamResource\Pages;
 
 use App\Filament\Resources\StreamResource;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Actions;
+use Filament\Resources\Pages\ListRecords;
 
 class ListStreams extends ListRecords
 {

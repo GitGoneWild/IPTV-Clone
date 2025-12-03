@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, LogsActivity, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -107,7 +109,7 @@ class User extends Authenticatable
      */
     public function canAccessStreams(): bool
     {
-        return $this->is_active && !$this->isExpired();
+        return $this->is_active && ! $this->isExpired();
     }
 
     /**
@@ -116,6 +118,7 @@ class User extends Authenticatable
     public function getM3uUrlAttribute(): string
     {
         $baseUrl = rtrim(config('app.url'), '/');
+
         return "{$baseUrl}/get.php?username={$this->username}&password={$this->password}&type=m3u_plus";
     }
 
@@ -125,6 +128,7 @@ class User extends Authenticatable
     public function getXtreamUrlAttribute(): string
     {
         $baseUrl = rtrim(config('app.url'), '/');
+
         return "{$baseUrl}/player_api.php?username={$this->username}&password={$this->password}";
     }
 
@@ -136,5 +140,39 @@ class User extends Authenticatable
         return Stream::whereHas('bouquets', function ($query) {
             $query->whereIn('bouquets.id', $this->bouquets()->pluck('bouquets.id'));
         })->where('is_active', true)->get();
+    }
+
+    /**
+     * Get the API usage logs for this user.
+     */
+    public function apiUsageLogs(): HasMany
+    {
+        return $this->hasMany(ApiUsageLog::class);
+    }
+
+    /**
+     * Get the user's role name.
+     */
+    public function getRoleAttribute(): string
+    {
+        if ($this->is_admin) {
+            return 'admin';
+        }
+        if ($this->is_reseller) {
+            return 'reseller';
+        }
+
+        return 'viewer';
+    }
+
+    /**
+     * Configure activity logging for this model.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'email', 'username', 'is_admin', 'is_reseller', 'is_active', 'expires_at'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

@@ -5,10 +5,129 @@
 @section('content')
 <div class="py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-white">Welcome, {{ auth()->user()->name }}!</h1>
-            <p class="mt-2 text-gray-400">Manage your streams and playlists from here.</p>
+        <!-- Header with Role Badge -->
+        <div class="mb-8 flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-white">Welcome, {{ auth()->user()->name }}!</h1>
+                <p class="mt-2 text-gray-400">Manage your streams and playlists from here.</p>
+            </div>
+            <div>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                    @if($role === 'admin') bg-red-900/50 text-red-300 border border-red-500/50
+                    @elseif($role === 'reseller') bg-purple-900/50 text-purple-300 border border-purple-500/50
+                    @else bg-green-900/50 text-green-300 border border-green-500/50
+                    @endif">
+                    {{ ucfirst($role) }}
+                </span>
+            </div>
         </div>
+
+        <!-- Admin Dashboard Section -->
+        @if($role === 'admin')
+        <div class="mb-8 bg-gradient-to-r from-red-900/20 to-transparent rounded-lg p-6 border border-red-500/30">
+            <h2 class="text-lg font-semibold text-red-300 mb-4 flex items-center">
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                Admin Controls
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="/admin" class="bg-gray-800/50 hover:bg-gray-700/50 rounded-lg p-4 border border-gray-700 transition-colors">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 p-2 bg-red-600 rounded-lg">
+                            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-white">Admin Panel</p>
+                            <p class="text-xs text-gray-400">Full system control</p>
+                        </div>
+                    </div>
+                </a>
+                <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 p-2 bg-blue-600 rounded-lg">
+                            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-white">Total Users</p>
+                            <p class="text-lg font-bold text-blue-400">{{ \App\Models\User::count() }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 p-2 bg-green-600 rounded-lg">
+                            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-white">Active Streams</p>
+                            <p class="text-lg font-bold text-green-400">{{ \App\Models\Stream::where('is_active', true)->count() }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <!-- Reseller Dashboard Section -->
+        @if($role === 'reseller')
+        <div class="mb-8 bg-gradient-to-r from-purple-900/20 to-transparent rounded-lg p-6 border border-purple-500/30">
+            <h2 class="text-lg font-semibold text-purple-300 mb-4 flex items-center">
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Reseller Controls
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 p-2 bg-purple-600 rounded-lg">
+                            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-white">Your Clients</p>
+                            <p class="text-lg font-bold text-purple-400">{{ auth()->user()->clients->count() }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 p-2 bg-yellow-600 rounded-lg">
+                            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-white">Credits</p>
+                            <p class="text-lg font-bold text-yellow-400">{{ auth()->user()->credits }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 p-2 bg-green-600 rounded-lg">
+                            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-white">Active Clients</p>
+                            <p class="text-lg font-bold text-green-400">{{ auth()->user()->clients->where('is_active', true)->count() }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
 
         <!-- Quick Stats -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -35,7 +154,9 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-400">Account Status</p>
-                        <p class="text-2xl font-semibold text-green-400">Active</p>
+                        <p class="text-2xl font-semibold {{ auth()->user()->is_active ? 'text-green-400' : 'text-red-400' }}">
+                            {{ auth()->user()->is_active ? 'Active' : 'Inactive' }}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -60,15 +181,15 @@
         <!-- Playlist URLs -->
         <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-8">
             <h2 class="text-xl font-semibold text-white mb-4">Your Playlist URLs</h2>
-            
+
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-1">M3U Playlist URL</label>
                     <div class="flex">
-                        <input type="text" readonly 
+                        <input type="text" readonly
                                value="{{ config('app.url') }}/get.php?username={{ auth()->user()->username }}&password={{ auth()->user()->password }}&type=m3u_plus"
                                class="flex-1 bg-gray-900 border border-gray-700 rounded-l-md px-3 py-2 text-sm text-gray-300 font-mono">
-                        <button onclick="copyToClipboard(this.previousElementSibling)" 
+                        <button onclick="copyToClipboard(this.previousElementSibling)"
                                 class="bg-homelab-600 hover:bg-homelab-700 px-4 py-2 rounded-r-md text-sm font-medium">
                             Copy
                         </button>
@@ -96,10 +217,10 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-1">EPG URL (XMLTV)</label>
                     <div class="flex">
-                        <input type="text" readonly 
+                        <input type="text" readonly
                                value="{{ config('app.url') }}/xmltv.php?username={{ auth()->user()->username }}&password={{ auth()->user()->password }}"
                                class="flex-1 bg-gray-900 border border-gray-700 rounded-l-md px-3 py-2 text-sm text-gray-300 font-mono">
-                        <button onclick="copyToClipboard(this.previousElementSibling)" 
+                        <button onclick="copyToClipboard(this.previousElementSibling)"
                                 class="bg-homelab-600 hover:bg-homelab-700 px-4 py-2 rounded-r-md text-sm font-medium">
                             Copy
                         </button>
@@ -111,7 +232,7 @@
         <!-- Assigned Bouquets -->
         <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <h2 class="text-xl font-semibold text-white mb-4">Your Bouquets</h2>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @forelse(auth()->user()->bouquets as $bouquet)
                     <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
@@ -132,7 +253,7 @@ async function copyToClipboard(input) {
     const text = input.value;
     const button = input.nextElementSibling;
     const originalText = button.textContent;
-    
+
     try {
         await navigator.clipboard.writeText(text);
         button.textContent = 'Copied!';
@@ -142,7 +263,7 @@ async function copyToClipboard(input) {
         document.execCommand('copy');
         button.textContent = 'Copied!';
     }
-    
+
     setTimeout(() => {
         button.textContent = originalText;
     }, 2000);

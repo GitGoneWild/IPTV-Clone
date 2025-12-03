@@ -17,22 +17,22 @@ class XtreamAuthentication
         $username = $request->get('username');
         $password = $request->get('password');
 
-        if (!$username || !$password) {
+        if (! $username || ! $password) {
             return $this->unauthorizedResponse();
         }
 
         $user = User::where('username', $username)->first();
 
-        if (!$user) {
+        if (! $user) {
             return $this->unauthorizedResponse();
         }
 
         // Validate password (plain text for Xtream compatibility)
-        if ($user->password !== $password && !password_verify($password, $user->password)) {
+        if ($user->password !== $password && ! password_verify($password, $user->password)) {
             return $this->unauthorizedResponse();
         }
 
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             return response()->json([
                 'user_info' => [
                     'auth' => 0,

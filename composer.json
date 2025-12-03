@@ -11,7 +11,8 @@
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "livewire/livewire": "^3.4"
+        "livewire/livewire": "^3.4",
+        "spatie/laravel-activitylog": "^4.10"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

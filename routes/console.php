@@ -24,3 +24,8 @@ Schedule::command('homelabtv:check-streams')
 Schedule::command('homelabtv:cleanup-logs')
     ->daily()
     ->withoutOverlapping();
+
+// Flush activity logs every 6 hours
+Schedule::command('homelabtv:flush-activity-logs --days=7')
+    ->everySixHours()
+    ->withoutOverlapping();

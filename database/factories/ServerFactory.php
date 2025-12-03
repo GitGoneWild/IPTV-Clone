@@ -15,7 +15,7 @@ class ServerFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->words(2, true) . ' Server',
+            'name' => fake()->words(2, true).' Server',
             'base_url' => fake()->url(),
             'rtmp_url' => null,
             'http_port' => 80,
