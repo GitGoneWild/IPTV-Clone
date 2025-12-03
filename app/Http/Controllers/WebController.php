@@ -95,15 +95,11 @@ class WebController extends Controller
     {
         $user = auth()->user();
         $streams = $user->getAvailableStreams()
-            ->where('is_active', true)
             ->where('is_hidden', false)
-            ->with('category')
-            ->orderBy('sort_order')
-            ->get();
+            ->sortBy('sort_order');
 
-        $categories = Category::whereHas('streams', function ($query) use ($user) {
-            $query->whereIn('id', $user->getAvailableStreams()->pluck('id'));
-        })->get();
+        $categoryIds = $streams->pluck('category_id')->unique()->filter();
+        $categories = Category::whereIn('id', $categoryIds)->get();
 
         return view('pages.streams', compact('streams', 'categories'));
     }

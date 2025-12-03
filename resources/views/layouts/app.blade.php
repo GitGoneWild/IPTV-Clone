@@ -124,8 +124,10 @@
         @yield('content')
     </main>
 
-    <!-- Player Modal Component -->
-    @include('components.player-modal')
+    {{-- Player Modal Component - only include if on streams page --}}
+    @if(Request::is('streams'))
+        @include('components.player-modal')
+    @endif
 
     <!-- Footer -->
     <footer class="bg-gh-bg-secondary border-t border-gh-border mt-auto">
