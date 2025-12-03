@@ -28,7 +28,7 @@ class XtreamAuthentication
         }
 
         // Validate password (plain text for Xtream compatibility)
-        if ($user->password !== $password && ! password_verify($password, $user->password)) {
+        if (! $user->validateXtreamPassword($password)) {
             return $this->unauthorizedResponse();
         }
 

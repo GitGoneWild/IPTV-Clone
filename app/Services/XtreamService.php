@@ -234,15 +234,18 @@ class XtreamService
     }
 
     /**
-     * Get streams available to user
+     * Get streams available to user.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Stream>
      */
-    protected function getUserStreams(User $user)
+    protected function getUserStreams(User $user): \Illuminate\Database\Eloquent\Collection
     {
         $bouquetIds = $user->bouquets()->pluck('bouquets.id');
 
-        return Stream::whereHas('bouquets', function ($query) use ($bouquetIds) {
-            $query->whereIn('bouquets.id', $bouquetIds);
-        })
+        return Stream::with(['category', 'server'])
+            ->whereHas('bouquets', function ($query) use ($bouquetIds) {
+                $query->whereIn('bouquets.id', $bouquetIds);
+            })
             ->where('is_active', true)
             ->where('is_hidden', false)
             ->orderBy('sort_order')
@@ -264,9 +267,9 @@ class XtreamService
     }
 
     /**
-     * Get user info array
+     * Get user info array for API responses.
      */
-    protected function getUserInfoArray(User $user): array
+    public function getUserInfoArray(User $user): array
     {
         return [
             'username' => $user->username,
@@ -283,9 +286,9 @@ class XtreamService
     }
 
     /**
-     * Get server info
+     * Get server info for API responses.
      */
-    protected function getServerInfo(): array
+    public function getServerInfo(): array
     {
         return [
             'url' => config('app.url'),
