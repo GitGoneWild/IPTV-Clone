@@ -19,6 +19,22 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
+/**
+ * Admin Panel Provider for Filament.
+ *
+ * Navigation Icon Policy:
+ * -----------------------
+ * In Filament 3.x, navigation groups and their items cannot both have icons.
+ * We follow the pattern of:
+ *   - Navigation GROUPS: No icons (label-only for clean grouping)
+ *   - Individual RESOURCES: Have icons (for visual identification)
+ *
+ * This ensures proper UX and avoids the Filament error:
+ * "Navigation group [X] has an icon but one or more of its items also have icons."
+ *
+ * When adding new resources, set $navigationIcon on the Resource class but DO NOT
+ * add icons to NavigationGroup::make() calls in this provider.
+ */
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -39,16 +55,27 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->darkMode(true, true)
             ->font('Inter')
+            /*
+             * Navigation Groups Configuration
+             *
+             * IMPORTANT: Do not add icons to groups. Icons should only be on
+             * individual Resource classes via the $navigationIcon property.
+             * This is a Filament 3.x requirement to ensure proper UX.
+             *
+             * To add a new group:
+             * 1. Add NavigationGroup::make()->label('GroupName') below
+             * 2. In your Resource class, set: protected static ?string $navigationGroup = 'GroupName';
+             * 3. Set an icon on the Resource: protected static ?string $navigationIcon = 'heroicon-o-xxx';
+             */
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label('Streaming')
-                    ->icon('heroicon-o-play'),
+                    ->label('Streaming'),
                 NavigationGroup::make()
-                    ->label('Users & Access')
-                    ->icon('heroicon-o-users'),
+                    ->label('Content'),
                 NavigationGroup::make()
-                    ->label('System')
-                    ->icon('heroicon-o-cog-6-tooth'),
+                    ->label('Users & Access'),
+                NavigationGroup::make()
+                    ->label('System'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

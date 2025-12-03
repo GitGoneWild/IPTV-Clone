@@ -11,11 +11,52 @@ use Illuminate\View\View;
 class WebController extends Controller
 {
     /**
-     * Display the landing page.
+     * Display the landing page with server status.
      */
     public function landing(): View
     {
-        return view('pages.landing');
+        // Prepare server status data for the landing page widget
+        $serverStatus = $this->getPublicServerStatus();
+
+        return view('pages.landing', compact('serverStatus'));
+    }
+
+    /**
+     * Get public server status for the landing page.
+     * This is a lightweight status that doesn't require authentication.
+     */
+    public function publicServerStatus(): JsonResponse
+    {
+        return response()->json($this->getPublicServerStatus());
+    }
+
+    /**
+     * Build public server status array.
+     *
+     * @return array{status: string, uptime: string, streams: int, online_streams: int, last_updated: string}
+     */
+    private function getPublicServerStatus(): array
+    {
+        $totalStreams = Stream::count();
+        $onlineStreams = Stream::where('last_check_status', 'online')->count();
+
+        // Determine overall status based on stream health
+        $status = 'operational';
+        if ($totalStreams === 0) {
+            $status = 'operational'; // No streams configured is still operational
+        } elseif ($onlineStreams === 0) {
+            $status = 'degraded';
+        } elseif ($onlineStreams < $totalStreams * 0.5) {
+            $status = 'degraded';
+        }
+
+        return [
+            'status' => $status,
+            'uptime' => '99.9%', // Placeholder - could be calculated from logs
+            'streams' => $totalStreams,
+            'online_streams' => $onlineStreams,
+            'last_updated' => now()->toIso8601String(),
+        ];
     }
 
     /**

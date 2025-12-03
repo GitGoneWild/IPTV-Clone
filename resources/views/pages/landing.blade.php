@@ -11,49 +11,119 @@
     <div class="max-w-7xl mx-auto">
         <div class="relative z-10 pb-8 sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
             <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-                <div class="text-center">
-                    <!-- Animated badge -->
-                    <div class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-gh-bg-tertiary border border-gh-border mb-6">
-                        <span class="flex h-2 w-2 relative mr-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gh-success opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-gh-success"></span>
-                        </span>
-                        <span class="text-gh-text-muted">Self-hosted IPTV for your homelab</span>
-                    </div>
+                <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+                    <!-- Hero Content -->
+                    <div class="lg:col-span-7 text-center lg:text-left">
+                        <!-- Animated badge -->
+                        <div class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-gh-bg-tertiary border border-gh-border mb-6">
+                            <span class="flex h-2 w-2 relative mr-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gh-success opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-gh-success"></span>
+                            </span>
+                            <span class="text-gh-text-muted">Self-hosted IPTV for your homelab</span>
+                        </div>
 
-                    <h1 class="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
-                        <span class="block">Your Private</span>
-                        <span class="block bg-gradient-to-r from-homelab-400 to-homelab-600 bg-clip-text text-transparent">IPTV Management</span>
-                    </h1>
-                    <p class="mt-3 text-base text-gh-text-muted sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl">
-                        HomelabTV is a self-hosted IPTV management panel designed for homelab enthusiasts.
-                        Manage your legal streams, CCTV cameras, and private channels all in one place.
-                    </p>
-                    <div class="mt-5 sm:mt-8 sm:flex sm:justify-center gap-4">
-                        @auth
-                            <div class="rounded-md shadow">
-                                <a href="{{ route('dashboard') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-homelab-600 hover:bg-homelab-700 md:py-4 md:text-lg md:px-10 transition-all duration-200 glow-accent">
+                        <h1 class="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
+                            <span class="block">Your Private</span>
+                            <span class="block bg-gradient-to-r from-homelab-400 to-homelab-600 bg-clip-text text-transparent">IPTV Management</span>
+                        </h1>
+                        <p class="mt-3 text-base text-gh-text-muted sm:mt-5 sm:text-lg md:mt-5 md:text-xl lg:max-w-xl">
+                            HomelabTV is a self-hosted IPTV management panel designed for homelab enthusiasts.
+                            Manage your legal streams, CCTV cameras, and private channels all in one place.
+                        </p>
+                        <div class="mt-5 sm:mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                            @auth
+                                <a href="{{ route('dashboard') }}" class="flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-homelab-600 hover:bg-homelab-700 md:py-4 md:text-lg md:px-10 transition-all duration-200 glow-accent">
                                     Go to Dashboard
                                     <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                     </svg>
                                 </a>
-                            </div>
-                        @else
-                            <div class="rounded-md shadow">
-                                <a href="{{ route('login') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-homelab-600 hover:bg-homelab-700 md:py-4 md:text-lg md:px-10 transition-all duration-200 glow-accent">
+                            @else
+                                <a href="{{ route('login') }}" class="flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-homelab-600 hover:bg-homelab-700 md:py-4 md:text-lg md:px-10 transition-all duration-200 glow-accent">
                                     Get Started
                                     <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                     </svg>
                                 </a>
-                            </div>
-                            <div class="mt-3 sm:mt-0">
-                                <a href="#features" class="w-full flex items-center justify-center px-8 py-3 border border-gh-border text-base font-medium rounded-md text-gh-text hover:bg-gh-bg-tertiary md:py-4 md:text-lg md:px-10 transition-colors">
+                                <a href="#features" class="flex items-center justify-center px-8 py-3 border border-gh-border text-base font-medium rounded-md text-gh-text hover:bg-gh-bg-tertiary md:py-4 md:text-lg md:px-10 transition-colors">
                                     Learn More
                                 </a>
+                            @endauth
+                        </div>
+                    </div>
+
+                    <!-- Live Server Status Widget -->
+                    <div class="lg:col-span-5 mt-10 lg:mt-0">
+                        <div id="server-status-widget" class="bg-gh-bg-secondary rounded-xl p-6 border border-gh-border shadow-xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-white flex items-center">
+                                    <svg class="h-5 w-5 mr-2 text-gh-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
+                                    </svg>
+                                    Server Status
+                                </h3>
+                                <span id="status-indicator" class="flex items-center text-sm">
+                                    <span class="flex h-2.5 w-2.5 relative mr-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" id="status-ping"></span>
+                                        <span class="relative inline-flex rounded-full h-2.5 w-2.5" id="status-dot"></span>
+                                    </span>
+                                    <span id="status-text" class="font-medium">Loading...</span>
+                                </span>
                             </div>
-                        @endauth
+
+                            <div class="space-y-4">
+                                <!-- Uptime -->
+                                <div class="flex items-center justify-between p-3 bg-gh-bg rounded-lg border border-gh-border-muted">
+                                    <div class="flex items-center">
+                                        <svg class="h-5 w-5 text-gh-success mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span class="text-gh-text-muted">Uptime</span>
+                                    </div>
+                                    <span id="uptime-value" class="font-semibold text-white">--</span>
+                                </div>
+
+                                <!-- Streams -->
+                                <div class="flex items-center justify-between p-3 bg-gh-bg rounded-lg border border-gh-border-muted">
+                                    <div class="flex items-center">
+                                        <svg class="h-5 w-5 text-gh-accent mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                        <span class="text-gh-text-muted">Active Streams</span>
+                                    </div>
+                                    <span class="font-semibold text-white">
+                                        <span id="online-streams">--</span>
+                                        <span class="text-gh-text-muted">/</span>
+                                        <span id="total-streams">--</span>
+                                    </span>
+                                </div>
+
+                                <!-- Last Updated -->
+                                <div class="text-center pt-2 border-t border-gh-border-muted">
+                                    <span class="text-xs text-gh-text-muted">
+                                        Last updated: <span id="last-updated">--</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            @guest
+                            <!-- Quick Login Form -->
+                            <div class="mt-6 pt-4 border-t border-gh-border">
+                                <h4 class="text-sm font-medium text-white mb-3">Quick Access</h4>
+                                <form method="POST" action="{{ route('login.store') }}" class="space-y-3">
+                                    @csrf
+                                    <input type="text" name="username" placeholder="Username" required
+                                        class="w-full px-3 py-2 bg-gh-bg border border-gh-border rounded-md text-white placeholder-gh-text-muted focus:outline-none focus:ring-2 focus:ring-homelab-500 focus:border-transparent text-sm">
+                                    <input type="password" name="password" placeholder="Password" required
+                                        class="w-full px-3 py-2 bg-gh-bg border border-gh-border rounded-md text-white placeholder-gh-text-muted focus:outline-none focus:ring-2 focus:ring-homelab-500 focus:border-transparent text-sm">
+                                    <button type="submit" class="w-full px-4 py-2 bg-homelab-600 hover:bg-homelab-700 text-white font-medium rounded-md transition-colors text-sm">
+                                        Sign In
+                                    </button>
+                                </form>
+                            </div>
+                            @endguest
+                        </div>
                     </div>
                 </div>
             </main>
@@ -264,3 +334,62 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    /**
+     * Live Server Status Widget
+     * Fetches and displays real-time server status from the API
+     */
+    (function() {
+        const statusColors = {
+            operational: { bg: 'bg-gh-success', text: 'text-gh-success', label: 'Operational' },
+            degraded: { bg: 'bg-gh-warning', text: 'text-gh-warning', label: 'Degraded' },
+            offline: { bg: 'bg-gh-danger', text: 'text-gh-danger', label: 'Offline' }
+        };
+
+        function updateStatus(data) {
+            const statusConfig = statusColors[data.status] || statusColors.offline;
+
+            // Update status indicator
+            const statusPing = document.getElementById('status-ping');
+            const statusDot = document.getElementById('status-dot');
+            const statusText = document.getElementById('status-text');
+
+            statusPing.className = 'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ' + statusConfig.bg;
+            statusDot.className = 'relative inline-flex rounded-full h-2.5 w-2.5 ' + statusConfig.bg;
+            statusText.className = 'font-medium ' + statusConfig.text;
+            statusText.textContent = statusConfig.label;
+
+            // Update stats
+            document.getElementById('uptime-value').textContent = data.uptime;
+            document.getElementById('online-streams').textContent = data.online_streams;
+            document.getElementById('total-streams').textContent = data.streams;
+
+            // Update last updated time
+            const lastUpdated = new Date(data.last_updated);
+            document.getElementById('last-updated').textContent = lastUpdated.toLocaleTimeString();
+        }
+
+        function fetchStatus() {
+            fetch('/api/server-status')
+                .then(response => response.json())
+                .then(data => updateStatus(data))
+                .catch(error => {
+                    console.error('Failed to fetch server status:', error);
+                    updateStatus({ status: 'offline', uptime: 'N/A', streams: 0, online_streams: 0, last_updated: new Date().toISOString() });
+                });
+        }
+
+        // Initial load with server-rendered data (if available)
+        @if(isset($serverStatus))
+        updateStatus(@json($serverStatus));
+        @else
+        fetchStatus();
+        @endif
+
+        // Refresh status every 30 seconds
+        setInterval(fetchStatus, 30000);
+    })();
+</script>
+@endpush
