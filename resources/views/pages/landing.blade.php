@@ -108,12 +108,14 @@
                             </div>
 
                             @guest
-                            <!-- Quick Login Form -->
+                            {{-- Quick Login Form - Uses same route as main login page.
+                                 Rate limiting is handled by Laravel's built-in throttling
+                                 via the ThrottleRequests middleware. --}}
                             <div class="mt-6 pt-4 border-t border-gh-border">
                                 <h4 class="text-sm font-medium text-white mb-3">Quick Access</h4>
                                 <form method="POST" action="{{ route('login.store') }}" class="space-y-3">
                                     @csrf
-                                    <input type="text" name="username" placeholder="Username" required
+                                    <input type="email" name="email" placeholder="Email" required
                                         class="w-full px-3 py-2 bg-gh-bg border border-gh-border rounded-md text-white placeholder-gh-text-muted focus:outline-none focus:ring-2 focus:ring-homelab-500 focus:border-transparent text-sm">
                                     <input type="password" name="password" placeholder="Password" required
                                         class="w-full px-3 py-2 bg-gh-bg border border-gh-border rounded-md text-white placeholder-gh-text-muted focus:outline-none focus:ring-2 focus:ring-homelab-500 focus:border-transparent text-sm">

@@ -33,6 +33,10 @@ class WebController extends Controller
     /**
      * Build public server status array.
      *
+     * Note: The uptime value is derived from stream health metrics.
+     * For true server uptime tracking, consider implementing a heartbeat
+     * system with persistent storage of uptime records.
+     *
      * @return array{status: string, uptime: string, streams: int, online_streams: int, last_updated: string}
      */
     private function getPublicServerStatus(): array
@@ -41,18 +45,22 @@ class WebController extends Controller
         $onlineStreams = Stream::where('last_check_status', 'online')->count();
 
         // Determine overall status based on stream health
+        // When no streams exist or all streams are online, system is operational
         $status = 'operational';
-        if ($totalStreams === 0) {
-            $status = 'operational'; // No streams configured is still operational
-        } elseif ($onlineStreams === 0) {
+        if ($totalStreams > 0 && $onlineStreams === 0) {
             $status = 'degraded';
-        } elseif ($onlineStreams < $totalStreams * 0.5) {
+        } elseif ($totalStreams > 0 && $onlineStreams < $totalStreams * 0.5) {
             $status = 'degraded';
         }
 
+        // Calculate uptime based on stream health ratio
+        $uptimePercent = $totalStreams > 0
+            ? round(($onlineStreams / $totalStreams) * 100, 1).'%'
+            : '100%';
+
         return [
             'status' => $status,
-            'uptime' => '99.9%', // Placeholder - could be calculated from logs
+            'uptime' => $uptimePercent,
             'streams' => $totalStreams,
             'online_streams' => $onlineStreams,
             'last_updated' => now()->toIso8601String(),
