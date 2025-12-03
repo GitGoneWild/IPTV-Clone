@@ -236,6 +236,9 @@ class XtreamService
     /**
      * Get streams available to user.
      *
+     * Eager loads category and server relationships to prevent N+1 queries.
+     * Server relationship is needed for getEffectiveUrl() in getStreamUrl().
+     *
      * @return \Illuminate\Database\Eloquent\Collection<int, Stream>
      */
     protected function getUserStreams(User $user): \Illuminate\Database\Eloquent\Collection

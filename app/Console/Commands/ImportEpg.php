@@ -198,7 +198,7 @@ class ImportEpg extends Command
                 $timezone = $matches[2] ?? null;
 
                 if ($timezone) {
-                    // Parse with timezone
+                    // Parse with timezone (format expects single space between timestamp and offset)
                     $result = \DateTime::createFromFormat('YmdHis O', $timestamp.' '.$timezone);
                 } else {
                     // Parse without timezone

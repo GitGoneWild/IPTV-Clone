@@ -172,11 +172,11 @@ class XtreamController extends Controller
      */
     protected function getUserInfo(User $user): Response
     {
+        $userInfo = $this->xtreamService->getUserInfoArray($user);
+        $userInfo['message'] = 'Welcome to HomelabTV';
+
         return response()->json([
-            'user_info' => array_merge(
-                $this->xtreamService->getUserInfoArray($user),
-                ['message' => 'Welcome to HomelabTV']
-            ),
+            'user_info' => $userInfo,
             'server_info' => $this->xtreamService->getServerInfo(),
         ]);
     }
