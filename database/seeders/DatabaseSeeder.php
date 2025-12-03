@@ -136,38 +136,98 @@ class DatabaseSeeder extends Seeder
             ]));
         }
 
-        // Create bouquets
-        $basicBouquet = Bouquet::create([
-            'name' => 'Basic Package',
-            'description' => 'Basic streaming package with essential channels',
+        // Create bouquets for Live TV
+        $ukGeneralBouquet = Bouquet::create([
+            'name' => 'UK: General',
+            'category_type' => 'live_tv',
+            'region' => 'UK',
+            'description' => 'General UK channels including news, entertainment, and lifestyle',
             'is_active' => true,
             'sort_order' => 1,
         ]);
 
-        $premiumBouquet = Bouquet::create([
-            'name' => 'Premium Package',
-            'description' => 'Full access to all streams',
+        $ukMoviesBouquet = Bouquet::create([
+            'name' => 'UK: Movies',
+            'category_type' => 'live_tv',
+            'region' => 'UK',
+            'description' => 'UK movie channels with latest blockbusters and classics',
             'is_active' => true,
             'sort_order' => 2,
         ]);
 
+        $ukSportsBouquet = Bouquet::create([
+            'name' => 'UK: Sports',
+            'category_type' => 'live_tv',
+            'region' => 'UK',
+            'description' => 'UK sports channels including football, cricket, and more',
+            'is_active' => true,
+            'sort_order' => 3,
+        ]);
+
+        $usSportsBouquet = Bouquet::create([
+            'name' => 'US: Sports',
+            'category_type' => 'live_tv',
+            'region' => 'US',
+            'description' => 'US sports channels including NFL, NBA, MLB, NHL',
+            'is_active' => true,
+            'sort_order' => 4,
+        ]);
+
+        // Create bouquets for Movies
+        $moviesBouquet = Bouquet::create([
+            'name' => 'Movies Collection',
+            'category_type' => 'movie',
+            'region' => null,
+            'description' => 'Curated collection of movies across all genres',
+            'is_active' => true,
+            'sort_order' => 5,
+        ]);
+
+        // Create bouquets for TV Series
+        $seriesBouquet = Bouquet::create([
+            'name' => 'TV Series Collection',
+            'category_type' => 'series',
+            'region' => null,
+            'description' => 'Popular TV series and shows',
+            'is_active' => true,
+            'sort_order' => 6,
+        ]);
+
+        // Legacy bouquet for backward compatibility
+        $basicBouquet = Bouquet::create([
+            'name' => 'Basic Package',
+            'category_type' => 'live_tv',
+            'region' => null,
+            'description' => 'Basic streaming package with essential channels',
+            'is_active' => true,
+            'sort_order' => 100,
+        ]);
+
         // Attach streams to bouquets
+        $ukGeneralBouquet->streams()->attach([
+            $createdStreams[0]->id => ['sort_order' => 1],
+            $createdStreams[1]->id => ['sort_order' => 2],
+        ]);
+
+        $ukSportsBouquet->streams()->attach([
+            $createdStreams[4]->id => ['sort_order' => 1],
+        ]);
+
         $basicBouquet->streams()->attach([
             $createdStreams[0]->id => ['sort_order' => 1],
             $createdStreams[1]->id => ['sort_order' => 2],
         ]);
 
-        $premiumBouquet->streams()->attach([
-            $createdStreams[0]->id => ['sort_order' => 1],
-            $createdStreams[1]->id => ['sort_order' => 2],
-            $createdStreams[2]->id => ['sort_order' => 3],
-            $createdStreams[3]->id => ['sort_order' => 4],
-            $createdStreams[4]->id => ['sort_order' => 5],
-        ]);
-
         // Assign bouquets to users
-        $user1->bouquets()->attach([$basicBouquet->id, $premiumBouquet->id]);
-        $reseller->bouquets()->attach([$premiumBouquet->id]);
-        $admin->bouquets()->attach([$basicBouquet->id, $premiumBouquet->id]);
+        $user1->bouquets()->attach([$ukGeneralBouquet->id, $moviesBouquet->id, $seriesBouquet->id]);
+        $reseller->bouquets()->attach([$ukGeneralBouquet->id, $ukMoviesBouquet->id, $ukSportsBouquet->id, $usSportsBouquet->id]);
+        $admin->bouquets()->attach([
+            $ukGeneralBouquet->id,
+            $ukMoviesBouquet->id,
+            $ukSportsBouquet->id,
+            $usSportsBouquet->id,
+            $moviesBouquet->id,
+            $seriesBouquet->id,
+        ]);
     }
 }

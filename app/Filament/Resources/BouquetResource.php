@@ -27,6 +27,20 @@ class BouquetResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Select::make('category_type')
+                    ->label('Category Type')
+                    ->options([
+                        'live_tv' => 'Live TV',
+                        'movie' => 'Movies',
+                        'series' => 'TV Shows/Series',
+                    ])
+                    ->default('live_tv')
+                    ->required()
+                    ->native(false),
+                Forms\Components\TextInput::make('region')
+                    ->label('Region')
+                    ->placeholder('e.g., UK, US, FR')
+                    ->maxLength(255),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('sort_order')
@@ -50,6 +64,25 @@ class BouquetResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('category_type')
+                    ->label('Type')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'live_tv' => 'info',
+                        'movie' => 'success',
+                        'series' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'live_tv' => 'Live TV',
+                        'movie' => 'Movies',
+                        'series' => 'TV Shows',
+                        default => $state,
+                    }),
+                Tables\Columns\TextColumn::make('region')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('N/A'),
                 Tables\Columns\TextColumn::make('description')
                     ->limit(50),
                 Tables\Columns\TextColumn::make('streams_count')
@@ -65,6 +98,22 @@ class BouquetResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active'),
+                Tables\Filters\SelectFilter::make('category_type')
+                    ->label('Category Type')
+                    ->options([
+                        'live_tv' => 'Live TV',
+                        'movie' => 'Movies',
+                        'series' => 'TV Shows',
+                    ]),
+                Tables\Filters\SelectFilter::make('region')
+                    ->label('Region')
+                    ->options(function () {
+                        return \App\Models\Bouquet::query()
+                            ->whereNotNull('region')
+                            ->distinct()
+                            ->pluck('region', 'region')
+                            ->toArray();
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

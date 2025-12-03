@@ -12,6 +12,8 @@ class Bouquet extends Model
 
     protected $fillable = [
         'name',
+        'category_type',
+        'region',
         'description',
         'is_active',
         'sort_order',
