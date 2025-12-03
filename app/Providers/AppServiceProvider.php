@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Bouquet;
 use App\Models\Stream;
+use App\Observers\BouquetObserver;
 use App\Observers\StreamObserver;
 use App\Services\XtreamService;
 use Illuminate\Support\Facades\Gate;
@@ -25,8 +27,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register model observers
+        // Register model observers for cache invalidation
         Stream::observe(StreamObserver::class);
+        Bouquet::observe(BouquetObserver::class);
         
         // Define admin gate
         Gate::define('admin', function ($user) {

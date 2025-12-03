@@ -188,14 +188,24 @@ class ImportEpg extends Command
 
     /**
      * Insert programs batch using upsert for better performance.
+     * Handles potential database errors gracefully.
      */
     protected function insertProgramsBatch(array $programs): void
     {
-        EpgProgram::upsert(
-            $programs,
-            ['channel_id', 'start_time'],
-            ['title', 'description', 'end_time', 'category', 'episode_num', 'icon_url', 'lang', 'updated_at']
-        );
+        try {
+            EpgProgram::upsert(
+                $programs,
+                ['channel_id', 'start_time'],
+                ['title', 'description', 'end_time', 'category', 'episode_num', 'icon_url', 'lang', 'updated_at']
+            );
+        } catch (\Illuminate\Database\QueryException $e) {
+            $this->error('Database upsert failed: '.$e->getMessage());
+            // Log the error for debugging
+            \Log::error('EPG import batch insert failed', [
+                'error' => $e->getMessage(),
+                'batch_size' => count($programs),
+            ]);
+        }
     }
 
     /**

@@ -35,11 +35,14 @@ class StreamObserver
     /**
      * Clear cache for all users that have access to this stream.
      * Optimized to use a direct database query instead of loading full objects.
+     * 
+     * Note: If a stream is not yet associated with any bouquets, this will clear
+     * zero caches, which is expected and safe behavior for new streams.
      */
     protected function clearUserCaches(Stream $stream): void
     {
         // Get user IDs directly from the database without loading full objects
-        $userIds = \DB::table('user_bouquets')
+        $userIds = DB::table('user_bouquets')
             ->join('bouquet_streams', 'user_bouquets.bouquet_id', '=', 'bouquet_streams.bouquet_id')
             ->where('bouquet_streams.stream_id', $stream->id)
             ->distinct()

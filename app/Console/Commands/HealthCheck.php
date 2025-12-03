@@ -119,11 +119,29 @@ class HealthCheck extends Command
     {
         $epgDir = config('homelabtv.epg_storage_path');
 
-        if (! file_exists($epgDir)) {
-            mkdir($epgDir, 0755, true);
-        }
+        try {
+            if (! file_exists($epgDir)) {
+                if (! mkdir($epgDir, 0755, true)) {
+                    $error = error_get_last();
+                    $message = $error ? $error['message'] : 'Unknown error';
+                    $this->error("Failed to create EPG directory '{$epgDir}': {$message}");
 
-        return is_writable($epgDir);
+                    return false;
+                }
+            }
+
+            if (! is_writable($epgDir)) {
+                $this->error("EPG directory is not writable: {$epgDir}");
+
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            $this->error("Exception while checking/creating EPG directory: {$e->getMessage()}");
+
+            return false;
+        }
     }
 
     /**

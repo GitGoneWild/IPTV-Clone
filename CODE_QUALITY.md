@@ -26,13 +26,16 @@ php artisan db:seed --class=GenerateApiTokensSeeder
 
 ### 2. Input Validation
 
-**Problem**: API endpoints lacked proper input validation.
+**Problem**: API endpoints lacked proper input validation infrastructure.
 
 **Solution**: 
-- Created `XtreamApiRequest` form request class
+- Created `XtreamApiRequest` form request class with comprehensive validation rules
 - Validates all API parameters (username, password, action, etc.)
 - Returns consistent error responses for validation failures
 - Prevents injection attacks through strict validation rules
+- **Note**: Currently prepared but not integrated into controllers to maintain backward compatibility with existing authentication flow
+
+**Future Integration**: Controllers can be updated to use the form request by changing method signatures once deployment is confirmed.
 
 ### 3. XML Security
 

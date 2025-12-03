@@ -118,7 +118,8 @@ class User extends Authenticatable
      *
      * For security, validates against the API token if available,
      * otherwise falls back to hashed password verification.
-     * Plain-text password comparison is NOT recommended and should be phased out.
+     * Note: Plain-text password comparison has been removed for security.
+     * Only hashed passwords and API tokens are supported.
      */
     public function validateXtreamPassword(string $password): bool
     {
@@ -127,30 +128,51 @@ class User extends Authenticatable
             return true;
         }
         
-        // Fall back to password verification (hashed only)
+        // Fall back to hashed password verification only
         return password_verify($password, $this->password);
     }
     
     /**
      * Generate a new API token for this user.
      * This token can be used for Xtream API authentication.
+     * Handles uniqueness constraint with retry logic.
      */
     public function generateApiToken(): string
     {
-        $token = bin2hex(random_bytes(32));
-        $this->api_token = $token;
-        $this->save();
+        $maxAttempts = 5;
+        $attempts = 0;
         
-        return $token;
+        do {
+            $token = bin2hex(random_bytes(32));
+            $this->api_token = $token;
+            
+            try {
+                $this->save();
+                return $token;
+            } catch (\Illuminate\Database\QueryException $e) {
+                // Check if it's a unique constraint violation on api_token
+                if (str_contains($e->getMessage(), 'api_token')) {
+                    $attempts++;
+                    if ($attempts >= $maxAttempts) {
+                        throw new \RuntimeException('Failed to generate a unique API token after ' . $maxAttempts . ' attempts.');
+                    }
+                    // Try again with a new token
+                    continue;
+                }
+                // Other DB error, rethrow
+                throw $e;
+            }
+        } while (true);
     }
     
     /**
      * Get the password/token to use for API URLs.
-     * Returns API token if available, otherwise returns a masked password.
+     * Returns API token if available, otherwise returns empty string.
+     * Users without tokens should generate one via the dashboard or seeder.
      */
     public function getApiPasswordAttribute(): string
     {
-        return $this->api_token ?? '***hidden***';
+        return $this->api_token ?? '';
     }
 
     /**

@@ -20,7 +20,7 @@ class XtreamApiRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required', 'string', 'max:255', 'alpha_dash'],
+            'username' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'max:255'],
             'action' => ['sometimes', 'string', 'in:get_live_categories,get_live_streams,get_short_epg,get_simple_data_table'],
             'category_id' => ['sometimes', 'integer', 'min:1'],
