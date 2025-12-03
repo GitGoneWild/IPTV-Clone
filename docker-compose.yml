@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  # PHP Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: homelabtv-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - ./storage/app/epg:/var/www/html/storage/app/epg
+    networks:
+      - homelabtv
+    depends_on:
+      - mysql
+      - redis
+
+  # Nginx Web Server
+  nginx:
+    image: nginx:alpine
+    container_name: homelabtv-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - homelabtv
+    depends_on:
+      - app
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: homelabtv-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: homelabtv
+      MYSQL_USER: homelabtv
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - homelabtv
+
+  # Redis Cache
+  redis:
+    image: redis:alpine
+    container_name: homelabtv-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - homelabtv
+
+  # Queue Worker
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: homelabtv-queue
+    restart: unless-stopped
+    working_dir: /var/www/html
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    volumes:
+      - .:/var/www/html
+    networks:
+      - homelabtv
+    depends_on:
+      - app
+      - mysql
+      - redis
+
+  # Scheduler
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: homelabtv-scheduler
+    restart: unless-stopped
+    working_dir: /var/www/html
+    command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - homelabtv
+    depends_on:
+      - app
+      - mysql
+      - redis
+
+networks:
+  homelabtv:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
