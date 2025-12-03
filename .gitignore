@@ -28,3 +28,8 @@ yarn-error.log
 *.swo
 .DS_Store
 Thumbs.db
+/public/hot
+/public/storage
+/public/build
+/public/css/app.css
+/public/js/app.js
