@@ -152,7 +152,7 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
 - Composer
 - MySQL 8.0+ or MariaDB 10.6+
 - Redis
-- Node.js & NPM (for asset compilation)
+- Node.js & NPM (for asset compilation, optional)
 
 ### Steps
 
@@ -161,6 +161,7 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
    git clone https://github.com/yourusername/homelabtv.git
    cd homelabtv
    composer install
+   npm install  # Optional: for frontend development
    ```
 
 2. **Environment setup**
@@ -186,12 +187,19 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
    php artisan db:seed --class=GenerateApiTokensSeeder
    ```
 
-5. **Verify installation**
+5. **Build frontend assets (optional)**
+   ```bash
+   npm run build  # For production
+   # OR
+   npm run dev    # For development with hot reload
+   ```
+
+6. **Verify installation**
    ```bash
    php artisan homelabtv:health-check
    ```
 
-6. **Start development server**
+7. **Start development server**
    ```bash
    php artisan serve
    ```
@@ -289,10 +297,36 @@ homelabtv/
 │   └── seeders/              # Database seeders
 ├── docker/                   # Docker configuration
 ├── public/                   # Public assets
-├── resources/views/          # Blade templates
+├── resources/
+│   ├── css/                  # CSS source files
+│   ├── js/                   # JavaScript source files
+│   └── views/                # Blade templates
 ├── routes/                   # Route definitions
 └── storage/                  # File storage
 ```
+
+## 🎨 Frontend Development
+
+The project uses Vite for asset compilation with Tailwind CSS and Alpine.js.
+
+### Available NPM Commands
+
+```bash
+npm run dev         # Start development server with hot reload
+npm run build       # Build for production
+npm run preview     # Preview production build
+npm run format      # Format code with Prettier
+npm run format:check # Check code formatting
+```
+
+### Frontend Stack
+
+- **Build Tool**: Vite 5.x
+- **CSS Framework**: Tailwind CSS 3.x
+- **JavaScript Framework**: Alpine.js 3.x
+- **Admin Panel**: Filament 3.x with Livewire 3.x
+
+**Note**: Currently, the application uses CDN-based Tailwind CSS. The Vite configuration is provided for future frontend development and customization.
 
 ## 🔒 Security
 
