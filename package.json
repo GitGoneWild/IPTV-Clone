@@ -1,0 +1,44 @@
+{
+    "name": "homelabtv-iptv-panel",
+    "version": "1.0.0",
+    "description": "HomelabTV - Private IPTV Management Panel for Homelab and Legal Streams",
+    "keywords": [
+        "laravel",
+        "iptv",
+        "homelab",
+        "streaming",
+        "filament",
+        "livewire",
+        "alpine",
+        "tailwind"
+    ],
+    "author": "HomelabTV Team",
+    "license": "MIT",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "format": "prettier --write \"resources/**/*.{js,css,blade.php}\"",
+        "format:check": "prettier --check \"resources/**/*.{js,css,blade.php}\""
+    },
+    "devDependencies": {
+        "@tailwindcss/forms": "^0.5.7",
+        "@tailwindcss/typography": "^0.5.10",
+        "alpinejs": "^3.14.1",
+        "autoprefixer": "^10.4.16",
+        "axios": "^1.6.5",
+        "laravel-vite-plugin": "^1.0.1",
+        "postcss": "^8.4.33",
+        "prettier": "^3.1.1",
+        "prettier-plugin-blade": "^2.1.11",
+        "tailwindcss": "^3.4.1",
+        "vite": "^5.0.12"
+    },
+    "dependencies": {},
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=9.0.0"
+    }
+}
