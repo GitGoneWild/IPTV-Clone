@@ -42,6 +42,7 @@ A self-hosted IPTV management panel designed for homelab enthusiasts to manage l
 
 ### User Management
 - 👤 Create users with username/password
+- 🔑 API token generation for secure IPTV client authentication
 - ⏰ Expiry dates and max connection limits
 - 📋 Allowed output formats (M3U, Xtream, Enigma2)
 - 🏷️ Assign bouquets per user
@@ -55,7 +56,7 @@ Works with any IPTV player supporting Xtream Codes:
 - `/xmltv.php` - EPG data (XMLTV format)
 - `/enigma2.php` - Enigma2 bouquet file
 - `/live/{username}/{password}/{stream_id}` - Direct stream URLs
-- **Authentication**: Legacy XTREAM Codes-style (username + password)
+- **Authentication**: API tokens (recommended) or password (legacy compatibility)
 
 ### Additional Features
 - 🔒 REST API with Laravel Sanctum tokens
@@ -69,7 +70,7 @@ Works with any IPTV player supporting Xtream Codes:
 - **Backend**: Laravel 12, PHP 8.2+
 - **Admin Panel**: Filament 3
 - **Frontend**: Livewire 3, Alpine.js, Tailwind CSS 3
-- **Authentication**: Legacy XTREAM Codes (username + password) + Laravel Sanctum for REST API
+- **Authentication**: API tokens (recommended) + password fallback for legacy XTREAM Codes compatibility
 - **Database**: MySQL / MariaDB / SQLite
 - **External APIs**: TMDB (The Movie Database)
 - **Cache**: Redis
@@ -133,20 +134,24 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
    docker-compose exec app php artisan storage:link
    ```
 
-5. **Verify system health**
+5. **Generate API tokens for users**
+   ```bash
+   docker-compose exec app php artisan db:seed --class=GenerateApiTokensSeeder
+   ```
+
+6. **Verify system health**
    ```bash
    docker-compose exec app php artisan homelabtv:health-check
    ```
 
-6. **Access the application**
+7. **Access the application**
    - Frontend: http://localhost:8080
    - Admin Panel: http://localhost:8080/admin
 
-### Default Credentials
 
 ### Default Credentials
 
-**🔒 Security Note**: Uses legacy XTREAM Codes authentication (username + password).
+**🔒 Security Note**: API tokens are recommended for IPTV client authentication. Generate tokens using the seeder or admin panel.
 
 | User Type | Email | Username | Password | Use Case |
 |-----------|-------|----------|----------|----------|
@@ -154,7 +159,9 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
 | Demo User | demo@homelabtv.local | demo | demo123 | Testing viewer features |
 | Reseller | reseller@homelabtv.local | reseller | reseller123 | Reseller features testing |
 
-**⚠️ Important**: Change these default passwords after first login!
+**⚠️ Important**: 
+- Change these default passwords after first login!
+- Generate API tokens for each user to use in IPTV clients instead of passwords
 
 ## 🛠️ Manual Installation (Without Docker)
 
@@ -195,6 +202,7 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
    ```bash
    php artisan migrate --seed
    php artisan storage:link
+   php artisan db:seed --class=GenerateApiTokensSeeder
    ```
 
 5. **Build frontend assets (optional)**
@@ -268,32 +276,47 @@ This checks:
 
 ### Authentication
 
-This system uses **legacy XTREAM Codes-style authentication** (username + password).
+This system supports both API tokens (recommended) and password authentication.
+
+**⚠️ Security Warning**: For production use, always use API tokens instead of passwords in URLs. Passwords in URLs can be exposed in server logs, browser history, and referrer headers.
+
+**Using API Tokens (Recommended):**
+1. Generate an API token from the admin panel for each user
+2. Use the token instead of the password in API requests
+3. Tokens can be revoked without changing the user's password
 
 **Default Credentials:**
 - Username: `demo`
 - Password: `demo123`
+- API Token: Generate via admin panel or seeder
 
 **Important:** Change default passwords after first login!
 
 ### Getting User Info
 ```bash
+# Using API token (recommended)
+curl "http://localhost:8080/player_api.php?username=demo&password=YOUR_API_TOKEN"
+
+# Using password (legacy, not recommended for production)
 curl "http://localhost:8080/player_api.php?username=demo&password=demo123"
 ```
 
 ### Getting Live Streams
 ```bash
-curl "http://localhost:8080/player_api.php?username=demo&password=demo123&action=get_live_streams"
+# Using API token (recommended)
+curl "http://localhost:8080/player_api.php?username=demo&password=YOUR_API_TOKEN&action=get_live_streams"
 ```
 
 ### Getting M3U Playlist
 ```bash
-curl "http://localhost:8080/get.php?username=demo&password=demo123&type=m3u_plus"
+# Using API token (recommended)
+curl "http://localhost:8080/get.php?username=demo&password=YOUR_API_TOKEN&type=m3u_plus"
 ```
 
 ### Getting EPG (XMLTV)
 ```bash
-curl "http://localhost:8080/xmltv.php?username=demo&password=demo123"
+# Using API token (recommended)
+curl "http://localhost:8080/xmltv.php?username=demo&password=YOUR_API_TOKEN"
 ```
 
 ## 📅 Scheduled Tasks
@@ -370,7 +393,8 @@ npm run format:check # Check code formatting
 ## 🔒 Security
 
 - All API endpoints are rate-limited
-- **Legacy XTREAM Codes authentication** (username + password)
+- **API token authentication** (recommended for production)
+- **Password fallback** for legacy XTREAM Codes compatibility
 - Passwords are hashed using bcrypt
 - **Input validation** on all API endpoints
 - CSRF protection on all forms
@@ -379,11 +403,13 @@ npm run format:check # Check code formatting
 
 ### Security Best Practices
 
-1. **Change default passwords** immediately after installation
-2. **Use strong passwords** for IPTV accounts
-3. **Enable HTTPS** in production
-4. **Regular updates** of dependencies
-5. **Monitor logs** for suspicious activity
+1. **Use API tokens** instead of passwords for IPTV clients (avoids password exposure in URLs)
+2. **Change default passwords** immediately after installation
+3. **Use strong passwords** for admin accounts
+4. **Enable HTTPS** in production to protect credentials in transit
+5. **Regular updates** of dependencies
+6. **Monitor logs** for suspicious activity
+7. **Regenerate API tokens** periodically or after suspected compromise
 
 For detailed security information, see [CODE_QUALITY.md](CODE_QUALITY.md#security-improvements)
 

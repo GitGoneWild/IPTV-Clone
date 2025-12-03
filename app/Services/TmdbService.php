@@ -13,10 +13,17 @@ class TmdbService
     
     /** Maximum number of cast members to include */
     protected const MAX_CAST_MEMBERS = 10;
+    
+    /** HTTP timeout in seconds */
+    protected const HTTP_TIMEOUT = 10;
 
     public function __construct()
     {
         $this->apiKey = config('services.tmdb.api_key', '');
+        
+        if (empty($this->apiKey)) {
+            Log::warning('TMDB API key is not configured. Please set TMDB_API_KEY in your .env file.');
+        }
     }
 
     /**
@@ -37,7 +44,7 @@ class TmdbService
         }
 
         try {
-            $response = Http::get("{$this->baseUrl}/search/movie", [
+            $response = Http::timeout(self::HTTP_TIMEOUT)->get("{$this->baseUrl}/search/movie", [
                 'api_key' => $this->apiKey,
                 'query' => $query,
                 'language' => 'en-US',
@@ -63,7 +70,7 @@ class TmdbService
         }
 
         try {
-            $response = Http::get("{$this->baseUrl}/movie/{$tmdbId}", [
+            $response = Http::timeout(self::HTTP_TIMEOUT)->get("{$this->baseUrl}/movie/{$tmdbId}", [
                 'api_key' => $this->apiKey,
                 'append_to_response' => 'credits,videos',
                 'language' => 'en-US',
@@ -90,7 +97,7 @@ class TmdbService
         }
 
         try {
-            $response = Http::get("{$this->baseUrl}/search/tv", [
+            $response = Http::timeout(self::HTTP_TIMEOUT)->get("{$this->baseUrl}/search/tv", [
                 'api_key' => $this->apiKey,
                 'query' => $query,
                 'language' => 'en-US',
@@ -116,7 +123,7 @@ class TmdbService
         }
 
         try {
-            $response = Http::get("{$this->baseUrl}/tv/{$tmdbId}", [
+            $response = Http::timeout(self::HTTP_TIMEOUT)->get("{$this->baseUrl}/tv/{$tmdbId}", [
                 'api_key' => $this->apiKey,
                 'append_to_response' => 'credits,videos',
                 'language' => 'en-US',
@@ -143,7 +150,7 @@ class TmdbService
         }
 
         try {
-            $response = Http::get("{$this->baseUrl}/tv/{$seriesId}/season/{$seasonNumber}", [
+            $response = Http::timeout(self::HTTP_TIMEOUT)->get("{$this->baseUrl}/tv/{$seriesId}/season/{$seasonNumber}", [
                 'api_key' => $this->apiKey,
                 'language' => 'en-US',
             ]);

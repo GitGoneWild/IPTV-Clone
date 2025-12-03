@@ -31,6 +31,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['series_id', 'season_number', 'episode_number']);
+            $table->unique(['series_id', 'season_number', 'episode_number']);
             $table->index('is_active');
         });
     }
