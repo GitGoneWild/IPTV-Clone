@@ -2,7 +2,7 @@
 # This creates a lightweight load balancer for IPTV content distribution
 # Based on Alpine Linux with Nginx for optimal performance
 
-FROM alpine:3.19
+FROM alpine:3.23
 
 # Install dependencies
 RUN apk add --no-cache \
