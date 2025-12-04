@@ -35,7 +35,7 @@ class StreamObserver
     /**
      * Clear cache for all users that have access to this stream.
      * Optimized to use a direct database query instead of loading full objects.
-     * 
+     *
      * Note: If a stream is not yet associated with any bouquets, this will clear
      * zero caches, which is expected and safe behavior for new streams.
      */

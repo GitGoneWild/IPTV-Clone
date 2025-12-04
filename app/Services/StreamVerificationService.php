@@ -19,14 +19,23 @@ class StreamVerificationService
 
     /** Error type constants */
     public const ERROR_NONE = null;
+
     public const ERROR_TIMEOUT = 'timeout';
+
     public const ERROR_CONNECTION = 'connection_failed';
+
     public const ERROR_DNS = 'dns_resolution_failed';
+
     public const ERROR_SSL = 'ssl_error';
+
     public const ERROR_HTTP_4XX = 'http_client_error';
+
     public const ERROR_HTTP_5XX = 'http_server_error';
+
     public const ERROR_INVALID_URL = 'invalid_url';
+
     public const ERROR_INVALID_FORMAT = 'invalid_stream_format';
+
     public const ERROR_UNKNOWN = 'unknown_error';
 
     public function __construct()

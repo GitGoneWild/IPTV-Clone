@@ -54,14 +54,14 @@ Route::middleware(['throttle.api'])->prefix('flutter/v1')->group(function () {
     // EPG endpoints
     Route::get('/epg', [FlutterApiController::class, 'epg']);
     Route::get('/epg/current-next/{channelId}', [FlutterApiController::class, 'epgCurrentNext']);
-    
+
     // Categories
     Route::get('/categories', [FlutterApiController::class, 'categories']);
     Route::get('/categories/live', [FlutterApiController::class, 'liveCategories']);
-    
+
     // Search
     Route::get('/search', [FlutterApiController::class, 'search']);
-    
+
     // Load Balancer - Public endpoint to get optimal server
     Route::get('/load-balancer/optimal', [LoadBalancerApiController::class, 'getOptimal']);
 });
@@ -71,11 +71,11 @@ Route::middleware(['auth:sanctum', 'throttle.api'])->prefix('flutter/v1')->group
     // Live TV
     Route::get('/live/streams', [FlutterApiController::class, 'liveStreams']);
     Route::get('/live/streams/{streamId}', [FlutterApiController::class, 'liveStream']);
-    
+
     // Movies (VOD)
     Route::get('/movies', [FlutterApiController::class, 'movies']);
     Route::get('/movies/{movieId}', [FlutterApiController::class, 'movie']);
-    
+
     // TV Series
     Route::get('/series', [FlutterApiController::class, 'series']);
     Route::get('/series/{seriesId}', [FlutterApiController::class, 'seriesDetail']);
@@ -88,7 +88,7 @@ Route::prefix('lb/v1')->group(function () {
     // Registration endpoint - PROTECTED: Requires authentication to prevent unauthorized registrations
     // In production, this should be restricted to admin users only
     Route::middleware(['auth:sanctum', 'throttle:10,60'])->post('/register', [LoadBalancerApiController::class, 'register']);
-    
+
     // Load balancer endpoints (authenticated via API key)
     Route::post('/heartbeat', [LoadBalancerApiController::class, 'heartbeat']);
     Route::get('/config', [LoadBalancerApiController::class, 'getConfig']);
@@ -99,4 +99,3 @@ Route::middleware(['auth:sanctum', 'throttle.api'])->prefix('lb/v1/admin')->grou
     Route::get('/load-balancers', [LoadBalancerApiController::class, 'index']);
     Route::get('/load-balancers/{id}/stats', [LoadBalancerApiController::class, 'stats']);
 });
-

@@ -64,7 +64,7 @@ class StreamResource extends Resource
                                             return;
                                         }
 
-                                        $service = new StreamVerificationService();
+                                        $service = new StreamVerificationService;
                                         $result = $service->verifyUrl($url, $streamType);
 
                                         if ($result['is_online']) {
@@ -130,7 +130,7 @@ class StreamResource extends Resource
                                         return;
                                     }
 
-                                    $service = new StreamVerificationService();
+                                    $service = new StreamVerificationService;
                                     $result = $service->verifyUrl($url, $streamType);
 
                                     if ($result['is_online']) {
@@ -295,7 +295,7 @@ class StreamResource extends Resource
                     ->icon('heroicon-o-signal')
                     ->color('info')
                     ->action(function (Stream $record) {
-                        $service = new StreamVerificationService();
+                        $service = new StreamVerificationService;
                         $result = $service->verify($record);
 
                         $record->update([
@@ -339,7 +339,7 @@ class StreamResource extends Resource
                         ->icon('heroicon-o-signal')
                         ->color('info')
                         ->action(function (Collection $records) {
-                            $service = new StreamVerificationService();
+                            $service = new StreamVerificationService;
                             $online = 0;
                             $offline = 0;
 

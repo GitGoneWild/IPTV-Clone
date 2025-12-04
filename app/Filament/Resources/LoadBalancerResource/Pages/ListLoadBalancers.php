@@ -24,7 +24,7 @@ class ListLoadBalancers extends ListRecords
                 ->modalContent(view('filament.pages.load-balancer-registration'))
                 ->modalSubmitAction(false)
                 ->modalCancelActionLabel('Close'),
-            
+
             Actions\CreateAction::make()
                 ->label('Manual Registration')
                 ->icon('heroicon-o-plus'),

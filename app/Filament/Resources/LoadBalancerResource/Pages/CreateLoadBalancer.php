@@ -16,7 +16,7 @@ class CreateLoadBalancer extends CreateRecord
         $data['api_key'] = bcrypt(Str::random(64));
         $data['status'] = $data['status'] ?? 'offline';
         $data['current_connections'] = 0;
-        
+
         return $data;
     }
 

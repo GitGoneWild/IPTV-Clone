@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('bouquets', function (Blueprint $table) {
             $table->string('category_type')->default('live_tv')->after('name');
             $table->string('region')->nullable()->after('category_type');
-            
+
             $table->index('category_type');
             $table->index('region');
         });

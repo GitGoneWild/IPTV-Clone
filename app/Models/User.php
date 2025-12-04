@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'username',
         'api_token',
+        'real_debrid_token',
         'is_admin',
         'is_reseller',
         'reseller_id',
@@ -43,6 +44,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'real_debrid_token',
     ];
 
     /**
@@ -126,11 +128,11 @@ class User extends Authenticatable
         if ($this->api_token && hash_equals($this->api_token, $password)) {
             return true;
         }
-        
+
         // Fall back to password verification for legacy compatibility
         return password_verify($password, $this->password);
     }
-    
+
     /**
      * Generate a new API token for this user.
      * This token can be used for Xtream API authentication.
@@ -140,21 +142,23 @@ class User extends Authenticatable
     {
         $maxAttempts = 5;
         $attempts = 0;
-        
+
         do {
             $token = bin2hex(random_bytes(32));
             $this->api_token = $token;
-            
+
             try {
                 $this->save();
+
                 return $token;
             } catch (\Illuminate\Database\QueryException $e) {
                 // Check if it's a unique constraint violation on api_token
                 if (str_contains($e->getMessage(), 'api_token')) {
                     $attempts++;
                     if ($attempts >= $maxAttempts) {
-                        throw new \RuntimeException('Failed to generate a unique API token after ' . $maxAttempts . ' attempts.');
+                        throw new \RuntimeException('Failed to generate a unique API token after '.$maxAttempts.' attempts.');
                     }
+
                     // Try again with a new token
                     continue;
                 }
@@ -163,7 +167,7 @@ class User extends Authenticatable
             }
         } while (true);
     }
-    
+
     /**
      * Get the password/token to use for API URLs.
      * Returns API token if available, otherwise returns placeholder.

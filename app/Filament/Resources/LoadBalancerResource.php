@@ -7,9 +7,9 @@ use App\Models\LoadBalancer;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Support\Enums\FontWeight;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Http;
 
@@ -104,7 +104,7 @@ class LoadBalancerResource extends Resource
                         Forms\Components\Placeholder::make('current_connections')
                             ->content(fn (?LoadBalancer $record) => $record?->current_connections ?? 0),
                         Forms\Components\Placeholder::make('load_percentage')
-                            ->content(fn (?LoadBalancer $record) => $record ? $record->load_percentage . '%' : '0%'),
+                            ->content(fn (?LoadBalancer $record) => $record ? $record->load_percentage.'%' : '0%'),
                         Forms\Components\Placeholder::make('last_heartbeat_at')
                             ->content(fn (?LoadBalancer $record) => $record?->last_heartbeat_at?->diffForHumans() ?? 'Never'),
                         Forms\Components\Placeholder::make('is_healthy')
@@ -127,19 +127,19 @@ class LoadBalancerResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->weight(FontWeight::Bold),
-                
+
                 Tables\Columns\TextColumn::make('hostname')
                     ->searchable()
                     ->copyable()
                     ->copyMessage('Hostname copied!')
                     ->icon('heroicon-m-globe-alt'),
-                
+
                 Tables\Columns\TextColumn::make('region')
                     ->badge()
                     ->color('info')
                     ->sortable()
                     ->default('N/A'),
-                
+
                 Tables\Columns\IconColumn::make('status')
                     ->icon(fn (string $state): string => match ($state) {
                         'online' => 'heroicon-o-check-circle',
@@ -154,23 +154,23 @@ class LoadBalancerResource extends Resource
                         default => 'gray',
                     })
                     ->sortable(),
-                
+
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean()
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('current_connections')
                     ->numeric()
                     ->sortable()
                     ->suffix(fn (LoadBalancer $record) => $record->max_connections ? " / {$record->max_connections}" : '')
                     ->description(fn (LoadBalancer $record) => "Load: {$record->load_percentage}%"),
-                
+
                 Tables\Columns\TextColumn::make('weight')
                     ->numeric()
                     ->sortable()
                     ->badge()
                     ->color('primary'),
-                
+
                 Tables\Columns\IconColumn::make('healthy')
                     ->label('Health')
                     ->boolean()
@@ -179,13 +179,13 @@ class LoadBalancerResource extends Resource
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query->orderBy('last_heartbeat_at', $direction);
                     }),
-                
+
                 Tables\Columns\TextColumn::make('last_heartbeat_at')
                     ->dateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -198,13 +198,13 @@ class LoadBalancerResource extends Resource
                         'offline' => 'Offline',
                         'maintenance' => 'Maintenance',
                     ]),
-                
+
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active')
                     ->placeholder('All load balancers')
                     ->trueLabel('Active only')
                     ->falseLabel('Inactive only'),
-                
+
                 Tables\Filters\SelectFilter::make('region')
                     ->options(fn () => LoadBalancer::distinct()->pluck('region', 'region')->filter()->toArray()),
             ])
@@ -212,15 +212,15 @@ class LoadBalancerResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
-                    
+
                     Tables\Actions\Action::make('test_connection')
                         ->label('Test Connection')
                         ->icon('heroicon-o-signal')
                         ->action(function (LoadBalancer $record) {
                             try {
-                                $url = $record->buildBaseUrl() . '/health';
+                                $url = $record->buildBaseUrl().'/health';
                                 $response = Http::timeout(5)->get($url);
-                                
+
                                 if ($response->successful()) {
                                     \Filament\Notifications\Notification::make()
                                         ->success()
@@ -242,7 +242,7 @@ class LoadBalancerResource extends Resource
                                     ->send();
                             }
                         }),
-                    
+
                     Tables\Actions\Action::make('set_maintenance')
                         ->label('Set Maintenance')
                         ->icon('heroicon-o-wrench')
@@ -250,28 +250,28 @@ class LoadBalancerResource extends Resource
                         ->action(fn (LoadBalancer $record) => $record->update(['status' => 'maintenance']))
                         ->requiresConfirmation()
                         ->visible(fn (LoadBalancer $record) => $record->status !== 'maintenance'),
-                    
+
                     Tables\Actions\Action::make('set_online')
                         ->label('Set Online')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->action(fn (LoadBalancer $record) => $record->update(['status' => 'online']))
                         ->visible(fn (LoadBalancer $record) => $record->status !== 'online'),
-                    
+
                     Tables\Actions\DeleteAction::make(),
                 ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    
+
                     Tables\Actions\BulkAction::make('activate')
                         ->label('Activate')
                         ->icon('heroicon-o-check')
                         ->color('success')
                         ->action(fn ($records) => $records->each->update(['is_active' => true]))
                         ->requiresConfirmation(),
-                    
+
                     Tables\Actions\BulkAction::make('deactivate')
                         ->label('Deactivate')
                         ->icon('heroicon-o-x-mark')
@@ -308,6 +308,7 @@ class LoadBalancerResource extends Resource
     public static function getNavigationBadgeColor(): ?string
     {
         $count = static::getNavigationBadge();
+
         return $count > 0 ? 'success' : 'danger';
     }
 }

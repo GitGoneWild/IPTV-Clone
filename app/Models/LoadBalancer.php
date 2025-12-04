@@ -80,7 +80,7 @@ class LoadBalancer extends Model
      */
     public function hasCapacity(): bool
     {
-        if (!$this->max_connections) {
+        if (! $this->max_connections) {
             return true;
         }
 
@@ -92,7 +92,7 @@ class LoadBalancer extends Model
      */
     public function getLoadPercentageAttribute(): float
     {
-        if (!$this->max_connections || $this->max_connections === 0) {
+        if (! $this->max_connections || $this->max_connections === 0) {
             return 0;
         }
 
@@ -104,7 +104,7 @@ class LoadBalancer extends Model
      */
     public function isHealthy(): bool
     {
-        if (!$this->is_active || $this->status !== 'online') {
+        if (! $this->is_active || $this->status !== 'online') {
             return false;
         }
 
@@ -152,8 +152,8 @@ class LoadBalancer extends Model
     {
         // Use explicit use_ssl field if set, otherwise fallback to port-based detection
         $protocol = ($this->use_ssl === true) ? 'https' : (($this->port === 443) ? 'https' : 'http');
-        $port = in_array($this->port, [80, 443]) ? '' : ':' . $this->port;
-        
+        $port = in_array($this->port, [80, 443]) ? '' : ':'.$this->port;
+
         return "{$protocol}://{$this->hostname}{$port}";
     }
 }

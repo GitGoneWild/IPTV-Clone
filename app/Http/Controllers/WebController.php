@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Stream;
 use App\Models\User;
+use App\Services\RealDebridService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class WebController extends Controller
@@ -206,5 +208,87 @@ class WebController extends Controller
             : $user->clients;
 
         return response()->json($clients);
+    }
+
+    /**
+     * Display the Real-Debrid page.
+     */
+    public function realDebrid(): View
+    {
+        $user = auth()->user();
+        $userInfo = null;
+        $downloads = [];
+
+        if ($user->real_debrid_token) {
+            $service = new RealDebridService;
+            $userInfo = $service->getUserInfo($user->real_debrid_token);
+            $downloads = $service->getDownloads($user->real_debrid_token);
+        }
+
+        return view('pages.real-debrid', compact('userInfo', 'downloads'));
+    }
+
+    /**
+     * Save Real-Debrid API token.
+     */
+    public function saveRealDebridToken(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'api_token' => 'nullable|string|max:500',
+        ]);
+
+        $user = auth()->user();
+        $token = $request->input('api_token');
+
+        // Test connection if requested
+        if ($request->input('action') === 'test' && $token) {
+            $service = new RealDebridService;
+            $result = $service->testConnection($token);
+
+            if ($result['success']) {
+                return redirect()->route('real-debrid')
+                    ->with('success', 'Connection successful! Connected as: '.$result['user']['username']);
+            }
+
+            return redirect()->route('real-debrid')
+                ->with('error', 'Connection failed: '.$result['message']);
+        }
+
+        // Save the token
+        $user->update(['real_debrid_token' => $token ?: null]);
+
+        // Clear cache if token was removed
+        if (empty($token)) {
+            return redirect()->route('real-debrid')
+                ->with('success', 'Real-Debrid token removed.');
+        }
+
+        // Test the new token
+        $service = new RealDebridService;
+        $result = $service->testConnection($token);
+
+        if ($result['success']) {
+            return redirect()->route('real-debrid')
+                ->with('success', 'Token saved and verified! Connected as: '.$result['user']['username']);
+        }
+
+        return redirect()->route('real-debrid')
+            ->with('error', 'Token saved but verification failed: '.$result['message']);
+    }
+
+    /**
+     * Refresh Real-Debrid cache.
+     */
+    public function refreshRealDebrid(): RedirectResponse
+    {
+        $user = auth()->user();
+
+        if ($user->real_debrid_token) {
+            $service = new RealDebridService;
+            $service->clearCache($user->real_debrid_token);
+        }
+
+        return redirect()->route('real-debrid')
+            ->with('success', 'Downloads refreshed.');
     }
 }
