@@ -84,18 +84,44 @@ class InvoiceResource extends Resource
                             ->nullable(),
                     ])->columns(2),
 
-                Forms\Components\Section::make('Package Assignment')
+                Forms\Components\Section::make('Package Line Items')
                     ->schema([
-                        Forms\Components\Select::make('bouquets')
-                            ->label('Packages (Bouquets)')
-                            ->multiple()
-                            ->relationship('user.bouquets', 'name')
-                            ->preload()
-                            ->searchable()
-                            ->helperText('Select packages to assign to the user when invoice is paid.')
-                            ->dehydrated(false),
+                        Forms\Components\Repeater::make('line_items')
+                            ->label('Packages to Assign')
+                            ->schema([
+                                Forms\Components\Select::make('bouquet_id')
+                                    ->label('Package (Bouquet)')
+                                    ->options(function () {
+                                        return \App\Models\Bouquet::pluck('name', 'id');
+                                    })
+                                    ->required()
+                                    ->searchable()
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        if ($state) {
+                                            $bouquet = \App\Models\Bouquet::find($state);
+                                            if ($bouquet) {
+                                                $set('name', $bouquet->name);
+                                                $set('description', $bouquet->description);
+                                                $set('type', $bouquet->category_type);
+                                                $set('region', $bouquet->region);
+                                            }
+                                        }
+                                    }),
+                                Forms\Components\Hidden::make('name'),
+                                Forms\Components\Hidden::make('description'),
+                                Forms\Components\Hidden::make('type'),
+                                Forms\Components\Hidden::make('region'),
+                            ])
+                            ->columns(1)
+                            ->defaultItems(0)
+                            ->helperText('Add packages that will be assigned to the user when this invoice is paid.')
+                            ->collapsible()
+                            ->cloneable()
+                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? 'Package'),
                     ])
-                    ->description('Packages will be automatically assigned when the invoice is marked as paid.'),
+                    ->description('Packages will be automatically assigned when the invoice is marked as paid.')
+                    ->collapsible(),
 
                 Forms\Components\Section::make('Additional Details')
                     ->schema([

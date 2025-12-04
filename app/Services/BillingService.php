@@ -17,7 +17,10 @@ class BillingService
      * @param float $amount Amount to charge
      * @param string $currency Currency code (default: USD)
      * @param User|null $reseller The reseller creating the invoice (optional)
-     * @param array $options Additional options (due_date, payment_method, description)
+     * @param array $options Additional options:
+     *                       - 'due_date' (DateTime|null): Invoice due date (default: 7 days from now)
+     *                       - 'payment_method' (string|null): Payment method used
+     *                       - 'description' (string): Description for the invoice (default: 'Package subscription')
      * @return Invoice
      */
     public function createPackageInvoice(
