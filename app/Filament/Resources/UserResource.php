@@ -49,10 +49,31 @@ class UserResource extends Resource
 
                 Forms\Components\Section::make('Role & Permissions')
                     ->schema([
+                        Forms\Components\Select::make('role')
+                            ->label('Primary Role')
+                            ->options([
+                                'guest' => 'Guest (No Access)',
+                                'user' => 'User (Stream Access)',
+                                'reseller' => 'Reseller',
+                                'admin' => 'Administrator',
+                            ])
+                            ->default('guest')
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function ($state, $set) {
+                                // Sync legacy fields with role selection
+                                $set('is_admin', $state === 'admin');
+                                $set('is_reseller', in_array($state, ['admin', 'reseller']));
+                            })
+                            ->helperText('Note: Guest users are automatically upgraded to User when a package is assigned.'),
                         Forms\Components\Toggle::make('is_admin')
-                            ->default(false),
+                            ->default(false)
+                            ->disabled()
+                            ->dehydrated(true),
                         Forms\Components\Toggle::make('is_reseller')
-                            ->default(false),
+                            ->default(false)
+                            ->disabled()
+                            ->dehydrated(true),
                         Forms\Components\Toggle::make('is_active')
                             ->default(true),
                         Forms\Components\Select::make('reseller_id')
@@ -103,12 +124,25 @@ class UserResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Role')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'admin' => 'danger',
+                        'reseller' => 'warning',
+                        'user' => 'success',
+                        'guest' => 'gray',
+                        default => 'info',
+                    })
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state)),
                 Tables\Columns\IconColumn::make('is_admin')
                     ->boolean()
-                    ->label('Admin'),
+                    ->label('Admin')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('is_reseller')
                     ->boolean()
-                    ->label('Reseller'),
+                    ->label('Reseller')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean()
                     ->label('Active'),

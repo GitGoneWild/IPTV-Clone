@@ -10,6 +10,7 @@ class CheckRole
 {
     /**
      * Handle an incoming request.
+     * Updated to use Spatie Laravel-Permission for role checking.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
@@ -19,8 +20,15 @@ class CheckRole
             return redirect()->route('login');
         }
 
-        $userRole = $request->user()->role;
+        // Check using Spatie's hasRole method
+        foreach ($roles as $role) {
+            if ($request->user()->hasRole($role)) {
+                return $next($request);
+            }
+        }
 
+        // Fallback to legacy role checking for backward compatibility
+        $userRole = $request->user()->role;
         if (in_array($userRole, $roles)) {
             return $next($request);
         }

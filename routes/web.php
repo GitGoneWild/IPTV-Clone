@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\XtreamController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +45,8 @@ Route::middleware(['auth', 'role:admin,reseller'])->prefix('reseller')->group(fu
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.store');
+    Route::get('/register', [RegistrationController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [RegistrationController::class, 'register'])->name('register.store');
 });
 
 // Xtream Codes compatible endpoints (also accessible via web for IPTV player compatibility)

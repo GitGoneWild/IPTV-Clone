@@ -11,10 +11,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, LogsActivity, Notifiable;
+    use HasApiTokens, HasFactory, HasRoles, LogsActivity, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -114,6 +115,31 @@ class User extends Authenticatable
     public function canAccessStreams(): bool
     {
         return $this->is_active && ! $this->isExpired();
+    }
+
+    /**
+     * Check if user has package assigned (bouquets).
+     * Used to determine if a guest can be upgraded to user role.
+     */
+    public function hasPackageAssigned(): bool
+    {
+        return $this->bouquets()->count() > 0;
+    }
+
+    /**
+     * Upgrade user from guest to user role when package is assigned.
+     * Called automatically when bouquets are assigned to a guest user.
+     */
+    public function upgradeFromGuestToUser(): void
+    {
+        if ($this->hasRole('guest') && $this->hasPackageAssigned()) {
+            $this->removeRole('guest');
+            $this->assignRole('user');
+            
+            activity()
+                ->causedBy($this)
+                ->log('User upgraded from guest to user role due to package assignment');
+        }
     }
 
     /**
@@ -230,9 +256,25 @@ class User extends Authenticatable
 
     /**
      * Get the user's role name.
+     * Uses Spatie Permission for role-based access control.
      */
     public function getRoleAttribute(): string
     {
+        // Use Spatie Permission's role system
+        if ($this->hasRole('admin')) {
+            return 'admin';
+        }
+        if ($this->hasRole('reseller')) {
+            return 'reseller';
+        }
+        if ($this->hasRole('user')) {
+            return 'user';
+        }
+        if ($this->hasRole('guest')) {
+            return 'guest';
+        }
+
+        // Fallback to legacy system for backward compatibility
         if ($this->is_admin) {
             return 'admin';
         }
@@ -240,7 +282,7 @@ class User extends Authenticatable
             return 'reseller';
         }
 
-        return 'viewer';
+        return 'guest';
     }
 
     /**
