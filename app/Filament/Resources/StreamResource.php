@@ -6,10 +6,10 @@ use App\Filament\Resources\StreamResource\Pages;
 use App\Models\Stream;
 use App\Services\StreamVerificationService;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,15 +20,15 @@ class StreamResource extends Resource
 {
     protected static ?string $model = Stream::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-play';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-play';
 
-    protected static ?string $navigationGroup = 'Streaming';
+    protected static string|\UnitEnum|null $navigationGroup = 'Streaming';
 
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Forms\Components\Section::make('Stream Information')
                     ->description('Basic information about the stream')

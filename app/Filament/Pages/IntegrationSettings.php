@@ -9,9 +9,9 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Schema;
 use Illuminate\Support\HtmlString;
 
 /**
@@ -21,9 +21,9 @@ class IntegrationSettings extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected static ?string $navigationGroup = 'System';
+    protected static string|\UnitEnum|null $navigationGroup = 'System';
 
     protected static ?string $navigationLabel = 'Integrations';
 
@@ -31,7 +31,7 @@ class IntegrationSettings extends Page implements HasForms
 
     protected static ?int $navigationSort = 10;
 
-    protected static string $view = 'filament.pages.integration-settings';
+    protected string $view = 'filament.pages.integration-settings';
 
     public ?array $sonarrData = [];
 
@@ -118,9 +118,9 @@ class IntegrationSettings extends Page implements HasForms
         ];
     }
 
-    public function sonarrForm(Form $form): Form
+    public function sonarrForm(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Section::make('Sonarr Configuration')
                     ->description('Configure Sonarr API connection for TV series import')
@@ -148,9 +148,9 @@ class IntegrationSettings extends Page implements HasForms
             ->statePath('sonarrData');
     }
 
-    public function radarrForm(Form $form): Form
+    public function radarrForm(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Section::make('Radarr Configuration')
                     ->description('Configure Radarr API connection for movie import')

@@ -39,6 +39,28 @@ class Bouquet extends Model
     }
 
     /**
+     * Get the movies in this bouquet.
+     */
+    public function movies(): BelongsToMany
+    {
+        return $this->belongsToMany(Movie::class, 'bouquet_movies')
+            ->withPivot('sort_order')
+            ->withTimestamps()
+            ->orderBy('bouquet_movies.sort_order');
+    }
+
+    /**
+     * Get the series in this bouquet.
+     */
+    public function series(): BelongsToMany
+    {
+        return $this->belongsToMany(Series::class, 'bouquet_series')
+            ->withPivot('sort_order')
+            ->withTimestamps()
+            ->orderBy('bouquet_series.sort_order');
+    }
+
+    /**
      * Get the users assigned to this bouquet.
      */
     public function users(): BelongsToMany
@@ -53,6 +75,30 @@ class Bouquet extends Model
     public function getStreamsCountAttribute(): int
     {
         return $this->streams()->count();
+    }
+
+    /**
+     * Get total movies count.
+     */
+    public function getMoviesCountAttribute(): int
+    {
+        return $this->movies()->count();
+    }
+
+    /**
+     * Get total series count.
+     */
+    public function getSeriesCountAttribute(): int
+    {
+        return $this->series()->count();
+    }
+
+    /**
+     * Get total content count (streams + movies + series).
+     */
+    public function getTotalContentCountAttribute(): int
+    {
+        return $this->streams_count + $this->movies_count + $this->series_count;
     }
 
     /**
