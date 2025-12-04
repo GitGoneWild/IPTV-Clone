@@ -78,22 +78,25 @@ services:
       - /etc/ssl/certs:/etc/ssl/certs:ro
 ```
 
-#### Solution 4: Laravel/Guzzle Configuration (Development Only)
+#### Solution 4: PHP Configuration (Development Only)
 
 > ⚠️ **Warning**: This disables SSL verification and should only be used for development/testing. Never use in production!
 
-Create or update `config/services.php`:
-```php
-'tmdb' => [
-    'api_key' => env('TMDB_API_KEY'),
-    'verify_ssl' => env('TMDB_VERIFY_SSL', true),
-],
+You can temporarily disable SSL verification in your `php.ini` for local development:
+
+```ini
+; Add to php.ini (Development ONLY - never use in production!)
+curl.cainfo = ""
+openssl.cafile = ""
 ```
 
-Then in your `.env` file (development only):
+Or set the CURL_CA_BUNDLE environment variable to an empty value:
+
+```bash
+export CURL_CA_BUNDLE=""
 ```
-TMDB_VERIFY_SSL=false
-```
+
+**Note**: These workarounds bypass SSL security. Always fix the root cause (missing CA certificates) for production environments.
 
 ### Verification
 

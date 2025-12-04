@@ -61,6 +61,8 @@ class AdminPanelProvider extends PanelProvider
             ->topNavigation(false)
             ->sidebarCollapsibleOnDesktop()
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
+            ->spa()
+            ->breadcrumbs(true)
             /*
              * Navigation Groups Configuration
              *
