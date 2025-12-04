@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\XtreamController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RegistrationController;
@@ -31,7 +33,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [WebController::class, 'logout'])->name('logout');
 });
 
-// Admin-only routes
+// Blade-based Admin Panel
+Route::middleware(['auth', 'role:admin'])->prefix('blade-admin')->name('admin.')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // User Management
+    Route::resource('users', UserController::class);
+});
+
+// Admin-only routes (legacy API)
 Route::middleware(['auth', 'role:admin'])->prefix('admin-api')->group(function () {
     Route::get('/system-status', [WebController::class, 'systemStatus'])->name('admin.system-status');
 });
