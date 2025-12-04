@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         // Register model observers for cache invalidation
         Stream::observe(StreamObserver::class);
         Bouquet::observe(BouquetObserver::class);
-        
+
         // Define admin gate
         Gate::define('admin', function ($user) {
             return $user->is_admin;

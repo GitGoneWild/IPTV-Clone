@@ -18,7 +18,7 @@ class EditLoadBalancer extends EditRecord
                 ->icon('heroicon-o-chart-bar')
                 ->color('info')
                 ->url(fn () => route('filament.admin.resources.load-balancers.stats', ['record' => $this->record])),
-            
+
             Actions\DeleteAction::make(),
         ];
     }

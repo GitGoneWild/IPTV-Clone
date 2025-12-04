@@ -40,36 +40,38 @@ class SeriesResource extends Resource
                                     ->icon('heroicon-o-magnifying-glass')
                                     ->action(function (Forms\Get $get, Forms\Set $set, $state) {
                                         $tmdb = app(TmdbService::class);
-                                        
-                                        if (!$tmdb->isConfigured()) {
+
+                                        if (! $tmdb->isConfigured()) {
                                             Notification::make()
                                                 ->title('TMDB API not configured')
                                                 ->body('Please set TMDB_API_KEY in your .env file')
                                                 ->warning()
                                                 ->send();
+
                                             return;
                                         }
 
                                         $results = $tmdb->searchSeries($state);
-                                        
+
                                         if (empty($results)) {
                                             Notification::make()
                                                 ->title('No results found')
                                                 ->warning()
                                                 ->send();
+
                                             return;
                                         }
 
                                         $set('tmdb_id', $results[0]['id']);
-                                        
+
                                         // Auto-import first result
                                         $seriesData = $tmdb->getSeries($results[0]['id']);
-                                        
+
                                         if ($seriesData) {
                                             foreach ($seriesData as $key => $value) {
                                                 $set($key, $value);
                                             }
-                                            
+
                                             Notification::make()
                                                 ->title('Series imported from TMDB')
                                                 ->success()
@@ -85,28 +87,29 @@ class SeriesResource extends Resource
                                     ->label('Import')
                                     ->icon('heroicon-o-arrow-down-tray')
                                     ->action(function (Forms\Get $get, Forms\Set $set, $state) {
-                                        if (!$state) {
+                                        if (! $state) {
                                             return;
                                         }
 
                                         $tmdb = app(TmdbService::class);
-                                        
-                                        if (!$tmdb->isConfigured()) {
+
+                                        if (! $tmdb->isConfigured()) {
                                             Notification::make()
                                                 ->title('TMDB API not configured')
                                                 ->body('Please set TMDB_API_KEY in your .env file')
                                                 ->warning()
                                                 ->send();
+
                                             return;
                                         }
 
                                         $seriesData = $tmdb->getSeries($state);
-                                        
+
                                         if ($seriesData) {
                                             foreach ($seriesData as $key => $value) {
                                                 $set($key, $value);
                                             }
-                                            
+
                                             Notification::make()
                                                 ->title('Series imported from TMDB')
                                                 ->success()
@@ -254,4 +257,3 @@ class SeriesResource extends Resource
         ];
     }
 }
-

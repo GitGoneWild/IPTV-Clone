@@ -107,6 +107,8 @@
                 <div class="flex items-center space-x-4">
                     @auth
                         <a href="{{ route('dashboard') }}" class="text-gh-text-muted hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Dashboard</a>
+                        <a href="{{ route('status') }}" class="text-gh-text-muted hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Status</a>
+                        <a href="{{ route('real-debrid') }}" class="text-gh-text-muted hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Real-Debrid</a>
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit" class="text-gh-text-muted hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Logout</button>

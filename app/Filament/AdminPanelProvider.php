@@ -5,6 +5,7 @@ namespace App\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Navigation\NavigationGroup;
 use Filament\Pages;
 use Filament\Panel;
@@ -108,6 +109,24 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->authGuard('web');
+            ->authGuard('web')
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('Exit Admin')
+                    ->url('/')
+                    ->icon('heroicon-o-arrow-left-start-on-rectangle'),
+                MenuItem::make()
+                    ->label('Dashboard')
+                    ->url('/dashboard')
+                    ->icon('heroicon-o-home'),
+                MenuItem::make()
+                    ->label('Status Page')
+                    ->url('/status')
+                    ->icon('heroicon-o-signal'),
+            ])
+            ->renderHook(
+                'panels::body.end',
+                fn () => view('filament.footer')
+            );
     }
 }

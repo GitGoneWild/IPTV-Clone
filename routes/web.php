@@ -23,6 +23,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/streams', [WebController::class, 'streams'])->name('streams');
     Route::get('/playlist', [WebController::class, 'playlist'])->name('playlist');
     Route::get('/epg', [WebController::class, 'epg'])->name('epg');
+    Route::get('/status', [WebController::class, 'status'])->name('status');
+    Route::get('/real-debrid', [WebController::class, 'realDebrid'])->name('real-debrid');
+    Route::post('/real-debrid/save', [WebController::class, 'saveRealDebridToken'])->name('real-debrid.save');
+    Route::post('/real-debrid/refresh', [WebController::class, 'refreshRealDebrid'])->name('real-debrid.refresh');
     Route::post('/logout', [WebController::class, 'logout'])->name('logout');
 });
 

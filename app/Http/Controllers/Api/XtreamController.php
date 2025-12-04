@@ -12,7 +12,7 @@ use Illuminate\Http\Response;
 class XtreamController extends Controller
 {
     use XtreamAuthenticatable;
-    
+
     protected XtreamService $xtreamService;
 
     public function __construct(XtreamService $xtreamService)

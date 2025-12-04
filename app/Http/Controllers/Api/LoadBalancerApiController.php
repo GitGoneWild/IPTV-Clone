@@ -6,21 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Models\LoadBalancer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
  * Load Balancer API Controller
- * 
+ *
  * Handles load balancer registration, health reporting, and management.
  */
 class LoadBalancerApiController extends Controller
 {
     /**
      * Register a new load balancer
-     * 
+     *
      * @group Load Balancer Management
      */
     public function register(Request $request): JsonResponse
@@ -67,14 +67,14 @@ class LoadBalancerApiController extends Controller
 
     /**
      * Send heartbeat from load balancer
-     * 
+     *
      * @group Load Balancer Management
      */
     public function heartbeat(Request $request): JsonResponse
     {
         $loadBalancer = $this->authenticateLoadBalancer($request);
 
-        if (!$loadBalancer) {
+        if (! $loadBalancer) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid API key',
@@ -122,14 +122,14 @@ class LoadBalancerApiController extends Controller
 
     /**
      * Get load balancer configuration
-     * 
+     *
      * @group Load Balancer Management
      */
     public function getConfig(Request $request): JsonResponse
     {
         $loadBalancer = $this->authenticateLoadBalancer($request);
 
-        if (!$loadBalancer) {
+        if (! $loadBalancer) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid API key',
@@ -155,7 +155,7 @@ class LoadBalancerApiController extends Controller
 
     /**
      * Get optimal load balancer for a client
-     * 
+     *
      * @group Load Balancer Management
      */
     public function getOptimal(Request $request): JsonResponse
@@ -169,7 +169,7 @@ class LoadBalancerApiController extends Controller
 
         // Prefer load balancers in the same region if specified
         if (isset($validated['region'])) {
-            $query->orderByRaw("CASE WHEN region = ? THEN 0 ELSE 1 END", [$validated['region']]);
+            $query->orderByRaw('CASE WHEN region = ? THEN 0 ELSE 1 END', [$validated['region']]);
         }
 
         // Order by weight (higher weight = higher priority) and load percentage (lower = better)
@@ -177,13 +177,13 @@ class LoadBalancerApiController extends Controller
             // Calculate a score: higher weight and lower load = better score
             $loadScore = $lb->load_percentage;
             $weightScore = 100 - $lb->weight; // Invert weight so lower is better for sorting
-            
+
             return ($loadScore + $weightScore) / 2;
         });
 
         $optimal = $loadBalancers->first();
 
-        if (!$optimal) {
+        if (! $optimal) {
             return response()->json([
                 'success' => false,
                 'message' => 'No available load balancers',
@@ -207,7 +207,7 @@ class LoadBalancerApiController extends Controller
 
     /**
      * List all active load balancers (Admin endpoint)
-     * 
+     *
      * @group Load Balancer Management
      */
     public function index(): JsonResponse
@@ -243,7 +243,7 @@ class LoadBalancerApiController extends Controller
 
     /**
      * Get statistics for a specific load balancer
-     * 
+     *
      * @group Load Balancer Management
      */
     public function stats(int $id): JsonResponse
@@ -274,7 +274,7 @@ class LoadBalancerApiController extends Controller
 
     /**
      * Authenticate load balancer using API key
-     * 
+     *
      * Note: This implementation loads all load balancers for authentication.
      * For production with many load balancers, consider implementing a more
      * efficient authentication mechanism such as:
@@ -286,7 +286,7 @@ class LoadBalancerApiController extends Controller
     {
         $apiKey = $request->header('X-LB-API-Key') ?? $request->input('api_key');
 
-        if (!$apiKey) {
+        if (! $apiKey) {
             return null;
         }
 
@@ -294,7 +294,7 @@ class LoadBalancerApiController extends Controller
         $loadBalancers = Cache::remember('load_balancers_auth', 300, function () {
             return LoadBalancer::all();
         });
-        
+
         foreach ($loadBalancers as $lb) {
             if (Hash::check($apiKey, $lb->api_key)) {
                 return $lb;
