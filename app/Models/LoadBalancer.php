@@ -49,6 +49,7 @@ class LoadBalancer extends Model
             'bandwidth_in' => 'integer',
             'bandwidth_out' => 'integer',
             'capabilities' => 'array',
+            'api_key' => 'encrypted',
             'last_heartbeat_at' => 'datetime',
             'last_check_at' => 'datetime',
         ];
