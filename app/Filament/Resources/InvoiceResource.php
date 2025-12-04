@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\InvoiceResource\Pages;
 use App\Models\Invoice;
+use App\Services\BillingService;
 use Filament\Forms;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables;
@@ -82,6 +84,19 @@ class InvoiceResource extends Resource
                             ->nullable(),
                     ])->columns(2),
 
+                Forms\Components\Section::make('Package Assignment')
+                    ->schema([
+                        Forms\Components\Select::make('bouquets')
+                            ->label('Packages (Bouquets)')
+                            ->multiple()
+                            ->relationship('user.bouquets', 'name')
+                            ->preload()
+                            ->searchable()
+                            ->helperText('Select packages to assign to the user when invoice is paid.')
+                            ->dehydrated(false),
+                    ])
+                    ->description('Packages will be automatically assigned when the invoice is marked as paid.'),
+
                 Forms\Components\Section::make('Additional Details')
                     ->schema([
                         Forms\Components\Textarea::make('description')
@@ -144,8 +159,47 @@ class InvoiceResource extends Resource
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
+                    ->modalHeading('Mark Invoice as Paid')
+                    ->modalDescription('This will mark the invoice as paid and assign any packages (bouquets) to the user.')
                     ->visible(fn ($record) => $record->status === 'pending')
-                    ->action(fn ($record) => $record->markAsPaid()),
+                    ->form([
+                        Forms\Components\Select::make('payment_method')
+                            ->label('Payment Method')
+                            ->options([
+                                'cash' => 'Cash',
+                                'credit_card' => 'Credit Card',
+                                'bank_transfer' => 'Bank Transfer',
+                                'paypal' => 'PayPal',
+                                'manual' => 'Manual',
+                                'other' => 'Other',
+                            ])
+                            ->required(),
+                        Forms\Components\TextInput::make('payment_reference')
+                            ->label('Payment Reference')
+                            ->placeholder('Transaction ID, check number, etc.'),
+                    ])
+                    ->action(function ($record, array $data) {
+                        $billingService = app(BillingService::class);
+                        $success = $billingService->processPaymentAndAssignPackages(
+                            $record,
+                            $data['payment_method'],
+                            $data['payment_reference'] ?? null
+                        );
+
+                        if ($success) {
+                            Notification::make()
+                                ->success()
+                                ->title('Invoice Paid')
+                                ->body('Invoice marked as paid and packages assigned to user.')
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->danger()
+                                ->title('Error')
+                                ->body('Failed to process payment.')
+                                ->send();
+                        }
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

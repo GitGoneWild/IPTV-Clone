@@ -102,6 +102,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the invoices for this user.
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    /**
      * Check if user subscription is expired.
      */
     public function isExpired(): bool
