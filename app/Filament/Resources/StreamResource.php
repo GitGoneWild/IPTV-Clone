@@ -4,14 +4,17 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\StreamResource\Pages;
 use App\Models\Stream;
+use App\Services\StreamVerificationService;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\HtmlString;
 
 class StreamResource extends Resource
 {
@@ -40,12 +43,54 @@ class StreamResource extends Resource
                             ->maxLength(2048)
                             ->columnSpanFull()
                             ->placeholder('https://example.com/stream.m3u8')
-                            ->helperText('Enter the direct stream URL (HLS, MPEG-TS, RTMP, or HTTP)'),
+                            ->helperText('Enter the direct stream URL (HLS, MPEG-TS, RTMP, or HTTP)')
+                            ->live(onBlur: true)
+                            ->suffixAction(
+                                Forms\Components\Actions\Action::make('testStream')
+                                    ->icon('heroicon-m-signal')
+                                    ->color('info')
+                                    ->tooltip('Test stream connectivity')
+                                    ->action(function (Get $get, Forms\Components\TextInput $component) {
+                                        $url = $get('stream_url');
+                                        $streamType = $get('stream_type') ?? 'hls';
+
+                                        if (empty($url)) {
+                                            Notification::make()
+                                                ->title('No URL provided')
+                                                ->body('Please enter a stream URL to test.')
+                                                ->warning()
+                                                ->send();
+
+                                            return;
+                                        }
+
+                                        $service = new StreamVerificationService();
+                                        $result = $service->verifyUrl($url, $streamType);
+
+                                        if ($result['is_online']) {
+                                            Notification::make()
+                                                ->title('Stream is online!')
+                                                ->body('Response time: '.$result['response_time_ms'].'ms')
+                                                ->success()
+                                                ->duration(5000)
+                                                ->send();
+                                        } else {
+                                            $description = StreamVerificationService::getErrorDescription($result['error_type']);
+                                            Notification::make()
+                                                ->title('Stream verification failed')
+                                                ->body($result['error_message']."\n\n".$description)
+                                                ->danger()
+                                                ->duration(8000)
+                                                ->send();
+                                        }
+                                    })
+                            ),
                         Forms\Components\Select::make('stream_type')
                             ->options(config('homelabtv.stream_types'))
                             ->default('hls')
                             ->required()
-                            ->native(false),
+                            ->native(false)
+                            ->live(),
                         Forms\Components\Select::make('category_id')
                             ->relationship('category', 'name')
                             ->searchable()
@@ -61,6 +106,76 @@ class StreamResource extends Resource
                             ->preload()
                             ->helperText('Optional: Select a server for load balancing'),
                     ])->columns(2),
+
+                // Stream Validation Section - shows validation results
+                Forms\Components\Section::make('Stream Validation')
+                    ->description('Test your stream URL before saving')
+                    ->schema([
+                        Forms\Components\Actions::make([
+                            Forms\Components\Actions\Action::make('validateStream')
+                                ->label('Validate Stream Now')
+                                ->icon('heroicon-o-play-circle')
+                                ->color('success')
+                                ->action(function (Get $get) {
+                                    $url = $get('stream_url');
+                                    $streamType = $get('stream_type') ?? 'hls';
+
+                                    if (empty($url)) {
+                                        Notification::make()
+                                            ->title('Missing URL')
+                                            ->body('Please enter a stream URL first.')
+                                            ->warning()
+                                            ->send();
+
+                                        return;
+                                    }
+
+                                    $service = new StreamVerificationService();
+                                    $result = $service->verifyUrl($url, $streamType);
+
+                                    if ($result['is_online']) {
+                                        $details = [
+                                            '✅ Status: Online',
+                                            '⏱️ Response time: '.$result['response_time_ms'].'ms',
+                                        ];
+
+                                        if ($result['content_type']) {
+                                            $details[] = '📄 Content-Type: '.$result['content_type'];
+                                        }
+
+                                        if ($result['http_status']) {
+                                            $details[] = '🌐 HTTP Status: '.$result['http_status'];
+                                        }
+
+                                        Notification::make()
+                                            ->title('Stream Validation Passed!')
+                                            ->body(implode("\n", $details))
+                                            ->success()
+                                            ->duration(8000)
+                                            ->send();
+                                    } else {
+                                        $description = StreamVerificationService::getErrorDescription($result['error_type']);
+
+                                        Notification::make()
+                                            ->title('Stream Validation Failed')
+                                            ->body("Error: {$result['error_message']}\n\n💡 {$description}")
+                                            ->danger()
+                                            ->duration(10000)
+                                            ->send();
+                                    }
+                                }),
+                        ])->columnSpanFull(),
+                        Forms\Components\Placeholder::make('validation_help')
+                            ->content(new HtmlString(
+                                '<div class="text-sm text-gray-500 dark:text-gray-400">'.
+                                '<p>Click "Validate Stream Now" to test the stream URL before saving.</p>'.
+                                '<p class="mt-1">You can also use the 🔊 button next to the URL field for quick testing.</p>'.
+                                '</div>'
+                            ))
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible()
+                    ->collapsed(false),
 
                 Forms\Components\Section::make('EPG & Display')
                     ->description('Electronic Program Guide and visual settings')
@@ -180,13 +295,27 @@ class StreamResource extends Resource
                     ->icon('heroicon-o-signal')
                     ->color('info')
                     ->action(function (Stream $record) {
-                        Artisan::call('homelabtv:check-streams', ['--stream' => $record->id]);
-                        $record->refresh();
-                        Notification::make()
-                            ->title('Stream checked')
-                            ->body("Status: {$record->last_check_status}")
-                            ->success()
-                            ->send();
+                        $service = new StreamVerificationService();
+                        $result = $service->verify($record);
+
+                        $record->update([
+                            'last_check_at' => now(),
+                            'last_check_status' => $result['status'],
+                        ]);
+
+                        if ($result['is_online']) {
+                            Notification::make()
+                                ->title('Stream is online')
+                                ->body("Response time: {$result['response_time_ms']}ms")
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Stream is offline')
+                                ->body($result['error_message'] ?? 'Unknown error')
+                                ->danger()
+                                ->send();
+                        }
                     }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -210,12 +339,27 @@ class StreamResource extends Resource
                         ->icon('heroicon-o-signal')
                         ->color('info')
                         ->action(function (Collection $records) {
+                            $service = new StreamVerificationService();
+                            $online = 0;
+                            $offline = 0;
+
                             foreach ($records as $record) {
-                                Artisan::call('homelabtv:check-streams', ['--stream' => $record->id]);
+                                $result = $service->verify($record);
+                                $record->update([
+                                    'last_check_at' => now(),
+                                    'last_check_status' => $result['status'],
+                                ]);
+
+                                if ($result['is_online']) {
+                                    $online++;
+                                } else {
+                                    $offline++;
+                                }
                             }
+
                             Notification::make()
                                 ->title('Health check completed')
-                                ->body("Checked {$records->count()} streams")
+                                ->body("Online: {$online}, Offline: {$offline}")
                                 ->success()
                                 ->send();
                         })

@@ -121,6 +121,59 @@ class WebController extends Controller
     }
 
     /**
+     * Display the status page with channel health overview.
+     */
+    public function status(): View
+    {
+        $user = auth()->user();
+        $availableStreams = $user->getAvailableStreams();
+
+        $totalStreams = $availableStreams->count();
+        $onlineStreams = $availableStreams->where('last_check_status', 'online')->count();
+        $offlineStreams = $availableStreams->where('last_check_status', 'offline')->count();
+
+        // Calculate uptime percentage
+        $uptimePercent = $totalStreams > 0
+            ? round(($onlineStreams / $totalStreams) * 100, 1)
+            : 100;
+
+        // Determine overall status
+        $overallStatus = 'operational';
+        if ($totalStreams > 0 && $onlineStreams === 0) {
+            $overallStatus = 'outage';
+        } elseif ($totalStreams > 0 && $onlineStreams < $totalStreams * 0.9) {
+            $overallStatus = 'degraded';
+        }
+
+        // Get category statistics
+        $categoryStats = Category::select('categories.id', 'categories.name')
+            ->selectRaw('COUNT(streams.id) as total_count')
+            ->selectRaw("SUM(CASE WHEN streams.last_check_status = 'online' THEN 1 ELSE 0 END) as online_count")
+            ->leftJoin('streams', function ($join) use ($availableStreams) {
+                $join->on('categories.id', '=', 'streams.category_id')
+                    ->whereIn('streams.id', $availableStreams->pluck('id'));
+            })
+            ->groupBy('categories.id', 'categories.name')
+            ->having('total_count', '>', 0)
+            ->get();
+
+        // Get offline channels
+        $offlineChannels = $availableStreams
+            ->where('last_check_status', 'offline')
+            ->take(10);
+
+        return view('pages.status', compact(
+            'totalStreams',
+            'onlineStreams',
+            'offlineStreams',
+            'uptimePercent',
+            'overallStatus',
+            'categoryStats',
+            'offlineChannels'
+        ));
+    }
+
+    /**
      * Log the user out.
      */
     public function logout(): RedirectResponse
