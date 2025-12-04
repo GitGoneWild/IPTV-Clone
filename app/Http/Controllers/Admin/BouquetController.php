@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Bouquet;
-use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -20,7 +19,7 @@ class BouquetController extends AdminController
      */
     public function index(Request $request): View
     {
-        $query = Bouquet::query()->withCount(['categories', 'users']);
+        $query = Bouquet::query()->withCount(['streams', 'movies', 'series', 'users']);
 
         // Search functionality
         if ($search = $request->get('search')) {
@@ -37,9 +36,7 @@ class BouquetController extends AdminController
      */
     public function create(): View
     {
-        $categories = Category::orderBy('name')->get();
-
-        return view('admin.bouquets.create', compact('categories'));
+        return view('admin.bouquets.create');
     }
 
     /**
@@ -50,19 +47,20 @@ class BouquetController extends AdminController
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:bouquets'],
             'description' => ['nullable', 'string'],
-            'categories' => ['nullable', 'array'],
-            'categories.*' => ['exists:categories,id'],
+            'category_type' => ['nullable', 'string', 'max:255'],
+            'region' => ['nullable', 'string', 'max:255'],
+            'is_active' => ['boolean'],
+            'sort_order' => ['nullable', 'integer'],
         ]);
 
         $bouquet = Bouquet::create([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
+            'category_type' => $validated['category_type'] ?? null,
+            'region' => $validated['region'] ?? null,
+            'is_active' => $request->boolean('is_active', true),
+            'sort_order' => $validated['sort_order'] ?? 0,
         ]);
-
-        // Attach categories
-        if (!empty($validated['categories'])) {
-            $bouquet->categories()->attach($validated['categories']);
-        }
 
         activity()
             ->performedOn($bouquet)
@@ -78,10 +76,9 @@ class BouquetController extends AdminController
      */
     public function edit(Bouquet $bouquet): View
     {
-        $categories = Category::orderBy('name')->get();
-        $bouquet->load('categories');
+        $bouquet->load(['streams', 'movies', 'series']);
 
-        return view('admin.bouquets.edit', compact('bouquet', 'categories'));
+        return view('admin.bouquets.edit', compact('bouquet'));
     }
 
     /**
@@ -92,17 +89,20 @@ class BouquetController extends AdminController
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', Rule::unique('bouquets')->ignore($bouquet->id)],
             'description' => ['nullable', 'string'],
-            'categories' => ['nullable', 'array'],
-            'categories.*' => ['exists:categories,id'],
+            'category_type' => ['nullable', 'string', 'max:255'],
+            'region' => ['nullable', 'string', 'max:255'],
+            'is_active' => ['boolean'],
+            'sort_order' => ['nullable', 'integer'],
         ]);
 
         $bouquet->update([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
+            'category_type' => $validated['category_type'] ?? null,
+            'region' => $validated['region'] ?? null,
+            'is_active' => $request->boolean('is_active', true),
+            'sort_order' => $validated['sort_order'] ?? 0,
         ]);
-
-        // Sync categories
-        $bouquet->categories()->sync($validated['categories'] ?? []);
 
         activity()
             ->performedOn($bouquet)
