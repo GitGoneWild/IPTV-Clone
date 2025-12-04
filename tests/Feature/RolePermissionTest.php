@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Bouquet;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class RolePermissionTest extends TestCase
@@ -15,7 +14,7 @@ class RolePermissionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Seed roles and permissions
         $this->artisan('db:seed', ['--class' => 'RolePermissionSeeder']);
     }
@@ -38,7 +37,7 @@ class RolePermissionTest extends TestCase
     {
         $user = User::factory()->create();
         $user->assignRole('user');
-        
+
         // Assign a package
         $bouquet = Bouquet::factory()->create();
         $user->bouquets()->attach($bouquet->id);
@@ -64,7 +63,7 @@ class RolePermissionTest extends TestCase
         $user->upgradeFromGuestToUser();
 
         $user->refresh();
-        
+
         $this->assertTrue($user->hasRole('user'));
         $this->assertFalse($user->hasRole('guest'));
     }
@@ -109,7 +108,7 @@ class RolePermissionTest extends TestCase
             ]);
 
         $response->assertRedirect('/dashboard');
-        
+
         $user = User::where('email', 'test@example.com')->first();
         $this->assertNotNull($user);
         $this->assertTrue($user->hasRole('guest'));

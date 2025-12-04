@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Models\LoadBalancer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 /**
@@ -110,7 +109,7 @@ class LoadBalancerController extends AdminController
         ];
 
         // Only update API key if provided
-        if (!empty($validated['api_key'])) {
+        if (! empty($validated['api_key'])) {
             $updateData['api_key'] = $validated['api_key'];
         }
 

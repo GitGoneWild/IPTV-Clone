@@ -67,7 +67,7 @@ class InvoiceController extends AdminController
 
         $invoice = Invoice::create([
             'user_id' => $validated['user_id'],
-            'invoice_number' => 'INV-' . strtoupper(uniqid()),
+            'invoice_number' => 'INV-'.strtoupper(uniqid()),
             'amount' => $validated['amount'],
             'description' => $validated['description'] ?? null,
             'status' => $validated['status'],

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Movie;
 use App\Models\Category;
+use App\Models\Movie;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -63,7 +63,7 @@ class MovieController extends AdminController
             'plot' => ['nullable', 'string'],
             'imdb_id' => ['nullable', 'string', 'max:255'],
             'rating' => ['nullable', 'numeric', 'min:0', 'max:10'],
-            'release_year' => ['nullable', 'integer', 'min:1900', 'max:' . (date('Y') + 5)],
+            'release_year' => ['nullable', 'integer', 'min:1900', 'max:'.(date('Y') + 5)],
             'duration_minutes' => ['nullable', 'integer', 'min:0'],
         ]);
 
@@ -101,7 +101,7 @@ class MovieController extends AdminController
             'plot' => ['nullable', 'string'],
             'imdb_id' => ['nullable', 'string', 'max:255'],
             'rating' => ['nullable', 'numeric', 'min:0', 'max:10'],
-            'release_year' => ['nullable', 'integer', 'min:1900', 'max:' . (date('Y') + 5)],
+            'release_year' => ['nullable', 'integer', 'min:1900', 'max:'.(date('Y') + 5)],
             'duration_minutes' => ['nullable', 'integer', 'min:0'],
         ]);
 

@@ -36,43 +36,43 @@ Route::middleware(['auth'])->group(function () {
 // Blade-based Admin Panel
 Route::middleware(['auth', 'role:admin'])->prefix('blade-admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // User Management
     Route::resource('users', UserController::class);
-    
+
     // Stream Management
     Route::resource('streams', \App\Http\Controllers\Admin\StreamController::class);
-    
+
     // Category Management
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
-    
+
     // Bouquet Management
     Route::resource('bouquets', \App\Http\Controllers\Admin\BouquetController::class);
-    
+
     // Server Management
     Route::resource('servers', \App\Http\Controllers\Admin\ServerController::class);
-    
+
     // Device Management
     Route::resource('devices', \App\Http\Controllers\Admin\DeviceController::class)->except(['create', 'store']);
-    
+
     // EPG Source Management
     Route::resource('epg-sources', \App\Http\Controllers\Admin\EpgSourceController::class);
-    
+
     // Load Balancer Management
     Route::resource('load-balancers', \App\Http\Controllers\Admin\LoadBalancerController::class);
-    
+
     // Geo Restriction Management
     Route::resource('geo-restrictions', \App\Http\Controllers\Admin\GeoRestrictionController::class);
-    
+
     // Invoice Management
     Route::resource('invoices', \App\Http\Controllers\Admin\InvoiceController::class);
-    
+
     // Movie Management
     Route::resource('movies', \App\Http\Controllers\Admin\MovieController::class);
-    
+
     // Series Management
     Route::resource('series', \App\Http\Controllers\Admin\SeriesController::class);
-    
+
     // Settings
     Route::get('/settings/integration-settings', [\App\Http\Controllers\Admin\SettingsController::class, 'integrationSettings'])->name('settings.integration-settings');
     Route::post('/settings/integration-settings', [\App\Http\Controllers\Admin\SettingsController::class, 'updateIntegrationSettings'])->name('settings.update-integration-settings');

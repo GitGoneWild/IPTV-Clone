@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Bouquet;
+use App\Models\Category;
 use App\Models\Stream;
 use App\Models\User;
-use App\Models\Category;
-use App\Models\Bouquet;
 use Illuminate\View\View;
 
 /**

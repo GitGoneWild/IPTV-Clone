@@ -3,10 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\Stream;
-use App\Models\Category;
-use App\Models\Bouquet;
-use App\Models\Server;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,10 +15,10 @@ class AdminPanelComprehensiveTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Run seeders
         $this->artisan('db:seed', ['--class' => 'RolePermissionSeeder']);
-        
+
         // Create an admin user
         $this->admin = User::factory()->create([
             'email' => 'admin@test.com',

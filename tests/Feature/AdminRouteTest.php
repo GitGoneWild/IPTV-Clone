@@ -13,7 +13,7 @@ class AdminRouteTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Run seeders
         $this->artisan('db:seed', ['--class' => 'RolePermissionSeeder']);
     }
