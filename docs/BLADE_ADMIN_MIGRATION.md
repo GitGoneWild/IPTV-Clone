@@ -48,9 +48,9 @@ resources/views/admin/
 ```
 
 ### Routes
-All admin routes use the prefix `/blade-admin` and require authentication + admin role:
+All admin routes use the prefix `/admin` and require authentication + admin role:
 ```php
-Route::middleware(['auth', 'role:admin'])->prefix('blade-admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('users', UserController::class);
     // Add more resources here
