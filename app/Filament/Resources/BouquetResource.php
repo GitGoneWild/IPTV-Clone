@@ -33,6 +33,7 @@ class BouquetResource extends Resource
                         'live_tv' => 'Live TV',
                         'movie' => 'Movies',
                         'series' => 'TV Shows/Series',
+                        'mixed' => 'Mixed Content',
                     ])
                     ->default('live_tv')
                     ->required()
@@ -48,12 +49,28 @@ class BouquetResource extends Resource
                     ->default(0),
                 Forms\Components\Toggle::make('is_active')
                     ->default(true),
-                Forms\Components\Select::make('streams')
-                    ->multiple()
-                    ->relationship('streams', 'name')
-                    ->preload()
-                    ->searchable()
-                    ->columnSpanFull(),
+                Forms\Components\Section::make('Content')
+                    ->schema([
+                        Forms\Components\Select::make('streams')
+                            ->multiple()
+                            ->relationship('streams', 'name')
+                            ->preload()
+                            ->searchable()
+                            ->label('Live Streams'),
+                        Forms\Components\Select::make('movies')
+                            ->multiple()
+                            ->relationship('movies', 'title')
+                            ->preload()
+                            ->searchable()
+                            ->label('Movies (VOD)'),
+                        Forms\Components\Select::make('series')
+                            ->multiple()
+                            ->relationship('series', 'title')
+                            ->preload()
+                            ->searchable()
+                            ->label('TV Series'),
+                    ])
+                    ->columns(1),
             ]);
     }
 
@@ -88,6 +105,12 @@ class BouquetResource extends Resource
                 Tables\Columns\TextColumn::make('streams_count')
                     ->counts('streams')
                     ->label('Streams'),
+                Tables\Columns\TextColumn::make('movies_count')
+                    ->counts('movies')
+                    ->label('Movies'),
+                Tables\Columns\TextColumn::make('series_count')
+                    ->counts('series')
+                    ->label('Series'),
                 Tables\Columns\TextColumn::make('users_count')
                     ->counts('users')
                     ->label('Users'),
