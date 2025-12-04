@@ -17,18 +17,6 @@ use Spatie\Permission\Models\Role;
 class UserController extends AdminController
 {
     /**
-     * Get the available output formats configuration.
-     */
-    private function getOutputFormats(): array
-    {
-        return config('homelabtv.output_formats', [
-            'm3u' => 'M3U Playlist',
-            'xtream' => 'Xtream Codes',
-            'enigma2' => 'Enigma2',
-        ]);
-    }
-
-    /**
      * Display a listing of users.
      */
     public function index(Request $request): View
@@ -97,7 +85,7 @@ class UserController extends AdminController
             'email' => $validated['email'],
             'username' => $validated['username'],
             'password' => Hash::make($validated['password']),
-            'is_active' => $validated['is_active'] ?? true,
+            'is_active' => $request->boolean('is_active', true),
             'reseller_id' => $validated['reseller_id'] ?? null,
             'expires_at' => $validated['expires_at'] ?? null,
             'max_connections' => $validated['max_connections'] ?? 1,
@@ -158,7 +146,7 @@ class UserController extends AdminController
             'name' => $validated['name'],
             'email' => $validated['email'],
             'username' => $validated['username'],
-            'is_active' => $validated['is_active'] ?? true,
+            'is_active' => $request->boolean('is_active', true),
             'reseller_id' => $validated['reseller_id'] ?? null,
             'expires_at' => $validated['expires_at'] ?? null,
             'max_connections' => $validated['max_connections'] ?? 1,

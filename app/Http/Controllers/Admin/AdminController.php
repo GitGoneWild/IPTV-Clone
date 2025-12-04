@@ -42,4 +42,17 @@ class AdminController extends Controller
             'errors' => $errors,
         ], $status);
     }
+
+    /**
+     * Get the available output formats configuration.
+     * Can be used by any admin controller that needs output format options.
+     */
+    protected function getOutputFormats(): array
+    {
+        return config('homelabtv.output_formats', [
+            'm3u' => 'M3U Playlist',
+            'xtream' => 'Xtream Codes',
+            'enigma2' => 'Enigma2',
+        ]);
+    }
 }

@@ -41,7 +41,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('blade-admin')->name('admin.')
     Route::resource('users', UserController::class);
 });
 
-// Admin-only routes (legacy API)
+// Admin API routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin-api')->group(function () {
     Route::get('/system-status', [WebController::class, 'systemStatus'])->name('admin.system-status');
 });

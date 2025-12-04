@@ -121,8 +121,7 @@
                             </svg>
                         </button>
                         <div x-show="open" @click.away="open = false" 
-                             class="absolute right-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1" 
-                             style="display: none;">
+                             class="absolute right-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">
@@ -162,7 +161,7 @@
     </div>
 
     <!-- Alpine.js for dropdowns -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js"></script>
     
     @stack('scripts')
 </body>
