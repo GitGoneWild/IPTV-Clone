@@ -80,11 +80,13 @@ class GeoRestrictionResource extends Resource
                     ->label('Country')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\BadgeColumn::make('type')
-                    ->colors([
-                        'success' => 'allow',
-                        'danger' => 'block',
-                    ]),
+                Tables\Columns\TextColumn::make('type')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'allow' => 'success',
+                        'block' => 'danger',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('restrictable_type')
                     ->label('Scope')
                     ->formatStateUsing(fn ($state) => match ($state) {

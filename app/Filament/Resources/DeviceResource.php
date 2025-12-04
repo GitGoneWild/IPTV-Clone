@@ -97,14 +97,19 @@ class DeviceResource extends Resource
                     ->label('IP')
                     ->searchable()
                     ->placeholder('N/A'),
-                Tables\Columns\BadgeColumn::make('device_type')
+                Tables\Columns\TextColumn::make('device_type')
                     ->label('Type')
-                    ->colors([
-                        'primary' => 'android',
-                        'secondary' => 'ios',
-                        'info' => 'smart_tv',
-                        'success' => 'media_player',
-                    ]),
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'android' => 'primary',
+                        'ios' => 'gray',
+                        'smart_tv' => 'info',
+                        'media_player' => 'success',
+                        'windows' => 'primary',
+                        'macos' => 'gray',
+                        'linux' => 'warning',
+                        default => 'gray',
+                    }),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean()
                     ->label('Active'),

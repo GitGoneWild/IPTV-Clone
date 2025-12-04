@@ -103,13 +103,15 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('amount')
                     ->money(fn ($record) => $record->currency)
                     ->sortable(),
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'paid',
-                        'danger' => 'cancelled',
-                        'secondary' => 'refunded',
-                    ]),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'paid' => 'success',
+                        'cancelled' => 'danger',
+                        'refunded' => 'gray',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('payment_method')
                     ->badge()
                     ->placeholder('N/A'),
