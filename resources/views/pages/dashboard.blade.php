@@ -189,53 +189,149 @@
         </div>
 
         <!-- Playlist URLs -->
-        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-8">
-            <h2 class="text-xl font-semibold text-white mb-4">Your Playlist URLs</h2>
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-8" x-data="{ showCredentials: false }">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <svg class="h-5 w-5 mr-2 text-homelab-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                    Your Playlist URLs
+                </h2>
+                <button
+                    @click="showCredentials = !showCredentials"
+                    class="flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
+                    :class="showCredentials ? 'bg-homelab-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'"
+                    :aria-pressed="showCredentials.toString()"
+                    aria-label="Toggle credential visibility"
+                >
+                    <svg x-show="!showCredentials" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <svg x-show="showCredentials" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" x-cloak>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                    <span x-text="showCredentials ? 'Hide' : 'Show'"></span>
+                </button>
+            </div>
 
             <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">M3U Playlist URL</label>
+                <!-- M3U Playlist URL Card -->
+                <div class="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
+                    <div class="flex items-center mb-2">
+                        <svg class="h-5 w-5 mr-2 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                        </svg>
+                        <label class="text-sm font-medium text-gray-300">M3U Playlist URL</label>
+                        <span class="ml-2 px-2 py-0.5 text-xs bg-green-900/50 text-green-400 rounded-full">Recommended</span>
+                    </div>
                     <div class="flex">
-                        <input type="text" readonly
-                               value="{{ config('app.url') }}/get.php?username={{ auth()->user()->username }}&password={{ auth()->user()->api_password }}&type=m3u_plus"
-                               class="flex-1 bg-gray-900 border border-gray-700 rounded-l-md px-3 py-2 text-sm text-gray-300 font-mono">
-                        <button onclick="copyToClipboard(this.previousElementSibling)"
-                                class="bg-homelab-600 hover:bg-homelab-700 px-4 py-2 rounded-r-md text-sm font-medium">
+                        <input
+                            :type="showCredentials ? 'text' : 'password'"
+                            readonly
+                            value="{{ config('app.url') }}/get.php?username={{ auth()->user()->username }}&password={{ auth()->user()->api_password }}&type=m3u_plus"
+                            class="flex-1 bg-gray-900 border border-gray-700 rounded-l-lg px-3 py-2 text-sm text-gray-300 font-mono focus:outline-none focus:ring-2 focus:ring-homelab-500 focus:border-transparent"
+                            aria-label="M3U Playlist URL"
+                        >
+                        <button
+                            onclick="copyToClipboard(this.previousElementSibling)"
+                            class="bg-homelab-600 hover:bg-homelab-700 px-4 py-2 rounded-r-lg text-sm font-medium transition-colors flex items-center"
+                            aria-label="Copy M3U Playlist URL"
+                        >
+                            <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
                             Copy
                         </button>
                     </div>
+                    <p class="mt-2 text-xs text-gray-500">Use this URL with most IPTV players (VLC, Kodi, TiviMate, etc.)</p>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Xtream Codes API</label>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div>
-                            <span class="text-gray-500">Server:</span>
-                            <code class="ml-2 text-homelab-400">{{ config('app.url') }}</code>
+                <!-- Xtream Codes API Card -->
+                <div class="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
+                    <div class="flex items-center mb-3">
+                        <svg class="h-5 w-5 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                        <label class="text-sm font-medium text-gray-300">Xtream Codes API</label>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                            <span class="block text-xs text-gray-500 mb-1">Server URL</span>
+                            <div class="flex items-center justify-between">
+                                <code class="text-sm text-homelab-400 truncate" x-text="showCredentials ? '{{ config('app.url') }}' : '••••••••••••'">{{ config('app.url') }}</code>
+                                <button onclick="navigator.clipboard.writeText('{{ config('app.url') }}')" class="text-gray-400 hover:text-white p-1" aria-label="Copy server URL">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-gray-500">Username:</span>
-                            <code class="ml-2 text-homelab-400">{{ auth()->user()->username }}</code>
+                        <div class="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                            <span class="block text-xs text-gray-500 mb-1">Username</span>
+                            <div class="flex items-center justify-between">
+                                <code class="text-sm text-homelab-400 truncate" x-text="showCredentials ? '{{ auth()->user()->username }}' : '••••••••'">{{ auth()->user()->username }}</code>
+                                <button onclick="navigator.clipboard.writeText('{{ auth()->user()->username }}')" class="text-gray-400 hover:text-white p-1" aria-label="Copy username">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-gray-500">Password:</span>
-                            <code class="ml-2 text-homelab-400">{{ auth()->user()->api_password }}</code>
+                        <div class="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                            <span class="block text-xs text-gray-500 mb-1">Password</span>
+                            <div class="flex items-center justify-between">
+                                <code class="text-sm text-homelab-400 truncate" x-text="showCredentials ? '{{ auth()->user()->api_password }}' : '••••••••'">{{ auth()->user()->api_password }}</code>
+                                <button onclick="navigator.clipboard.writeText('{{ auth()->user()->api_password }}')" class="text-gray-400 hover:text-white p-1" aria-label="Copy password">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
+                    <p class="mt-2 text-xs text-gray-500">For IPTV Smarters, Xciptv, and other Xtream-compatible apps</p>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">EPG URL (XMLTV)</label>
+                <!-- EPG URL Card -->
+                <div class="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
+                    <div class="flex items-center mb-2">
+                        <svg class="h-5 w-5 mr-2 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <label class="text-sm font-medium text-gray-300">EPG URL (XMLTV)</label>
+                    </div>
                     <div class="flex">
-                        <input type="text" readonly
-                               value="{{ config('app.url') }}/xmltv.php?username={{ auth()->user()->username }}&password={{ auth()->user()->api_password }}"
-                               class="flex-1 bg-gray-900 border border-gray-700 rounded-l-md px-3 py-2 text-sm text-gray-300 font-mono">
-                        <button onclick="copyToClipboard(this.previousElementSibling)"
-                                class="bg-homelab-600 hover:bg-homelab-700 px-4 py-2 rounded-r-md text-sm font-medium">
+                        <input
+                            :type="showCredentials ? 'text' : 'password'"
+                            readonly
+                            value="{{ config('app.url') }}/xmltv.php?username={{ auth()->user()->username }}&password={{ auth()->user()->api_password }}"
+                            class="flex-1 bg-gray-900 border border-gray-700 rounded-l-lg px-3 py-2 text-sm text-gray-300 font-mono focus:outline-none focus:ring-2 focus:ring-homelab-500 focus:border-transparent"
+                            aria-label="EPG URL"
+                        >
+                        <button
+                            onclick="copyToClipboard(this.previousElementSibling)"
+                            class="bg-homelab-600 hover:bg-homelab-700 px-4 py-2 rounded-r-lg text-sm font-medium transition-colors flex items-center"
+                            aria-label="Copy EPG URL"
+                        >
+                            <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
                             Copy
                         </button>
                     </div>
+                    <p class="mt-2 text-xs text-gray-500">Electronic Program Guide for channel listings and schedules</p>
                 </div>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="mt-4 flex items-start p-3 bg-yellow-900/20 rounded-lg border border-yellow-700/50">
+                <svg class="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <p class="text-xs text-yellow-200">
+                    <strong>Security Tip:</strong> Keep your credentials private. Never share these URLs publicly.
+                </p>
             </div>
         </div>
 

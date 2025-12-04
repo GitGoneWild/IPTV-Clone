@@ -8,19 +8,21 @@ use Illuminate\Support\Facades\Log;
 class TmdbService
 {
     protected string $apiKey;
+
     protected string $baseUrl = 'https://api.themoviedb.org/3';
+
     protected string $imageBaseUrl = 'https://image.tmdb.org/t/p/';
-    
+
     /** Maximum number of cast members to include */
     protected const MAX_CAST_MEMBERS = 10;
-    
+
     /** HTTP timeout in seconds */
     protected const HTTP_TIMEOUT = 10;
 
     public function __construct()
     {
         $this->apiKey = config('services.tmdb.api_key', '');
-        
+
         if (empty($this->apiKey)) {
             Log::warning('TMDB API key is not configured. Please set TMDB_API_KEY in your .env file.');
         }
@@ -31,7 +33,7 @@ class TmdbService
      */
     public function isConfigured(): bool
     {
-        return !empty($this->apiKey);
+        return ! empty($this->apiKey);
     }
 
     /**
@@ -39,7 +41,7 @@ class TmdbService
      */
     public function searchMovie(string $query): array
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             return [];
         }
 
@@ -54,10 +56,32 @@ class TmdbService
                 return $response->json()['results'] ?? [];
             }
         } catch (\Exception $e) {
-            Log::error('TMDB movie search failed', ['error' => $e->getMessage()]);
+            $this->logApiError('TMDB movie search failed', $e);
         }
 
         return [];
+    }
+
+    /**
+     * Log API errors with helpful troubleshooting info for SSL issues.
+     */
+    protected function logApiError(string $message, \Exception $e): void
+    {
+        $errorMessage = $e->getMessage();
+        $context = ['error' => $errorMessage];
+
+        // Check for SSL certificate errors (cURL error 60)
+        if (str_contains($errorMessage, 'cURL error 60') || str_contains($errorMessage, 'SSL certificate')) {
+            $context['troubleshooting'] = 'SSL Certificate Error - See docs/TROUBLESHOOTING.md for solutions';
+            $context['common_fixes'] = [
+                'Update CA certificates: sudo update-ca-certificates',
+                'Download latest cacert.pem from curl.se',
+                'Set curl.cainfo in php.ini',
+            ];
+            Log::error($message.' (SSL Certificate Issue)', $context);
+        } else {
+            Log::error($message, $context);
+        }
     }
 
     /**
@@ -65,7 +89,7 @@ class TmdbService
      */
     public function getMovie(int $tmdbId): ?array
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             return null;
         }
 
@@ -78,10 +102,11 @@ class TmdbService
 
             if ($response->successful()) {
                 $data = $response->json();
+
                 return $this->formatMovieData($data);
             }
         } catch (\Exception $e) {
-            Log::error('TMDB get movie failed', ['error' => $e->getMessage()]);
+            $this->logApiError('TMDB get movie failed', $e);
         }
 
         return null;
@@ -92,7 +117,7 @@ class TmdbService
      */
     public function searchSeries(string $query): array
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             return [];
         }
 
@@ -107,7 +132,7 @@ class TmdbService
                 return $response->json()['results'] ?? [];
             }
         } catch (\Exception $e) {
-            Log::error('TMDB series search failed', ['error' => $e->getMessage()]);
+            $this->logApiError('TMDB series search failed', $e);
         }
 
         return [];
@@ -118,7 +143,7 @@ class TmdbService
      */
     public function getSeries(int $tmdbId): ?array
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             return null;
         }
 
@@ -131,10 +156,11 @@ class TmdbService
 
             if ($response->successful()) {
                 $data = $response->json();
+
                 return $this->formatSeriesData($data);
             }
         } catch (\Exception $e) {
-            Log::error('TMDB get series failed', ['error' => $e->getMessage()]);
+            $this->logApiError('TMDB get series failed', $e);
         }
 
         return null;
@@ -145,7 +171,7 @@ class TmdbService
      */
     public function getSeason(int $seriesId, int $seasonNumber): ?array
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             return null;
         }
 
@@ -159,7 +185,7 @@ class TmdbService
                 return $response->json();
             }
         } catch (\Exception $e) {
-            Log::error('TMDB get season failed', ['error' => $e->getMessage()]);
+            $this->logApiError('TMDB get season failed', $e);
         }
 
         return null;
@@ -208,8 +234,8 @@ class TmdbService
             'tmdb_rating' => $data['vote_average'] ?? null,
             'release_year' => isset($data['release_date']) ? (int) substr($data['release_date'], 0, 4) : null,
             'release_date' => $data['release_date'] ?? null,
-            'poster_url' => isset($data['poster_path']) ? $this->imageBaseUrl . 'w500' . $data['poster_path'] : null,
-            'backdrop_url' => isset($data['backdrop_path']) ? $this->imageBaseUrl . 'original' . $data['backdrop_path'] : null,
+            'poster_url' => isset($data['poster_path']) ? $this->imageBaseUrl.'w500'.$data['poster_path'] : null,
+            'backdrop_url' => isset($data['backdrop_path']) ? $this->imageBaseUrl.'original'.$data['backdrop_path'] : null,
             'trailer_url' => $trailer,
             'tmdb_id' => $data['id'] ?? null,
             'imdb_id' => $data['imdb_id'] ?? null,
@@ -236,8 +262,8 @@ class TmdbService
             'genre' => isset($data['genres']) ? implode(', ', array_column($data['genres'], 'name')) : null,
             'tmdb_rating' => $data['vote_average'] ?? null,
             'release_year' => isset($data['first_air_date']) ? (int) substr($data['first_air_date'], 0, 4) : null,
-            'poster_url' => isset($data['poster_path']) ? $this->imageBaseUrl . 'w500' . $data['poster_path'] : null,
-            'backdrop_url' => isset($data['backdrop_path']) ? $this->imageBaseUrl . 'original' . $data['backdrop_path'] : null,
+            'poster_url' => isset($data['poster_path']) ? $this->imageBaseUrl.'w500'.$data['poster_path'] : null,
+            'backdrop_url' => isset($data['backdrop_path']) ? $this->imageBaseUrl.'original'.$data['backdrop_path'] : null,
             'tmdb_id' => $data['id'] ?? null,
             'status' => $data['status'] ?? null,
             'num_seasons' => $data['number_of_seasons'] ?? 0,
@@ -250,6 +276,6 @@ class TmdbService
      */
     public function getImageUrl(string $path, string $size = 'w500'): string
     {
-        return $this->imageBaseUrl . $size . $path;
+        return $this->imageBaseUrl.$size.$path;
     }
 }
