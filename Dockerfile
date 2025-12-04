@@ -1,4 +1,4 @@
-FROM php:8.3-fpm
+FROM php:8.5-fpm
 
 # Set build arguments
 ARG DEBIAN_FRONTEND=noninteractive
