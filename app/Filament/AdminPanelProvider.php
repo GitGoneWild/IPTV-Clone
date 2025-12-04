@@ -44,7 +44,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('HomelabTV')
+            ->brandName('HomelabTV Admin')
+            ->brandLogo(fn () => view('filament.brand-logo'))
+            ->brandLogoHeight('2rem')
+            ->favicon(asset('favicon.ico'))
             ->colors([
                 'primary' => Color::Violet,
                 'danger' => Color::Red,
@@ -55,6 +58,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->darkMode(true, true)
             ->font('Inter')
+            ->topNavigation(false)
+            ->sidebarCollapsibleOnDesktop()
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             /*
              * Navigation Groups Configuration
              *

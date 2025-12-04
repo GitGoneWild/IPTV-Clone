@@ -34,9 +34,10 @@ class StreamResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->placeholder('e.g., BBC News HD'),
-                        Forms\Components\Textarea::make('stream_url')
+                        Forms\Components\TextInput::make('stream_url')
                             ->required()
                             ->url()
+                            ->maxLength(2048)
                             ->columnSpanFull()
                             ->placeholder('https://example.com/stream.m3u8')
                             ->helperText('Enter the direct stream URL (HLS, MPEG-TS, RTMP, or HTTP)'),
