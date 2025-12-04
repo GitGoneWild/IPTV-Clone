@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Series;
 use App\Models\Category;
+use App\Models\Series;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -62,7 +62,7 @@ class SeriesController extends AdminController
             'plot' => ['nullable', 'string'],
             'imdb_id' => ['nullable', 'string', 'max:255'],
             'rating' => ['nullable', 'numeric', 'min:0', 'max:10'],
-            'release_year' => ['nullable', 'integer', 'min:1900', 'max:' . (date('Y') + 5)],
+            'release_year' => ['nullable', 'integer', 'min:1900', 'max:'.(date('Y') + 5)],
         ]);
 
         $series = Series::create($validated);
@@ -98,7 +98,7 @@ class SeriesController extends AdminController
             'plot' => ['nullable', 'string'],
             'imdb_id' => ['nullable', 'string', 'max:255'],
             'rating' => ['nullable', 'numeric', 'min:0', 'max:10'],
-            'release_year' => ['nullable', 'integer', 'min:1900', 'max:' . (date('Y') + 5)],
+            'release_year' => ['nullable', 'integer', 'min:1900', 'max:'.(date('Y') + 5)],
         ]);
 
         $series->update($validated);

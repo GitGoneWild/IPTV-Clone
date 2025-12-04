@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Models\LoadBalancer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 /**
@@ -25,7 +24,7 @@ class LoadBalancerController extends AdminController
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('host', 'like', "%{$search}%");
+                    ->orWhere('hostname', 'like', "%{$search}%");
             });
         }
 
@@ -54,7 +53,7 @@ class LoadBalancerController extends AdminController
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'host' => ['required', 'string', 'max:255'],
+            'hostname' => ['required', 'string', 'max:255'],
             'port' => ['nullable', 'integer', 'min:1', 'max:65535'],
             'api_key' => ['required', 'string', 'max:255'],
             'is_active' => ['boolean'],
@@ -63,7 +62,7 @@ class LoadBalancerController extends AdminController
 
         $loadBalancer = LoadBalancer::create([
             'name' => $validated['name'],
-            'host' => $validated['host'],
+            'hostname' => $validated['hostname'],
             'port' => $validated['port'] ?? 443,
             'api_key' => $validated['api_key'],
             'is_active' => $request->boolean('is_active', true),
@@ -94,7 +93,7 @@ class LoadBalancerController extends AdminController
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'host' => ['required', 'string', 'max:255'],
+            'hostname' => ['required', 'string', 'max:255'],
             'port' => ['nullable', 'integer', 'min:1', 'max:65535'],
             'api_key' => ['nullable', 'string', 'max:255'],
             'is_active' => ['boolean'],
@@ -103,14 +102,14 @@ class LoadBalancerController extends AdminController
 
         $updateData = [
             'name' => $validated['name'],
-            'host' => $validated['host'],
+            'hostname' => $validated['hostname'],
             'port' => $validated['port'] ?? 443,
             'is_active' => $request->boolean('is_active', true),
             'weight' => $validated['weight'] ?? 10,
         ];
 
         // Only update API key if provided
-        if (!empty($validated['api_key'])) {
+        if (! empty($validated['api_key'])) {
             $updateData['api_key'] = $validated['api_key'];
         }
 

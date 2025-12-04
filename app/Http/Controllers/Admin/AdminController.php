@@ -11,15 +11,6 @@ use App\Http\Controllers\Controller;
 class AdminController extends Controller
 {
     /**
-     * Create a new controller instance.
-     */
-    public function __construct()
-    {
-        // All admin routes require authentication and admin role
-        $this->middleware(['auth', 'role:admin']);
-    }
-
-    /**
      * Return success JSON response.
      */
     protected function successResponse(string $message, mixed $data = null, int $status = 200): \Illuminate\Http\JsonResponse

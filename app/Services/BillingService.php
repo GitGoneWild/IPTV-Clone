@@ -11,17 +11,16 @@ class BillingService
 {
     /**
      * Create an invoice for package (bouquet) assignment.
-     * 
-     * @param User $user The user to bill
-     * @param array $bouquetIds Array of bouquet IDs to assign
-     * @param float $amount Amount to charge
-     * @param string $currency Currency code (default: USD)
-     * @param User|null $reseller The reseller creating the invoice (optional)
-     * @param array $options Additional options:
-     *                       - 'due_date' (DateTime|null): Invoice due date (default: 7 days from now)
-     *                       - 'payment_method' (string|null): Payment method used
-     *                       - 'description' (string): Description for the invoice (default: 'Package subscription')
-     * @return Invoice
+     *
+     * @param  User  $user  The user to bill
+     * @param  array  $bouquetIds  Array of bouquet IDs to assign
+     * @param  float  $amount  Amount to charge
+     * @param  string  $currency  Currency code (default: USD)
+     * @param  User|null  $reseller  The reseller creating the invoice (optional)
+     * @param  array  $options  Additional options:
+     *                          - 'due_date' (DateTime|null): Invoice due date (default: 7 days from now)
+     *                          - 'payment_method' (string|null): Payment method used
+     *                          - 'description' (string): Description for the invoice (default: 'Package subscription')
      */
     public function createPackageInvoice(
         User $user,
@@ -35,14 +34,14 @@ class BillingService
         if (empty($bouquetIds)) {
             throw new \InvalidArgumentException('At least one bouquet ID is required');
         }
-        
+
         // Get bouquet details for line items
         $bouquets = Bouquet::whereIn('id', $bouquetIds)->get();
-        
+
         if (count($bouquets) !== count($bouquetIds)) {
             throw new \InvalidArgumentException('One or more bouquet IDs are invalid');
         }
-        
+
         $lineItems = $bouquets->map(function ($bouquet) {
             return [
                 'bouquet_id' => $bouquet->id,
@@ -73,11 +72,6 @@ class BillingService
     /**
      * Process payment and assign packages to user.
      * This method is called when an invoice is paid.
-     * 
-     * @param Invoice $invoice
-     * @param string|null $paymentMethod
-     * @param string|null $paymentReference
-     * @return bool
      */
     public function processPaymentAndAssignPackages(
         Invoice $invoice,
@@ -123,11 +117,6 @@ class BillingService
 
     /**
      * Create an invoice and immediately mark it as paid (for free packages or manual assignments).
-     * 
-     * @param User $user
-     * @param array $bouquetIds
-     * @param User|null $reseller
-     * @return Invoice
      */
     public function assignFreePackage(User $user, array $bouquetIds, ?User $reseller = null): Invoice
     {
@@ -149,9 +138,6 @@ class BillingService
 
     /**
      * Get billing summary for a user.
-     * 
-     * @param User $user
-     * @return array
      */
     public function getUserBillingSummary(User $user): array
     {

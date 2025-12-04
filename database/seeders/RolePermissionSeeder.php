@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -21,12 +20,12 @@ class RolePermissionSeeder extends Seeder
         $permissions = [
             // Dashboard access
             'view dashboard',
-            
+
             // Stream permissions
             'view streams',
             'view playlist',
             'view epg',
-            
+
             // Admin permissions
             'manage users',
             'manage streams',
@@ -37,12 +36,12 @@ class RolePermissionSeeder extends Seeder
             'view system status',
             'manage settings',
             'view activity logs',
-            
+
             // Reseller permissions
             'manage clients',
             'view reseller dashboard',
             'assign packages',
-            
+
             // Billing permissions
             'view invoices',
             'manage invoices',

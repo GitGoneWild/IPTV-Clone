@@ -145,7 +145,7 @@ class User extends Authenticatable
             if ($this->hasRole('guest') && $this->hasPackageAssigned()) {
                 $this->removeRole('guest');
                 $this->assignRole('user');
-                
+
                 activity()
                     ->causedBy($this)
                     ->log('User upgraded from guest to user role due to package assignment');
@@ -276,7 +276,7 @@ class User extends Authenticatable
         if ($spatieRole) {
             return $spatieRole;
         }
-        
+
         // Fallback to legacy system for backward compatibility
         if ($this->is_admin) {
             return 'admin';

@@ -157,7 +157,7 @@ class UserController extends AdminController
         ]);
 
         // Update password if provided
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $user->update(['password' => Hash::make($validated['password'])]);
         }
 
