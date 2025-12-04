@@ -119,7 +119,7 @@ Foundation and documentation complete, 11 resources remaining
 
 ```
 Admin Panel Structure:
-├── Routes: /blade-admin/* (coexists with /admin Filament)
+├── Routes: /admin/*
 ├── Controllers: app/Http/Controllers/Admin/
 │   ├── AdminController.php (base)
 │   ├── DashboardController.php
@@ -154,7 +154,7 @@ Admin Panel Structure:
 
 ### 1. Access Admin Panel
 ```
-URL: https://your-domain.com/blade-admin
+URL: https://your-domain.com/admin
 Requirements: Admin role + authentication
 ```
 
@@ -236,7 +236,7 @@ For each remaining resource:
 
 ## ⚠️ Important Notes
 
-1. **Coexistence**: Blade admin (`/blade-admin`) coexists with Filament (`/admin`)
+1. **Admin Routes**: Blade admin accessible at `/admin`
 2. **Reference**: Use User Management as pattern for all new resources
 3. **Activity Logging**: Always log admin actions
 4. **Validation**: Server-side validation required
@@ -254,7 +254,7 @@ For each remaining resource:
 4. Check Tailwind CSS docs (https://tailwindcss.com/docs)
 
 **Common Issues**:
-- 404 on /blade-admin → Clear cache: `php artisan cache:clear`
+- 404 on /admin → Clear cache: `php artisan cache:clear`
 - Can't access → Check admin role assignment
 - Validation errors → Check field requirements in controller
 

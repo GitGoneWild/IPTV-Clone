@@ -29,7 +29,7 @@ class AdminRouteTest extends TestCase
         $admin->assignRole('admin');
 
         // Test admin dashboard access
-        $response = $this->actingAs($admin)->get('/blade-admin');
+        $response = $this->actingAs($admin)->get('/admin');
         $response->assertStatus(200);
     }
 
@@ -44,14 +44,14 @@ class AdminRouteTest extends TestCase
         $user->assignRole('user');
 
         // Test admin dashboard access - should be forbidden
-        $response = $this->actingAs($user)->get('/blade-admin');
+        $response = $this->actingAs($user)->get('/admin');
         $response->assertStatus(403);
     }
 
     public function test_admin_routes_redirect_unauthenticated_users(): void
     {
         // Test admin dashboard access without authentication
-        $response = $this->get('/blade-admin');
+        $response = $this->get('/admin');
         $response->assertRedirect('/login');
     }
 
@@ -66,11 +66,11 @@ class AdminRouteTest extends TestCase
         $admin->assignRole('admin');
 
         // Test users index
-        $response = $this->actingAs($admin)->get('/blade-admin/users');
+        $response = $this->actingAs($admin)->get('/admin/users');
         $response->assertStatus(200);
 
         // Test users create
-        $response = $this->actingAs($admin)->get('/blade-admin/users/create');
+        $response = $this->actingAs($admin)->get('/admin/users/create');
         $response->assertStatus(200);
     }
 }

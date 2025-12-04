@@ -6,13 +6,12 @@ The Blade Admin Panel is a custom-built admin interface that provides full contr
 
 ## Access
 
-- **URL**: `https://your-domain.com/blade-admin`
+- **URL**: `https://your-domain.com/admin`
 - **Requirements**: Admin role authentication
-- **Coexistence**: Original Filament admin still available at `/admin` during migration
 
 ## Features
 
-### Dashboard (`/blade-admin`)
+### Dashboard (`/admin`)
 - System statistics overview
   - Total users (active/guest breakdown)
   - Total streams (online percentage)
@@ -21,7 +20,7 @@ The Blade Admin Panel is a custom-built admin interface that provides full contr
 - Recent users table
 - Visual stat cards with color-coded metrics
 
-### User Management (`/blade-admin/users`)
+### User Management (`/admin/users`)
 
 #### List View
 - Paginated user list (15 per page)
@@ -106,7 +105,7 @@ Color-coded role indicators:
 
 ### Creating a New User
 
-1. Navigate to `/blade-admin/users`
+1. Navigate to `/admin/users`
 2. Click "New User" button
 3. Fill in required fields:
    - Name: `John Doe`
@@ -123,7 +122,7 @@ Color-coded role indicators:
 
 ### Searching for Users
 
-1. Navigate to `/blade-admin/users`
+1. Navigate to `/admin/users`
 2. Use the search box:
    - Type name, email, or username
 3. Apply filters:
@@ -134,7 +133,7 @@ Color-coded role indicators:
 
 ### Editing a User
 
-1. Navigate to `/blade-admin/users`
+1. Navigate to `/admin/users`
 2. Find the user in the list
 3. Click "Edit" in the actions column
 4. Update fields as needed
@@ -184,7 +183,6 @@ View logs in the activity log table (when implemented).
 - **Content**: (To be implemented)
 - **Settings**: (To be implemented)
 - **View Site**: Return to user portal
-- **Filament Admin**: Link to original admin (temporary)
 
 ### User Dropdown
 - Display current user name
@@ -237,7 +235,7 @@ return redirect()->route('admin.users.index')
 **Issue**: Cannot access admin panel
 - **Solution**: Ensure you have admin role assigned
 
-**Issue**: 404 error on `/blade-admin`
+**Issue**: 404 error on `/admin`
 - **Solution**: Run `php artisan route:clear` and `php artisan cache:clear`
 
 **Issue**: Flash messages not appearing
@@ -301,13 +299,13 @@ See `docs/MIGRATION_IMPLEMENTATION_SUMMARY.md` for:
 
 | Feature | Route | Method | View |
 |---------|-------|--------|------|
-| Dashboard | `/blade-admin` | GET | `admin.dashboard` |
-| List Users | `/blade-admin/users` | GET | `admin.users.index` |
-| Create User | `/blade-admin/users/create` | GET | `admin.users.create` |
-| Store User | `/blade-admin/users` | POST | - |
-| Edit User | `/blade-admin/users/{id}/edit` | GET | `admin.users.edit` |
-| Update User | `/blade-admin/users/{id}` | PUT/PATCH | - |
-| Delete User | `/blade-admin/users/{id}` | DELETE | - |
+| Dashboard | `/admin` | GET | `admin.dashboard` |
+| List Users | `/admin/users` | GET | `admin.users.index` |
+| Create User | `/admin/users/create` | GET | `admin.users.create` |
+| Store User | `/admin/users` | POST | - |
+| Edit User | `/admin/users/{id}/edit` | GET | `admin.users.edit` |
+| Update User | `/admin/users/{id}` | PUT/PATCH | - |
+| Delete User | `/admin/users/{id}` | DELETE | - |
 
 ## Credits
 
