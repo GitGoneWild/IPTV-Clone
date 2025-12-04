@@ -8,11 +8,8 @@
         <h1 class="text-3xl font-bold text-gh-text">Create Load Balancer</h1>
     </div>
     <div class="bg-gh-bg-secondary border border-gh-border rounded-lg p-6">
-        <form method="POST" action="{{ isset($load-balancers) ? route('admin.load-balancers.update', $load-balancers) : route('admin.load-balancers.store') }}">
+        <form method="POST" action="{{ route('admin.load-balancers.store') }}">
             @csrf
-            @if(isset($load-balancers))
-                @method('PUT')
-            @endif
             
             <div class="space-y-4">
                 <!-- Add form fields here -->

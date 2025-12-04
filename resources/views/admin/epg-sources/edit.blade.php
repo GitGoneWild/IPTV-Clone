@@ -8,11 +8,9 @@
         <h1 class="text-3xl font-bold text-gh-text">Edit EPG Source</h1>
     </div>
     <div class="bg-gh-bg-secondary border border-gh-border rounded-lg p-6">
-        <form method="POST" action="{{ isset($epg-sources) ? route('admin.epg-sources.update', $epg-sources) : route('admin.epg-sources.store') }}">
+        <form method="POST" action="{{ route('admin.epg-sources.update', $epgSource) }}">
             @csrf
-            @if(isset($epg-sources))
-                @method('PUT')
-            @endif
+            @method('PUT')
             
             <div class="space-y-4">
                 <!-- Add form fields here -->

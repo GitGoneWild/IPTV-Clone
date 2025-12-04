@@ -8,11 +8,8 @@
         <h1 class="text-3xl font-bold text-gh-text">Create Geo Restriction</h1>
     </div>
     <div class="bg-gh-bg-secondary border border-gh-border rounded-lg p-6">
-        <form method="POST" action="{{ isset($geo-restrictions) ? route('admin.geo-restrictions.update', $geo-restrictions) : route('admin.geo-restrictions.store') }}">
+        <form method="POST" action="{{ route('admin.geo-restrictions.store') }}">
             @csrf
-            @if(isset($geo-restrictions))
-                @method('PUT')
-            @endif
             
             <div class="space-y-4">
                 <!-- Add form fields here -->
