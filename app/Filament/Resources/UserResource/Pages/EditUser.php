@@ -25,15 +25,30 @@ class EditUser extends EditRecord
     {
         $user = $this->record;
         
-        // Sync Spatie role with the role field if it was set
-        if (isset($this->data['role'])) {
-            $roleName = $this->data['role'];
-            $user->syncRoles([$roleName]);
-        }
-        
-        // Check if user is a guest and has packages assigned
-        if ($user->hasRole('guest') && $user->hasPackageAssigned()) {
-            $user->upgradeFromGuestToUser();
+        try {
+            // Sync Spatie role with the role field if it was set
+            if (isset($this->data['role'])) {
+                $roleName = $this->data['role'];
+                $user->syncRoles([$roleName]);
+            }
+            
+            // Check if user is a guest and has packages assigned
+            if ($user->hasRole('guest') && $user->hasPackageAssigned()) {
+                $user->upgradeFromGuestToUser();
+            }
+        } catch (\Exception $e) {
+            // Log error but don't fail the entire save operation
+            \Log::error('Failed to sync roles or upgrade user: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'exception' => $e,
+            ]);
+            
+            // Optionally notify the admin
+            \Filament\Notifications\Notification::make()
+                ->danger()
+                ->title('Role Update Warning')
+                ->body('User saved successfully but role update failed. Check logs for details.')
+                ->send();
         }
     }
 

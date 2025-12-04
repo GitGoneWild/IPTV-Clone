@@ -29,7 +29,7 @@ class RegistrationController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'username' => ['required', 'string', 'max:255', 'unique:users', 'alpha_dash'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
         ]);
 
         // Create user with default settings

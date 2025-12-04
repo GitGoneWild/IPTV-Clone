@@ -28,8 +28,10 @@ class RolePermissionTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertStatus(200);
+        $response->assertViewIs('pages.guest-welcome');
         $response->assertSee('Welcome to HomelabTV');
         $response->assertSee('Pending Package Assignment');
+        $response->assertDontSee('Stream access');
     }
 
     public function test_user_with_package_sees_dashboard(): void
@@ -97,13 +99,14 @@ class RolePermissionTest extends TestCase
 
     public function test_user_registration_assigns_guest_role(): void
     {
-        $response = $this->post('/register', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'username' => 'testuser',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
-        ]);
+        $response = $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class)
+            ->post('/register', [
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'username' => 'testuser',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+            ]);
 
         $response->assertRedirect('/dashboard');
         

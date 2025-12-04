@@ -68,11 +68,11 @@ class UserResource extends Resource
                             ->helperText('Note: Guest users are automatically upgraded to User when a package is assigned.'),
                         Forms\Components\Toggle::make('is_admin')
                             ->default(false)
-                            ->disabled()
+                            ->readonly()
                             ->dehydrated(true),
                         Forms\Components\Toggle::make('is_reseller')
                             ->default(false)
-                            ->disabled()
+                            ->readonly()
                             ->dehydrated(true),
                         Forms\Components\Toggle::make('is_active')
                             ->default(true),

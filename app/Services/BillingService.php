@@ -31,8 +31,17 @@ class BillingService
         ?User $reseller = null,
         array $options = []
     ): Invoice {
+        // Validate bouquet IDs
+        if (empty($bouquetIds)) {
+            throw new \InvalidArgumentException('At least one bouquet ID is required');
+        }
+        
         // Get bouquet details for line items
         $bouquets = Bouquet::whereIn('id', $bouquetIds)->get();
+        
+        if (count($bouquets) !== count($bouquetIds)) {
+            throw new \InvalidArgumentException('One or more bouquet IDs are invalid');
+        }
         
         $lineItems = $bouquets->map(function ($bouquet) {
             return [
@@ -89,9 +98,9 @@ class BillingService
                 return true; // No bouquets to assign
             }
 
-            // Assign bouquets to user
+            // Assign bouquets to user (replaces any previous bouquets)
             $user = $invoice->user;
-            $user->bouquets()->syncWithoutDetaching($bouquetIds);
+            $user->bouquets()->sync($bouquetIds);
 
             // Upgrade guest to user if applicable
             if ($user->hasRole('guest') && $user->hasPackageAssigned()) {

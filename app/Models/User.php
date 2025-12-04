@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -140,14 +141,16 @@ class User extends Authenticatable
      */
     public function upgradeFromGuestToUser(): void
     {
-        if ($this->hasRole('guest') && $this->hasPackageAssigned()) {
-            $this->removeRole('guest');
-            $this->assignRole('user');
-            
-            activity()
-                ->causedBy($this)
-                ->log('User upgraded from guest to user role due to package assignment');
-        }
+        DB::transaction(function () {
+            if ($this->hasRole('guest') && $this->hasPackageAssigned()) {
+                $this->removeRole('guest');
+                $this->assignRole('user');
+                
+                activity()
+                    ->causedBy($this)
+                    ->log('User upgraded from guest to user role due to package assignment');
+            }
+        });
     }
 
     /**
@@ -268,20 +271,12 @@ class User extends Authenticatable
      */
     public function getRoleAttribute(): string
     {
-        // Use Spatie Permission's role system
-        if ($this->hasRole('admin')) {
-            return 'admin';
+        // Get Spatie role first
+        $spatieRole = $this->getRoleNames()->first();
+        if ($spatieRole) {
+            return $spatieRole;
         }
-        if ($this->hasRole('reseller')) {
-            return 'reseller';
-        }
-        if ($this->hasRole('user')) {
-            return 'user';
-        }
-        if ($this->hasRole('guest')) {
-            return 'guest';
-        }
-
+        
         // Fallback to legacy system for backward compatibility
         if ($this->is_admin) {
             return 'admin';
