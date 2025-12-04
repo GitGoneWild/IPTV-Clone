@@ -81,22 +81,76 @@
                            class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.dashboard') ? 'bg-gh-bg-tertiary text-homelab-400' : 'text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary' }}">
                             Dashboard
                         </a>
-                        <a href="{{ route('admin.users.index') }}" 
-                           class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.users.*') ? 'bg-gh-bg-tertiary text-homelab-400' : 'text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary' }}">
-                            Users
+                        
+                        <!-- Dropdown for Streaming -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.streams.*', 'admin.servers.*') ? 'bg-gh-bg-tertiary text-homelab-400' : 'text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary' }}">
+                                Streaming
+                                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div x-show="open" @click.away="open = false" 
+                                 class="absolute left-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
+                                <a href="{{ route('admin.streams.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Streams</a>
+                                <a href="{{ route('admin.servers.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Servers</a>
+                                <a href="{{ route('admin.load-balancers.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Load Balancers</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Dropdown for Content -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.categories.*', 'admin.bouquets.*', 'admin.movies.*', 'admin.series.*') ? 'bg-gh-bg-tertiary text-homelab-400' : 'text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary' }}">
+                                Content
+                                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div x-show="open" @click.away="open = false" 
+                                 class="absolute left-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
+                                <a href="{{ route('admin.categories.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Categories</a>
+                                <a href="{{ route('admin.bouquets.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Bouquets</a>
+                                <a href="{{ route('admin.movies.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Movies</a>
+                                <a href="{{ route('admin.series.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Series</a>
+                                <a href="{{ route('admin.epg-sources.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">EPG Sources</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Dropdown for Users & Access -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.users.*', 'admin.devices.*', 'admin.geo-restrictions.*') ? 'bg-gh-bg-tertiary text-homelab-400' : 'text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary' }}">
+                                Users
+                                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div x-show="open" @click.away="open = false" 
+                                 class="absolute left-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
+                                <a href="{{ route('admin.users.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Users</a>
+                                <a href="{{ route('admin.devices.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Devices</a>
+                                <a href="{{ route('admin.geo-restrictions.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Geo Restrictions</a>
+                            </div>
+                        </div>
+                        
+                        <a href="{{ route('admin.invoices.index') }}" 
+                           class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.invoices.*') ? 'bg-gh-bg-tertiary text-homelab-400' : 'text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary' }}">
+                            Billing
                         </a>
-                        <a href="#" 
-                           class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary">
-                            Streams
-                        </a>
-                        <a href="#" 
-                           class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary">
-                            Content
-                        </a>
-                        <a href="#" 
-                           class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary">
-                            Settings
-                        </a>
+                        
+                        <!-- Dropdown for Settings -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.settings.*') ? 'bg-gh-bg-tertiary text-homelab-400' : 'text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary' }}">
+                                Settings
+                                <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div x-show="open" @click.away="open = false" 
+                                 class="absolute left-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
+                                <a href="{{ route('admin.settings.integration-settings') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Integration Settings</a>
+                                <a href="{{ route('admin.settings.system-management') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">System Management</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -105,11 +159,6 @@
                     <!-- User Portal Link -->
                     <a href="{{ route('dashboard') }}" class="text-sm text-gh-text-muted hover:text-gh-accent">
                         View Site
-                    </a>
-
-                    <!-- Filament Admin Link (temporary during migration) -->
-                    <a href="{{ url('/admin') }}" class="text-sm text-gh-warning hover:text-white">
-                        Filament Admin
                     </a>
 
                     <!-- User Dropdown -->

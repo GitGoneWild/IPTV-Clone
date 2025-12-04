@@ -2,11 +2,10 @@
     "name": "homelabtv/iptv-panel",
     "type": "project",
     "description": "HomelabTV - Private IPTV Management Panel for Homelab and Legal Streams",
-    "keywords": ["laravel", "iptv", "homelab", "streaming", "filament"],
+    "keywords": ["laravel", "iptv", "homelab", "streaming"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "filament/filament": "^4.2",
         "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
@@ -39,8 +38,7 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi",
-            "@php artisan filament:upgrade"
+            "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

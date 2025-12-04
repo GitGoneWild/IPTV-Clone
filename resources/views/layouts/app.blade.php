@@ -117,7 +117,7 @@
                         <a href="{{ route('login') }}" class="text-gh-text-muted hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Login</a>
                     @endauth
                     @if(Auth::check() && Auth::user()->is_admin)
-                        <a href="/admin" class="bg-homelab-600 hover:bg-homelab-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors glow-accent">Admin Panel</a>
+                        <a href="{{ route('admin.dashboard') }}" class="bg-homelab-600 hover:bg-homelab-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors glow-accent">Admin Panel</a>
                     @endif
                 </div>
             </div>
@@ -149,7 +149,7 @@
                         System Online
                     </span>
                     <span class="text-gh-border">|</span>
-                    <span class="ml-2">Powered by Laravel + Filament</span>
+                    <span class="ml-2">Powered by Laravel + Blade</span>
                 </div>
             </div>
         </div>
