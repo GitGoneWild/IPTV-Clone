@@ -76,7 +76,7 @@ class PageUrlsTest extends TestCase
      */
     public function test_admin_panel_requires_authentication(): void
     {
-        $response = $this->get('/blade-admin');
+        $response = $this->get('/admin');
 
         $response->assertRedirect();
     }

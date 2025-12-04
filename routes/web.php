@@ -33,8 +33,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [WebController::class, 'logout'])->name('logout');
 });
 
-// Blade-based Admin Panel
-Route::middleware(['auth', 'role:admin'])->prefix('blade-admin')->name('admin.')->group(function () {
+// Admin Panel
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // User Management
