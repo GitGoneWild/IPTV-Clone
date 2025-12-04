@@ -7,9 +7,9 @@ use App\Models\EpgProgram;
 use App\Models\EpgSource;
 use App\Models\Stream;
 use Filament\Forms;
-use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Artisan;
@@ -18,9 +18,9 @@ class EpgSourceResource extends Resource
 {
     protected static ?string $model = EpgSource::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-calendar';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calendar';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Streaming';
+    protected static string|\UnitEnum|null $navigationGroup = 'Streaming';
 
     protected static ?int $navigationSort = 4;
 

@@ -7,9 +7,9 @@ use App\Models\Movie;
 use App\Services\MediaDownloadService;
 use App\Services\TmdbService;
 use Filament\Forms;
-use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,9 +18,9 @@ class MovieResource extends Resource
 {
     protected static ?string $model = Movie::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-film';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-film';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Content';
+    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?int $navigationSort = 4;
 

@@ -14,9 +14,9 @@ class BouquetResource extends Resource
 {
     protected static ?string $model = Bouquet::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Streaming';
+    protected static string|\UnitEnum|null $navigationGroup = 'Streaming';
 
     protected static ?int $navigationSort = 3;
 

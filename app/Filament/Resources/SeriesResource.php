@@ -6,9 +6,9 @@ use App\Filament\Resources\SeriesResource\Pages;
 use App\Models\Series;
 use App\Services\TmdbService;
 use Filament\Forms;
-use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -16,9 +16,9 @@ class SeriesResource extends Resource
 {
     protected static ?string $model = Series::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-tv';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tv';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Content';
+    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?int $navigationSort = 5;
 
