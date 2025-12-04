@@ -38,9 +38,17 @@ class StreamVerificationService
 
     public const ERROR_UNKNOWN = 'unknown_error';
 
+    /** Minimum allowed timeout in seconds */
+    protected const MIN_TIMEOUT = 1;
+
+    /** Maximum allowed timeout in seconds */
+    protected const MAX_TIMEOUT = 60;
+
     public function __construct()
     {
-        $this->timeout = config('homelabtv.stream_check_timeout', 10);
+        $timeout = config('homelabtv.stream_check_timeout', 10);
+        // Ensure timeout is within reasonable bounds
+        $this->timeout = max(self::MIN_TIMEOUT, min(self::MAX_TIMEOUT, (int) $timeout));
     }
 
     /**

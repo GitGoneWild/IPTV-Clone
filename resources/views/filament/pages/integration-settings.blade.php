@@ -28,14 +28,9 @@
 
                 {{ $this->sonarrForm }}
 
-                @php
-                    $service = new \App\Services\SonarrRadarrService();
-                    $sonarrConfigured = $service->isSonarrConfigured();
-                @endphp
-
-                <div class="mt-4 p-4 rounded-lg {{ $sonarrConfigured ? 'bg-green-50 dark:bg-green-900/20' : 'bg-yellow-50 dark:bg-yellow-900/20' }}">
+                <div class="mt-4 p-4 rounded-lg {{ $this->sonarrConfigured ? 'bg-green-50 dark:bg-green-900/20' : 'bg-yellow-50 dark:bg-yellow-900/20' }}">
                     <div class="flex items-center">
-                        @if($sonarrConfigured)
+                        @if($this->sonarrConfigured)
                             <x-heroicon-o-check-circle class="h-5 w-5 text-green-500 mr-2" />
                             <span class="text-sm text-green-700 dark:text-green-400">Sonarr is configured</span>
                         @else
@@ -75,13 +70,9 @@
 
                 {{ $this->radarrForm }}
 
-                @php
-                    $radarrConfigured = $service->isRadarrConfigured();
-                @endphp
-
-                <div class="mt-4 p-4 rounded-lg {{ $radarrConfigured ? 'bg-green-50 dark:bg-green-900/20' : 'bg-yellow-50 dark:bg-yellow-900/20' }}">
+                <div class="mt-4 p-4 rounded-lg {{ $this->radarrConfigured ? 'bg-green-50 dark:bg-green-900/20' : 'bg-yellow-50 dark:bg-yellow-900/20' }}">
                     <div class="flex items-center">
-                        @if($radarrConfigured)
+                        @if($this->radarrConfigured)
                             <x-heroicon-o-check-circle class="h-5 w-5 text-green-500 mr-2" />
                             <span class="text-sm text-green-700 dark:text-green-400">Radarr is configured</span>
                         @else

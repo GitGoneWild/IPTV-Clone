@@ -55,6 +55,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'real_debrid_token' => 'encrypted',
             'is_admin' => 'boolean',
             'is_reseller' => 'boolean',
             'is_active' => 'boolean',

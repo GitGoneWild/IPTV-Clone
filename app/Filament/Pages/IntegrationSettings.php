@@ -37,8 +37,16 @@ class IntegrationSettings extends Page implements HasForms
 
     public ?array $radarrData = [];
 
+    public bool $sonarrConfigured = false;
+
+    public bool $radarrConfigured = false;
+
     public function mount(): void
     {
+        $service = new SonarrRadarrService;
+        $this->sonarrConfigured = $service->isSonarrConfigured();
+        $this->radarrConfigured = $service->isRadarrConfigured();
+
         $this->sonarrData = [
             'url' => config('services.sonarr.url', ''),
             'api_key' => config('services.sonarr.api_key', ''),

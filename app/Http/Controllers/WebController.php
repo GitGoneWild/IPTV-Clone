@@ -233,8 +233,9 @@ class WebController extends Controller
      */
     public function saveRealDebridToken(Request $request): RedirectResponse
     {
+        // Real-Debrid API tokens are typically around 50-100 characters
         $request->validate([
-            'api_token' => 'nullable|string|max:500',
+            'api_token' => 'nullable|string|max:200',
         ]);
 
         $user = auth()->user();

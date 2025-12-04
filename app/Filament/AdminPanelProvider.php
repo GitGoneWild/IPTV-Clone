@@ -123,6 +123,10 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Status Page')
                     ->url('/status')
                     ->icon('heroicon-o-signal'),
-            ]);
+            ])
+            ->renderHook(
+                'panels::body.end',
+                fn () => view('filament.footer')
+            );
     }
 }
