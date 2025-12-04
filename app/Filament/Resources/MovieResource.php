@@ -7,7 +7,7 @@ use App\Models\Movie;
 use App\Services\MediaDownloadService;
 use App\Services\TmdbService;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -18,15 +18,15 @@ class MovieResource extends Resource
 {
     protected static ?string $model = Movie::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-film';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-film';
 
-    protected static ?string $navigationGroup = 'Content';
+    protected static string | \UnitEnum | null $navigationGroup = 'Content';
 
     protected static ?int $navigationSort = 4;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Forms\Components\Section::make('TMDB Import')
                     ->description('Search and import movie details from TMDB')

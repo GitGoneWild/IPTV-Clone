@@ -7,7 +7,7 @@ use App\Models\EpgProgram;
 use App\Models\EpgSource;
 use App\Models\Stream;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -18,17 +18,17 @@ class EpgSourceResource extends Resource
 {
     protected static ?string $model = EpgSource::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-calendar';
 
-    protected static ?string $navigationGroup = 'Streaming';
+    protected static string | \UnitEnum | null $navigationGroup = 'Streaming';
 
     protected static ?int $navigationSort = 4;
 
     protected static ?string $navigationLabel = 'EPG Sources';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Forms\Components\Section::make('EPG Source Information')
                     ->description('Configure your XMLTV EPG source')

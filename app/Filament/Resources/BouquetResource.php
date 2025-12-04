@@ -5,8 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BouquetResource\Pages;
 use App\Models\Bouquet;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -14,15 +14,15 @@ class BouquetResource extends Resource
 {
     protected static ?string $model = Bouquet::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Streaming';
+    protected static string | \UnitEnum | null $navigationGroup = 'Streaming';
 
     protected static ?int $navigationSort = 3;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()

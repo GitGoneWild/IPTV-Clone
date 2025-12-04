@@ -7,7 +7,7 @@ use Filament\Widgets\ChartWidget;
 
 class StreamStatusChart extends ChartWidget
 {
-    protected static ?string $heading = 'Stream Status';
+    protected ?string $heading = 'Stream Status';
 
     protected static ?int $sort = 2;
 
