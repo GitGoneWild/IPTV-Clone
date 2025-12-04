@@ -17,6 +17,18 @@ use Spatie\Permission\Models\Role;
 class UserController extends AdminController
 {
     /**
+     * Get the available output formats configuration.
+     */
+    private function getOutputFormats(): array
+    {
+        return config('homelabtv.output_formats', [
+            'm3u' => 'M3U Playlist',
+            'xtream' => 'Xtream Codes',
+            'enigma2' => 'Enigma2',
+        ]);
+    }
+
+    /**
      * Display a listing of users.
      */
     public function index(Request $request): View
@@ -55,11 +67,7 @@ class UserController extends AdminController
     {
         $roles = Role::all();
         $resellers = User::where('is_reseller', true)->get();
-        $outputFormats = config('homelabtv.output_formats', [
-            'm3u' => 'M3U Playlist',
-            'xtream' => 'Xtream Codes',
-            'enigma2' => 'Enigma2',
-        ]);
+        $outputFormats = $this->getOutputFormats();
 
         return view('admin.users.create', compact('roles', 'resellers', 'outputFormats'));
     }
@@ -120,11 +128,7 @@ class UserController extends AdminController
     {
         $roles = Role::all();
         $resellers = User::where('is_reseller', true)->where('id', '!=', $user->id)->get();
-        $outputFormats = config('homelabtv.output_formats', [
-            'm3u' => 'M3U Playlist',
-            'xtream' => 'Xtream Codes',
-            'enigma2' => 'Enigma2',
-        ]);
+        $outputFormats = $this->getOutputFormats();
         $currentRole = $user->roles->first()?->name ?? 'guest';
 
         return view('admin.users.edit', compact('user', 'roles', 'resellers', 'outputFormats', 'currentRole'));

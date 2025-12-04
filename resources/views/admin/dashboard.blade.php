@@ -116,16 +116,8 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @php
                                     $role = $user->roles->first()?->name ?? 'guest';
-                                    $colors = [
-                                        'admin' => 'bg-gh-danger/10 text-gh-danger',
-                                        'reseller' => 'bg-gh-warning/10 text-gh-warning',
-                                        'user' => 'bg-gh-success/10 text-gh-success',
-                                        'guest' => 'bg-gh-text-muted/10 text-gh-text-muted',
-                                    ];
                                 @endphp
-                                <span class="px-2 py-1 text-xs font-medium rounded {{ $colors[$role] ?? $colors['guest'] }}">
-                                    {{ ucfirst($role) }}
-                                </span>
+                                <x-role-badge :role="$role" />
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gh-text-muted">
                                 {{ $user->created_at->diffForHumans() }}

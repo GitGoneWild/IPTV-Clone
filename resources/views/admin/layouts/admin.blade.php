@@ -108,7 +108,7 @@
                     </a>
 
                     <!-- Filament Admin Link (temporary during migration) -->
-                    <a href="/admin" class="text-sm text-gh-warning hover:text-white">
+                    <a href="{{ url('/admin') }}" class="text-sm text-gh-warning hover:text-white">
                         Filament Admin
                     </a>
 
