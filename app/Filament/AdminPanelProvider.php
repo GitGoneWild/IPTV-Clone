@@ -50,7 +50,19 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('2rem')
             ->favicon(asset('favicon.ico'))
             ->colors([
-                'primary' => Color::Violet,
+                'primary' => [
+                    50 => '#f5f3ff',
+                    100 => '#ede9fe',
+                    200 => '#ddd6fe',
+                    300 => '#c4b5fd',
+                    400 => '#a78bfa',
+                    500 => '#8b5cf6',
+                    600 => '#7c3aed',
+                    700 => '#6d28d9',
+                    800 => '#5b21b6',
+                    900 => '#4c1d95',
+                    950 => '#2e1065',
+                ],
                 'danger' => Color::Red,
                 'gray' => Color::Zinc,
                 'info' => Color::Blue,
@@ -83,6 +95,8 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Content'),
                 NavigationGroup::make()
                     ->label('Users & Access'),
+                NavigationGroup::make()
+                    ->label('Billing'),
                 NavigationGroup::make()
                     ->label('System'),
             ])

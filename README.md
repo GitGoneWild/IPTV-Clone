@@ -40,13 +40,22 @@ A self-hosted IPTV management panel designed for homelab enthusiasts to manage l
   - Season and episode tracking
   - TMDB integration for automatic metadata import
 
-### User Management
-- 👤 Create users with username/password
+### User Management & Role-Based Access
+- 👤 **User Registration**: Public signup with automatic guest role assignment
+- 🔐 **Role-Based Access Control (RBAC)**: 4 distinct roles with granular permissions
+  - 🟦 **Guest**: New users awaiting package assignment (restricted dashboard access)
+  - 🟢 **User**: Full stream access after package assignment
+  - 🟡 **Reseller**: Manage clients, create invoices, assign packages
+  - 🔴 **Admin**: Full system access
+- 🔄 **Automatic Role Escalation**: Guests auto-upgrade to User when packages assigned
 - 🔑 API token generation for secure IPTV client authentication
 - ⏰ Expiry dates and max connection limits
 - 📋 Allowed output formats (M3U, Xtream, Enigma2)
-- 🏷️ Assign bouquets per user
-- 💰 Optional reseller system with credits
+- 🏷️ Assign bouquets (packages) per user
+- 💳 **Integrated Billing System**: Invoice-based package assignment with payment tracking
+- 📊 Activity logging for all user actions
+
+**Documentation**: See `/docs/USER_MANAGEMENT_BILLING.md` for complete guide
 
 ### Xtream Codes Compatible API
 Works with any IPTV player supporting Xtream Codes:
@@ -225,6 +234,14 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
    ```bash
    php artisan migrate --seed
    php artisan storage:link
+   
+   # Seed roles and permissions
+   php artisan db:seed --class=RolePermissionSeeder
+   
+   # (Optional) Create test users
+   php artisan db:seed --class=TestAdminSeeder
+   
+   # Generate API tokens for existing users (if migrating from older version)
    php artisan db:seed --class=GenerateApiTokensSeeder
    ```
 
@@ -294,6 +311,61 @@ This checks:
 - Storage permissions
 - EPG directory
 - Critical configuration
+
+## 👥 User Workflows
+
+### New User Registration & Onboarding
+
+1. **User Self-Registration**
+   - Navigate to `/register`
+   - Fill in name, email, username, and password
+   - Account created automatically with "Guest" role
+
+2. **Guest User Experience**
+   - Guest users see a welcome page after login
+   - No access to streams until packages assigned
+   - Dashboard explains next steps
+
+3. **Admin: Package Assignment**
+   
+   **Method 1: Direct Assignment (Free)**
+   ```
+   Admin Panel → Users & Access → Users → Edit User → Bouquets → Save
+   ```
+   
+   **Method 2: Via Billing (Recommended)**
+   ```
+   Admin Panel → Billing → Invoices → New Invoice
+   → Select user, add packages, set amount → Save
+   → Mark as Paid → Enter payment details → Confirm
+   ```
+
+4. **Automatic Role Upgrade**
+   - When packages assigned: Guest → User (automatic)
+   - User gains immediate access to assigned streams
+   - Activity logged for audit trail
+
+### Reseller Workflow
+
+1. **Creating a Reseller**
+   ```
+   Admin Panel → Users → Edit User → Role: Reseller → Save
+   ```
+
+2. **Reseller Operations**
+   - Manage their own clients
+   - Create invoices for clients
+   - Assign packages with billing
+   - Track client subscriptions
+
+### Admin Operations
+
+- **User Management**: Create, edit, delete users and roles
+- **Package Management**: Create bouquets (packages) with streams
+- **Billing**: Track invoices, payments, and subscriptions
+- **System Monitoring**: View activity logs and system health
+
+**Detailed Guide**: `/docs/USER_MANAGEMENT_BILLING.md`
 
 ## 🔐 API Usage
 

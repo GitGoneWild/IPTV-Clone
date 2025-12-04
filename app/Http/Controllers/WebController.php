@@ -72,10 +72,18 @@ class WebController extends Controller
 
     /**
      * Display the user dashboard.
+     * Guest users see a welcome page, while users with packages see their dashboard.
      */
     public function dashboard(): View
     {
         $user = auth()->user();
+
+        // Check if user is a guest (no packages assigned)
+        if ($user->hasRole('guest')) {
+            return view('pages.guest-welcome', [
+                'user' => $user,
+            ]);
+        }
 
         $viewData = [
             'role' => $user->role,
