@@ -149,11 +149,16 @@ class TranscodeProfile extends Model
         }
 
         // Custom flags
-        if (! empty($this->custom_flags)) {
+        // Note: custom_flags should only contain trusted, validated FFmpeg arguments
+        // to prevent command injection vulnerabilities
+        if (! empty($this->custom_flags) && is_array($this->custom_flags)) {
             foreach ($this->custom_flags as $flag => $value) {
-                $args[] = $flag;
-                if ($value !== null && $value !== '') {
-                    $args[] = $value;
+                // Only add if flag is a string and starts with '-'
+                if (is_string($flag) && str_starts_with($flag, '-')) {
+                    $args[] = $flag;
+                    if ($value !== null && $value !== '') {
+                        $args[] = (string) $value;
+                    }
                 }
             }
         }

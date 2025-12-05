@@ -116,7 +116,10 @@ class TranscodeProfileSeeder extends Seeder
         ];
 
         foreach ($profiles as $profile) {
-            TranscodeProfile::create($profile);
+            TranscodeProfile::firstOrCreate(
+                ['name' => $profile['name']],
+                $profile
+            );
         }
     }
 }

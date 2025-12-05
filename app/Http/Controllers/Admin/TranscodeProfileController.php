@@ -31,26 +31,9 @@ class TranscodeProfileController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:transcode_profiles,name'],
-            'description' => ['nullable', 'string', 'max:500'],
-            'is_active' => ['boolean'],
-            'video_codec' => ['required', 'string', 'in:libx264,libx265,copy'],
-            'video_bitrate' => ['nullable', 'string', 'max:20'],
-            'video_width' => ['nullable', 'integer', 'min:100', 'max:7680'],
-            'video_height' => ['nullable', 'integer', 'min:100', 'max:4320'],
-            'video_fps' => ['nullable', 'integer', 'min:1', 'max:120'],
-            'video_preset' => ['required_if:video_codec,libx264,libx265', 'in:ultrafast,superfast,veryfast,faster,fast,medium,slow,slower,veryslow'],
-            'audio_codec' => ['required', 'string', 'in:aac,mp3,libmp3lame,copy'],
-            'audio_bitrate' => ['nullable', 'string', 'max:20'],
-            'audio_channels' => ['required', 'integer', 'in:1,2,6'],
-            'audio_sample_rate' => ['nullable', 'integer', 'in:22050,44100,48000'],
-            'container_format' => ['required', 'string', 'in:mpegts,hls,mp4'],
-            'segment_duration' => ['nullable', 'integer', 'min:1', 'max:60'],
-            'priority' => ['integer', 'min:0', 'max:100'],
-        ]);
+        $validated = $request->validate($this->validationRules());
 
-        $validated['is_active'] = $request->has('is_active');
+        $validated['is_active'] = $request->boolean('is_active', false);
 
         TranscodeProfile::create($validated);
 
@@ -80,26 +63,9 @@ class TranscodeProfileController extends Controller
      */
     public function update(Request $request, TranscodeProfile $transcodeProfile)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:transcode_profiles,name,'.$transcodeProfile->id],
-            'description' => ['nullable', 'string', 'max:500'],
-            'is_active' => ['boolean'],
-            'video_codec' => ['required', 'string', 'in:libx264,libx265,copy'],
-            'video_bitrate' => ['nullable', 'string', 'max:20'],
-            'video_width' => ['nullable', 'integer', 'min:100', 'max:7680'],
-            'video_height' => ['nullable', 'integer', 'min:100', 'max:4320'],
-            'video_fps' => ['nullable', 'integer', 'min:1', 'max:120'],
-            'video_preset' => ['required_if:video_codec,libx264,libx265', 'in:ultrafast,superfast,veryfast,faster,fast,medium,slow,slower,veryslow'],
-            'audio_codec' => ['required', 'string', 'in:aac,mp3,libmp3lame,copy'],
-            'audio_bitrate' => ['nullable', 'string', 'max:20'],
-            'audio_channels' => ['required', 'integer', 'in:1,2,6'],
-            'audio_sample_rate' => ['nullable', 'integer', 'in:22050,44100,48000'],
-            'container_format' => ['required', 'string', 'in:mpegts,hls,mp4'],
-            'segment_duration' => ['nullable', 'integer', 'min:1', 'max:60'],
-            'priority' => ['integer', 'min:0', 'max:100'],
-        ]);
+        $validated = $request->validate($this->validationRules($transcodeProfile->id));
 
-        $validated['is_active'] = $request->has('is_active');
+        $validated['is_active'] = $request->boolean('is_active', false);
 
         $transcodeProfile->update($validated);
 
@@ -118,5 +84,32 @@ class TranscodeProfileController extends Controller
         return redirect()
             ->route('admin.transcode-profiles.index')
             ->with('success', 'Transcode profile deleted successfully.');
+    }
+
+    /**
+     * Get validation rules for transcode profile.
+     *
+     * @param int|null $ignoreId Profile ID to ignore for unique validation
+     * @return array
+     */
+    private function validationRules(?int $ignoreId = null): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:255', 'unique:transcode_profiles,name,'.($ignoreId ?? 'NULL')],
+            'description' => ['nullable', 'string', 'max:500'],
+            'video_codec' => ['required', 'string', 'in:libx264,libx265,copy'],
+            'video_bitrate' => ['nullable', 'string', 'max:20'],
+            'video_width' => ['nullable', 'integer', 'min:100', 'max:7680'],
+            'video_height' => ['nullable', 'integer', 'min:100', 'max:4320'],
+            'video_fps' => ['nullable', 'integer', 'min:1', 'max:120'],
+            'video_preset' => ['required_if:video_codec,libx264,libx265', 'in:ultrafast,superfast,veryfast,faster,fast,medium,slow,slower,veryslow'],
+            'audio_codec' => ['required', 'string', 'in:aac,mp3,libmp3lame,copy'],
+            'audio_bitrate' => ['nullable', 'string', 'max:20'],
+            'audio_channels' => ['required', 'integer', 'in:1,2,6'],
+            'audio_sample_rate' => ['nullable', 'integer', 'in:22050,44100,48000'],
+            'container_format' => ['required', 'string', 'in:mpegts,hls,mp4'],
+            'segment_duration' => ['nullable', 'integer', 'min:1', 'max:60'],
+            'priority' => ['integer', 'min:0', 'max:100'],
+        ];
     }
 }
