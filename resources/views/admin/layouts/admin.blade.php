@@ -51,6 +51,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Alpine.js for interactive components -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+
     <!-- Heroicons -->
     <script src="https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/outline/index.js"></script>
 
@@ -156,6 +159,16 @@
 
                 <!-- Right side navigation -->
                 <div class="flex items-center space-x-4">
+                    <!-- Live Clock -->
+                    <div x-data="{ time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) }" 
+                         x-init="setInterval(() => { time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) }, 1000)"
+                         class="hidden sm:flex items-center text-gh-text-muted text-sm px-3 py-2">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span x-text="time" class="font-mono"></span>
+                    </div>
+                    
                     <!-- User Portal Link -->
                     <a href="{{ route('dashboard') }}" class="text-sm text-gh-text-muted hover:text-gh-accent">
                         View Site
