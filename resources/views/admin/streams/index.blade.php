@@ -217,25 +217,28 @@ function checkStream(streamId) {
     })
     .then(response => response.json())
     .then(data => {
-        let statusColor = 'gh-success';
+        let statusBgClass = 'bg-gh-success/20';
+        let statusTextClass = 'text-gh-success';
         let statusIcon = `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
         
         if (data.status === 'offline') {
-            statusColor = 'gh-danger';
+            statusBgClass = 'bg-gh-danger/20';
+            statusTextClass = 'text-gh-danger';
             statusIcon = `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
-        } else if (data.status === 'unknown' || data.status === 'error') {
-            statusColor = 'gh-warning';
+        } else if (data.status === 'unknown' || data.status === 'error' || data.status === 'valid_url') {
+            statusBgClass = 'bg-gh-warning/20';
+            statusTextClass = 'text-gh-warning';
             statusIcon = `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
         }
         
         let html = `
             <div class="text-center">
-                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-${statusColor}/20 mb-4">
-                    <div class="text-${statusColor}">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full ${statusBgClass} mb-4">
+                    <div class="${statusTextClass}">
                         ${statusIcon}
                     </div>
                 </div>
-                <h4 class="text-xl font-semibold text-white mb-2">${data.status.charAt(0).toUpperCase() + data.status.slice(1)}</h4>
+                <h4 class="text-xl font-semibold text-white mb-2">${data.status.charAt(0).toUpperCase() + data.status.slice(1).replace('_', ' ')}</h4>
                 <p class="text-gh-text-muted mb-4">${data.message}</p>
                 <div class="bg-gh-bg rounded-lg p-3 text-left space-y-1 text-sm">
                     ${data.http_code ? `<div class="flex justify-between"><span class="text-gh-text-muted">HTTP Code:</span><span class="text-white">${data.http_code}</span></div>` : ''}
@@ -245,11 +248,6 @@ function checkStream(streamId) {
         `;
         
         document.getElementById('checkStreamContent').innerHTML = html;
-        
-        // Refresh the page after 2 seconds to show updated status
-        setTimeout(() => {
-            location.reload();
-        }, 2000);
     })
     .catch(error => {
         document.getElementById('checkStreamContent').innerHTML = `

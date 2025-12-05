@@ -113,9 +113,9 @@ class StreamCheckTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'status' => 'online',
+                'status' => 'valid_url',
             ])
-            ->assertJsonPath('message', 'RTMP URL structure is valid');
+            ->assertJsonPath('message', 'RTMP URL structure is valid (connectivity not checked)');
     }
 
     public function test_stream_check_requires_authentication(): void

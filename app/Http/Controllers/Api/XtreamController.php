@@ -275,6 +275,7 @@ class XtreamController extends Controller
      */
     protected function getVodInfo(Request $request): JsonResponse
     {
+        $request->validate(['vod_id' => ['required', 'integer']]);
         $vodId = $request->get('vod_id');
         $info = $this->xtreamService->getVodInfo($vodId);
 
@@ -311,7 +312,10 @@ class XtreamController extends Controller
      */
     protected function getSeriesInfo(Request $request): JsonResponse
     {
-        $seriesId = $request->get('series_id');
+        $validated = $request->validate([
+            'series_id' => ['required', 'integer'],
+        ]);
+        $seriesId = $validated['series_id'];
         $info = $this->xtreamService->getSeriesInfo($seriesId);
 
         if (! $info) {

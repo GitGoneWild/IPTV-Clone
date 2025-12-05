@@ -389,6 +389,9 @@ class XtreamService
      */
     protected function formatCastArray($cast): string
     {
+        if (is_null($cast)) {
+            return '';
+        }
         return is_array($cast) ? implode(', ', $cast) : '';
     }
 
@@ -512,9 +515,9 @@ class XtreamService
 
         // Group episodes by season
         $seasons = [];
-        $episodesByseason = $series->episodes->groupBy('season_number');
+        $episodesBySeason = $series->episodes->groupBy('season_number');
 
-        foreach ($episodesByseason as $seasonNum => $episodes) {
+        foreach ($episodesBySeason as $seasonNum => $episodes) {
             $seasonData = [
                 'air_date' => $episodes->first()->air_date?->format('Y-m-d') ?? '',
                 'episode_count' => $episodes->count(),
@@ -588,8 +591,8 @@ class XtreamService
         $cacheKey = "user_movies_{$user->id}";
 
         return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user) {
-            // If user has no bouquets, return empty collection
-            if ($user->bouquets()->count() === 0) {
+            // Check if user has bouquets using exists() to avoid loading all bouquets
+            if (!$user->bouquets()->exists()) {
                 return collect([]);
             }
 
@@ -609,8 +612,8 @@ class XtreamService
         $cacheKey = "user_series_{$user->id}";
 
         return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user) {
-            // If user has no bouquets, return empty collection
-            if ($user->bouquets()->count() === 0) {
+            // Check if user has bouquets using exists() to avoid loading all bouquets
+            if (!$user->bouquets()->exists()) {
                 return collect([]);
             }
 

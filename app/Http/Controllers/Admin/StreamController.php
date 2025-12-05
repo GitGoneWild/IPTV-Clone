@@ -169,6 +169,9 @@ class StreamController extends AdminController
 
     /**
      * Check stream health status (AJAX endpoint)
+     * 
+     * @param Stream $stream The stream to check
+     * @return JsonResponse Returns JSON with status, message, checked_at, and optionally http_code or error fields
      */
     public function check(Stream $stream): JsonResponse
     {
@@ -190,12 +193,20 @@ class StreamController extends AdminController
     }
 
     /**
-     * Check health status of a stream
+     * Check health status of a stream.
+     *
+     * @param Stream $stream The stream to check.
+     * @return array Returns an array with keys:
+     *               - status: string ('online', 'offline', or 'error')
+     *               - message: string (status message)
+     *               - checked_at: string (ISO8601 timestamp)
+     *               - http_code: int (optional, HTTP status code)
+     *               - error: string (optional, error type)
      */
     protected function checkStreamHealth(Stream $stream): array
     {
         $url = $stream->getEffectiveUrl();
-        $timeout = config('homelabtv.stream_check_timeout', 10);
+        $timeout = min(config('homelabtv.stream_check_timeout', 10), 30);
 
         try {
             // Determine check method based on stream type
@@ -227,8 +238,8 @@ class StreamController extends AdminController
 
                 if ($parsed !== false && isset($parsed['scheme'], $parsed['host'])) {
                     return [
-                        'status' => 'online',
-                        'message' => 'RTMP URL structure is valid',
+                        'status' => 'valid_url',
+                        'message' => 'RTMP URL structure is valid (connectivity not checked)',
                         'checked_at' => now()->toIso8601String(),
                     ];
                 } else {
