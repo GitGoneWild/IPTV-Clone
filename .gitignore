@@ -30,6 +30,5 @@ yarn-error.log
 Thumbs.db
 /public/hot
 /public/storage
-/public/build
 /public/css/app.css
 /public/js/app.js

@@ -1,4 +1,14 @@
 /** @type {import('tailwindcss').Config} */
+/**
+ * NOTE: This project uses Tailwind CSS v4.
+ * 
+ * In Tailwind v4, custom theme configuration (including colors) is defined
+ * in the CSS file using the @theme directive, not in this config file.
+ * See resources/css/app.css for the @theme block with all custom colors.
+ * 
+ * This config file is kept for reference and backwards compatibility,
+ * but the actual theme is controlled by the CSS @theme directive.
+ */
 export default {
     content: [
         "./resources/**/*.blade.php",
