@@ -1,16 +1,17 @@
 {
-    "name": "homelabtv-iptv-panel",
+    "name": "streampilot-iptv-panel",
     "version": "1.0.0",
-    "description": "HomelabTV - Private IPTV Management Panel for Homelab and Legal Streams",
+    "description": "StreamPilot - Advanced IPTV Management Panel for Streaming and VOD",
     "keywords": [
         "laravel",
         "iptv",
-        "homelab",
         "streaming",
+        "vod",
+        "live-tv",
         "alpine",
         "tailwind"
     ],
-    "author": "HomelabTV Team",
+    "author": "StreamPilot Team",
     "license": "MIT",
     "private": true,
     "type": "module",

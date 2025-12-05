@@ -116,6 +116,14 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button onclick="previewStream(@json($stream->stream_url), @json($stream->name), @json($stream->stream_type))" 
+                                        class="text-homelab-500 hover:text-homelab-400 mr-3"
+                                        title="Preview Stream">
+                                    <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </button>
                                 <button onclick="checkStream({{ $stream->id }})" 
                                         class="text-gh-accent hover:text-homelab-400 mr-3"
                                         title="Check Stream">
@@ -191,7 +199,174 @@
     </div>
 </div>
 
+<!-- Stream Preview Modal -->
+<div id="streamPreviewModal" class="fixed inset-0 bg-black bg-opacity-75 hidden flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="streamPreviewTitle">
+    <div class="bg-gh-bg-secondary rounded-lg p-6 max-w-4xl w-full mx-4 border border-gh-border">
+        <div class="flex items-center justify-between mb-4">
+            <h3 id="streamPreviewTitle" class="text-lg font-semibold text-white">Stream Preview</h3>
+            <button onclick="closePreviewModal()" class="text-gh-text-muted hover:text-white" aria-label="Close modal">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <div id="streamPreviewContent" class="bg-black rounded-lg overflow-hidden">
+            <!-- Video player will be loaded here -->
+            <video id="streamPreviewPlayer" class="w-full h-auto" controls autoplay>
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        
+        <div id="streamErrorMessage" class="hidden mt-4 p-4 bg-gh-danger/10 border border-gh-danger text-gh-danger rounded-lg">
+            <p class="text-sm"></p>
+        </div>
+        
+        <div class="mt-4 flex justify-between items-center">
+            <p id="streamPreviewUrl" class="text-sm text-gh-text-muted truncate max-w-xl"></p>
+            <button onclick="closePreviewModal()" 
+                    class="px-4 py-2 bg-gh-bg-tertiary hover:bg-gh-border text-gh-text rounded-lg transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
+let previousFocusedElement = null;
+
+function showError(message) {
+    const errorDiv = document.getElementById('streamErrorMessage');
+    errorDiv.querySelector('p').textContent = message;
+    errorDiv.classList.remove('hidden');
+}
+
+function hideError() {
+    const errorDiv = document.getElementById('streamErrorMessage');
+    errorDiv.classList.add('hidden');
+}
+
+function previewStream(streamUrl, streamName, streamType) {
+    // Store the currently focused element to return focus later
+    previousFocusedElement = document.activeElement;
+    
+    // Show modal
+    const modal = document.getElementById('streamPreviewModal');
+    modal.classList.remove('hidden');
+    
+    // Hide any previous error messages
+    hideError();
+    
+    // Set title and URL
+    document.getElementById('streamPreviewTitle').textContent = streamName;
+    document.getElementById('streamPreviewUrl').textContent = streamUrl;
+    
+    // Get video player
+    const player = document.getElementById('streamPreviewPlayer');
+    
+    // Focus the close button for keyboard accessibility
+    setTimeout(() => {
+        modal.querySelector('button[aria-label="Close modal"]').focus();
+    }, 100);
+    
+    // Load HLS library if needed for HLS streams
+    if (streamType === 'hls' && streamUrl.includes('.m3u8')) {
+        if (!window.Hls) {
+            // Check if script is already being loaded
+            if (!document.querySelector('script[src*="hls.js"]')) {
+                // Load HLS.js library with pinned version
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.0/dist/hls.min.js';
+                script.onload = () => loadHlsStream(player, streamUrl);
+                script.onerror = () => {
+                    showError('Failed to load HLS player library. Please refresh and try again.');
+                };
+                document.head.appendChild(script);
+            }
+        } else {
+            loadHlsStream(player, streamUrl);
+        }
+    } else {
+        // For other stream types, use native video player
+        player.src = streamUrl;
+        player.load();
+        player.play().catch(err => {
+            console.error('Error playing stream:', err);
+            showError('Unable to play this stream. It may not be supported by your browser.');
+        });
+    }
+}
+
+function loadHlsStream(player, streamUrl) {
+    if (Hls.isSupported()) {
+        const hls = new Hls({
+            enableWorker: true,
+            lowLatencyMode: true,
+        });
+        hls.loadSource(streamUrl);
+        hls.attachMedia(player);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            player.play().catch(err => {
+                console.error('Error playing HLS stream:', err);
+                showError('Error starting stream playback: ' + err.message);
+            });
+        });
+        hls.on(Hls.Events.ERROR, (event, data) => {
+            if (data.fatal) {
+                console.error('Fatal HLS error:', data);
+                showError('Error loading HLS stream: ' + data.details);
+            }
+        });
+        
+        // Store hls instance for cleanup
+        player._hls = hls;
+    } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
+        // Native HLS support (Safari)
+        player.src = streamUrl;
+        player.load();
+        player.play().catch(err => {
+            console.error('Error playing native HLS:', err);
+            showError('Error starting stream playback: ' + err.message);
+        });
+    } else {
+        showError('HLS streams are not supported in your browser.');
+    }
+}
+
+function closePreviewModal() {
+    const modal = document.getElementById('streamPreviewModal');
+    const player = document.getElementById('streamPreviewPlayer');
+    
+    // Stop playback
+    player.pause();
+    player.src = '';
+    
+    // Clean up HLS instance if exists
+    if (player._hls) {
+        player._hls.destroy();
+        player._hls = null;
+    }
+    
+    // Hide modal
+    modal.classList.add('hidden');
+    
+    // Return focus to the element that opened the modal
+    if (previousFocusedElement) {
+        previousFocusedElement.focus();
+        previousFocusedElement = null;
+    }
+}
+
+// Keyboard support for modal
+document.addEventListener('keydown', function(e) {
+    const modal = document.getElementById('streamPreviewModal');
+    if (!modal.classList.contains('hidden')) {
+        if (e.key === 'Escape') {
+            closePreviewModal();
+        }
+    }
+});
+
 function checkStream(streamId) {
     // Show modal
     document.getElementById('checkStreamModal').classList.remove('hidden');
@@ -268,10 +443,16 @@ function closeCheckModal() {
     document.getElementById('checkStreamModal').classList.add('hidden');
 }
 
-// Close modal when clicking outside
+// Close modals when clicking outside
 document.getElementById('checkStreamModal')?.addEventListener('click', function(e) {
     if (e.target === this) {
         closeCheckModal();
+    }
+});
+
+document.getElementById('streamPreviewModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closePreviewModal();
     }
 });
 </script>

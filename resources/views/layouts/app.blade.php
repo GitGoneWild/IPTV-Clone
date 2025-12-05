@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'HomelabTV')</title>
+    <title>@yield('title', 'StreamPilot')</title>
 
     <!-- Inter Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,7 @@
                         <svg class="h-8 w-8 text-homelab-500 group-hover:text-homelab-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                         </svg>
-                        <span class="ml-2 text-xl font-bold text-white">HomelabTV</span>
+                        <span class="ml-2 text-xl font-bold text-white">StreamPilot</span>
                     </a>
                 </div>
 
@@ -71,7 +71,7 @@
         <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center">
                 <div class="text-gh-text-muted text-sm">
-                    &copy; {{ date('Y') }} HomelabTV. For private homelab use only.
+                    &copy; {{ date('Y') }} StreamPilot. For private homelab use only.
                 </div>
                 <div class="text-gh-text-muted text-sm flex items-center">
                     <span class="inline-flex items-center mr-2">

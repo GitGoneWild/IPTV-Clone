@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Admin Panel') - HomelabTV</title>
+    <title>@yield('title', 'Admin Panel') - StreamPilot</title>
 
     <!-- Inter Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,19 +25,19 @@
                     <!-- Logo -->
                     <div class="flex-shrink-0 flex items-center">
                         <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold text-homelab-500">
-                            HomelabTV <span class="text-gh-text-muted text-sm">Admin</span>
+                            StreamPilot <span class="text-gh-text-muted text-sm">Admin</span>
                         </a>
                     </div>
 
                     <!-- Navigation Links -->
-                    <div class="hidden sm:ml-8 sm:flex sm:space-x-4">
+                    <div class="hidden sm:ml-8 sm:flex sm:space-x-4 items-center">
                         <a href="{{ route('admin.dashboard') }}" 
                            class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.dashboard') ? 'bg-gh-bg-tertiary text-homelab-400' : 'text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary' }}">
                             Dashboard
                         </a>
                         
                         <!-- Dropdown for Streaming -->
-                        <div class="relative" x-data="{ open: false }">
+                        <div class="relative inline-flex items-center" x-data="{ open: false }">
                             <button @click="open = !open" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.streams.*', 'admin.servers.*') ? 'bg-gh-bg-tertiary text-homelab-400' : 'text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary' }}">
                                 Streaming
                                 <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,7 +45,7 @@
                                 </svg>
                             </button>
                             <div x-show="open" @click.away="open = false" 
-                                 class="absolute left-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
+                                 class="absolute left-0 top-full mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
                                 <a href="{{ route('admin.streams.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Streams</a>
                                 <a href="{{ route('admin.servers.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Servers</a>
                                 <a href="{{ route('admin.load-balancers.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Load Balancers</a>
@@ -53,7 +53,7 @@
                         </div>
                         
                         <!-- Dropdown for Content -->
-                        <div class="relative" x-data="{ open: false }">
+                        <div class="relative inline-flex items-center" x-data="{ open: false }">
                             <button @click="open = !open" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.categories.*', 'admin.bouquets.*', 'admin.movies.*', 'admin.series.*') ? 'bg-gh-bg-tertiary text-homelab-400' : 'text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary' }}">
                                 Content
                                 <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,7 +61,7 @@
                                 </svg>
                             </button>
                             <div x-show="open" @click.away="open = false" 
-                                 class="absolute left-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
+                                 class="absolute left-0 top-full mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
                                 <a href="{{ route('admin.categories.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Categories</a>
                                 <a href="{{ route('admin.bouquets.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Bouquets</a>
                                 <a href="{{ route('admin.movies.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Movies</a>
@@ -71,7 +71,7 @@
                         </div>
                         
                         <!-- Dropdown for Users & Access -->
-                        <div class="relative" x-data="{ open: false }">
+                        <div class="relative inline-flex items-center" x-data="{ open: false }">
                             <button @click="open = !open" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.users.*', 'admin.devices.*', 'admin.geo-restrictions.*') ? 'bg-gh-bg-tertiary text-homelab-400' : 'text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary' }}">
                                 Users
                                 <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,7 +79,7 @@
                                 </svg>
                             </button>
                             <div x-show="open" @click.away="open = false" 
-                                 class="absolute left-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
+                                 class="absolute left-0 top-full mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
                                 <a href="{{ route('admin.users.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Users</a>
                                 <a href="{{ route('admin.devices.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Devices</a>
                                 <a href="{{ route('admin.geo-restrictions.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Geo Restrictions</a>
@@ -92,7 +92,7 @@
                         </a>
                         
                         <!-- Dropdown for Settings -->
-                        <div class="relative" x-data="{ open: false }">
+                        <div class="relative inline-flex items-center" x-data="{ open: false }">
                             <button @click="open = !open" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.settings.*') ? 'bg-gh-bg-tertiary text-homelab-400' : 'text-gh-text-muted hover:text-gh-text hover:bg-gh-bg-tertiary' }}">
                                 Settings
                                 <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,7 +100,7 @@
                                 </svg>
                             </button>
                             <div x-show="open" @click.away="open = false" 
-                                 class="absolute left-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
+                                 class="absolute left-0 top-full mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
                                 <a href="{{ route('admin.settings.integration-settings') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Integration Settings</a>
                                 <a href="{{ route('admin.settings.system-management') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">System Management</a>
                             </div>

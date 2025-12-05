@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
         // Create admin user
         $admin = User::create([
             'name' => 'Admin User',
-            'email' => 'admin@homelabtv.local',
+            'email' => 'admin@streampilot.local',
             'username' => 'admin',
             'password' => Hash::make('admin123'),
             'is_admin' => true,
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
         // Create sample regular user
         $user1 = User::create([
             'name' => 'Demo User',
-            'email' => 'demo@homelabtv.local',
+            'email' => 'demo@streampilot.local',
             'username' => 'demo',
             'password' => Hash::make('demo123'),
             'is_admin' => false,
@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
         // Create sample reseller
         $reseller = User::create([
             'name' => 'Reseller User',
-            'email' => 'reseller@homelabtv.local',
+            'email' => 'reseller@streampilot.local',
             'username' => 'reseller',
             'password' => Hash::make('reseller123'),
             'is_admin' => false,
@@ -61,8 +61,8 @@ class DatabaseSeeder extends Seeder
         // Create primary server
         $server = Server::create([
             'name' => 'Primary Server',
-            'base_url' => 'http://localhost:8080',
-            'http_port' => 8080,
+            'base_url' => 'http://localhost',
+            'http_port' => 80,
             'is_active' => true,
             'is_primary' => true,
             'max_connections' => 1000,
@@ -70,10 +70,10 @@ class DatabaseSeeder extends Seeder
 
         // Create categories
         $categories = [
-            ['name' => 'Live TV', 'sort_order' => 1],
-            ['name' => 'CCTV Cameras', 'sort_order' => 2],
-            ['name' => 'Homelab Streams', 'sort_order' => 3],
-            ['name' => 'Radio', 'sort_order' => 4],
+            ['name' => 'Live TV', 'sort_order' => 1, 'category_type' => 'live'],
+            ['name' => 'CCTV Cameras', 'sort_order' => 2, 'category_type' => 'live'],
+            ['name' => 'Streaming Sources', 'sort_order' => 3, 'category_type' => 'live'],
+            ['name' => 'Radio', 'sort_order' => 4, 'category_type' => 'live'],
         ];
 
         $createdCategories = [];

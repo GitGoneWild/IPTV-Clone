@@ -4,11 +4,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | HomelabTV Configuration
+    | StreamPilot Configuration
     |--------------------------------------------------------------------------
     */
 
-    'name' => env('APP_NAME', 'HomelabTV'),
+    'name' => env('APP_NAME', 'StreamPilot'),
 
     /*
     |--------------------------------------------------------------------------
@@ -16,7 +16,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'port' => env('HOMELABTV_DEFAULT_PORT', 8080),
+    'port' => env('STREAMPILOT_DEFAULT_PORT', 80),
 
     /*
     |--------------------------------------------------------------------------
@@ -24,8 +24,8 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'stream_check_interval' => env('HOMELABTV_STREAM_CHECK_INTERVAL', 60),
-    'stream_check_timeout' => env('HOMELABTV_STREAM_CHECK_TIMEOUT', 10),
+    'stream_check_interval' => env('STREAMPILOT_STREAM_CHECK_INTERVAL', 60),
+    'stream_check_timeout' => env('STREAMPILOT_STREAM_CHECK_TIMEOUT', 10),
 
     /*
     |--------------------------------------------------------------------------
@@ -33,7 +33,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'epg_update_interval' => env('HOMELABTV_EPG_UPDATE_INTERVAL', 3600),
+    'epg_update_interval' => env('STREAMPILOT_EPG_UPDATE_INTERVAL', 3600),
     'epg_storage_path' => storage_path('app/epg'),
 
     /*
@@ -42,7 +42,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'max_connections_per_user' => env('HOMELABTV_MAX_CONNECTIONS_PER_USER', 1),
+    'max_connections_per_user' => env('STREAMPILOT_MAX_CONNECTIONS_PER_USER', 1),
 
     /*
     |--------------------------------------------------------------------------
@@ -50,7 +50,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'enable_reseller_system' => env('HOMELABTV_ENABLE_RESELLER_SYSTEM', true),
+    'enable_reseller_system' => env('STREAMPILOT_ENABLE_RESELLER_SYSTEM', true),
     'default_reseller_credits' => 100,
 
     /*

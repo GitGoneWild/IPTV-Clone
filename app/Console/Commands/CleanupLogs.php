@@ -10,7 +10,7 @@ class CleanupLogs extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'homelabtv:cleanup-logs {--days=30 : Number of days to keep logs}';
+    protected $signature = 'streampilot:cleanup-logs {--days=30 : Number of days to keep logs}';
 
     /**
      * The console command description.

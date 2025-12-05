@@ -206,7 +206,7 @@ class StreamController extends AdminController
     protected function checkStreamHealth(Stream $stream): array
     {
         $url = $stream->getEffectiveUrl();
-        $timeout = min(config('homelabtv.stream_check_timeout', 10), 30);
+        $timeout = min(config('streampilot.stream_check_timeout', 10), 30);
 
         try {
             // Determine check method based on stream type

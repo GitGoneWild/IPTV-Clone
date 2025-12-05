@@ -12,7 +12,7 @@ class ImportEpg extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'homelabtv:import-epg {--source= : Specific EPG source ID to import}';
+    protected $signature = 'streampilot:import-epg {--source= : Specific EPG source ID to import}';
 
     /**
      * The console command description.

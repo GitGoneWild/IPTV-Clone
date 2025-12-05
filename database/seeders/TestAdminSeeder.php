@@ -16,7 +16,7 @@ class TestAdminSeeder extends Seeder
         // Create an admin user for testing
         $admin = User::create([
             'name' => 'Admin User',
-            'email' => 'admin@homelabtv.com',
+            'email' => 'admin@streampilot.local',
             'username' => 'admin',
             'password' => Hash::make('password'),
             'is_active' => true,
@@ -30,13 +30,13 @@ class TestAdminSeeder extends Seeder
         $admin->generateApiToken();
 
         $this->command->info('Admin user created successfully!');
-        $this->command->info('Email: admin@homelabtv.com');
+        $this->command->info('Email: admin@streampilot.local');
         $this->command->info('Password: password');
 
         // Create a test regular user
         $user = User::create([
             'name' => 'Test User',
-            'email' => 'user@homelabtv.com',
+            'email' => 'user@streampilot.local',
             'username' => 'testuser',
             'password' => Hash::make('password'),
             'is_active' => true,
@@ -50,13 +50,13 @@ class TestAdminSeeder extends Seeder
         $user->generateApiToken();
 
         $this->command->info('Test user created successfully!');
-        $this->command->info('Email: user@homelabtv.com');
+        $this->command->info('Email: user@streampilot.local');
         $this->command->info('Password: password');
 
         // Create a test guest user
         $guest = User::create([
             'name' => 'Guest User',
-            'email' => 'guest@homelabtv.com',
+            'email' => 'guest@streampilot.local',
             'username' => 'guestuser',
             'password' => Hash::make('password'),
             'is_active' => true,
@@ -70,7 +70,7 @@ class TestAdminSeeder extends Seeder
         $guest->generateApiToken();
 
         $this->command->info('Guest user created successfully!');
-        $this->command->info('Email: guest@homelabtv.com');
+        $this->command->info('Email: guest@streampilot.local');
         $this->command->info('Password: password');
     }
 }

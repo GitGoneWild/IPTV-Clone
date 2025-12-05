@@ -11,7 +11,7 @@ class CheckStreams extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'homelabtv:check-streams {--stream= : Specific stream ID to check}';
+    protected $signature = 'streampilot:check-streams {--stream= : Specific stream ID to check}';
 
     /**
      * The console command description.
@@ -72,7 +72,7 @@ class CheckStreams extends Command
     protected function checkStream(Stream $stream): string
     {
         $url = $stream->getEffectiveUrl();
-        $timeout = config('homelabtv.stream_check_timeout', 10);
+        $timeout = config('streampilot.stream_check_timeout', 10);
 
         try {
             // For HLS streams, check if m3u8 is accessible

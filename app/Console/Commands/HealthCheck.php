@@ -11,7 +11,7 @@ class HealthCheck extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'homelabtv:health-check';
+    protected $signature = 'streampilot:health-check';
 
     /**
      * The console command description.
@@ -117,7 +117,7 @@ class HealthCheck extends Command
      */
     protected function checkEpgDirectory(): bool
     {
-        $epgDir = config('homelabtv.epg_storage_path');
+        $epgDir = config('streampilot.epg_storage_path');
 
         try {
             if (! file_exists($epgDir)) {
@@ -153,7 +153,7 @@ class HealthCheck extends Command
             'app.key',
             'app.url',
             'database.default',
-            'homelabtv.port',
+            'streampilot.port',
         ];
 
         foreach ($required as $key) {

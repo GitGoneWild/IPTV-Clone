@@ -6,14 +6,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: homelabtv-app
+    container_name: streampilot-app
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
       - ./storage/app/epg:/var/www/html/storage/app/epg
     networks:
-      - homelabtv
+      - streampilot
     depends_on:
       - mysql
       - redis
@@ -21,27 +21,27 @@ services:
   # Nginx Web Server
   nginx:
     image: nginx:alpine
-    container_name: homelabtv-nginx
+    container_name: streampilot-nginx
     restart: unless-stopped
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "80:80"
+      - "443:443"
     volumes:
       - .:/var/www/html
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     networks:
-      - homelabtv
+      - streampilot
     depends_on:
       - app
 
   # MySQL Database
   mysql:
     image: mysql:8.0
-    container_name: homelabtv-mysql
+    container_name: streampilot-mysql
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: homelabtv
-      MYSQL_USER: homelabtv
+      MYSQL_DATABASE: streampilot
+      MYSQL_USER: streampilot
       MYSQL_PASSWORD: secret
       MYSQL_ROOT_PASSWORD: secret
     ports:
@@ -49,33 +49,33 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - homelabtv
+      - streampilot
 
   # Redis Cache
   redis:
     image: redis:alpine
-    container_name: homelabtv-redis
+    container_name: streampilot-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
-      - homelabtv
+      - streampilot
 
   # Queue Worker
   queue:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: homelabtv-queue
+    container_name: streampilot-queue
     restart: unless-stopped
     working_dir: /var/www/html
     command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
     volumes:
       - .:/var/www/html
     networks:
-      - homelabtv
+      - streampilot
     depends_on:
       - app
       - mysql
@@ -86,21 +86,21 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: homelabtv-scheduler
+    container_name: streampilot-scheduler
     restart: unless-stopped
     working_dir: /var/www/html
     command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
     volumes:
       - .:/var/www/html
     networks:
-      - homelabtv
+      - streampilot
     depends_on:
       - app
       - mysql
       - redis
 
 networks:
-  homelabtv:
+  streampilot:
     driver: bridge
 
 volumes:

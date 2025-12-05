@@ -10,7 +10,7 @@ class RestartChannels extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'homelabtv:restart-channels {--stream= : Specific stream ID to restart} {--all : Restart all active streams}';
+    protected $signature = 'streampilot:restart-channels {--stream= : Specific stream ID to restart} {--all : Restart all active streams}';
 
     /**
      * The console command description.
@@ -61,7 +61,7 @@ class RestartChannels extends Command
 
         $this->newLine();
         $this->info("Successfully restarted {$restarted} channel(s).");
-        $this->info('Run `php artisan homelabtv:check-streams` to verify stream status.');
+        $this->info('Run `php artisan streampilot:check-streams` to verify stream status.');
 
         return self::SUCCESS;
     }

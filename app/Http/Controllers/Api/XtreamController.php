@@ -163,7 +163,7 @@ class XtreamController extends Controller
 
         return response($bouquetFile, 200)
             ->header('Content-Type', 'text/plain')
-            ->header('Content-Disposition', 'attachment; filename="userbouquet.homelabtv.tv"');
+            ->header('Content-Disposition', 'attachment; filename="userbouquet.streampilot.tv"');
     }
 
     /**

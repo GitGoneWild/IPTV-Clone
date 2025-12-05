@@ -14,24 +14,24 @@ class ServerBuildStreamUrlTest extends TestCase
     {
         $server = Server::create([
             'name' => 'Test Server',
-            'base_url' => 'http://localhost:8080',
+            'base_url' => 'http://localhost',
             'is_active' => true,
         ]);
 
         // Relative path should be appended to base URL
         $result = $server->buildStreamUrl('/live/stream.m3u8');
-        $this->assertEquals('http://localhost:8080/live/stream.m3u8', $result);
+        $this->assertEquals('http://localhost/live/stream.m3u8', $result);
 
         // Without leading slash
         $result = $server->buildStreamUrl('live/stream.m3u8');
-        $this->assertEquals('http://localhost:8080/live/stream.m3u8', $result);
+        $this->assertEquals('http://localhost/live/stream.m3u8', $result);
     }
 
     public function test_build_stream_url_preserves_absolute_http_url(): void
     {
         $server = Server::create([
             'name' => 'Test Server',
-            'base_url' => 'http://localhost:8080',
+            'base_url' => 'http://localhost',
             'is_active' => true,
         ]);
 
@@ -45,7 +45,7 @@ class ServerBuildStreamUrlTest extends TestCase
     {
         $server = Server::create([
             'name' => 'Test Server',
-            'base_url' => 'http://localhost:8080',
+            'base_url' => 'http://localhost',
             'is_active' => true,
         ]);
 
@@ -59,7 +59,7 @@ class ServerBuildStreamUrlTest extends TestCase
     {
         $server = Server::create([
             'name' => 'Test Server',
-            'base_url' => 'http://localhost:8080',
+            'base_url' => 'http://localhost',
             'is_active' => true,
         ]);
 
@@ -73,7 +73,7 @@ class ServerBuildStreamUrlTest extends TestCase
     {
         $server = Server::create([
             'name' => 'Test Server',
-            'base_url' => 'http://localhost:8080',
+            'base_url' => 'http://localhost',
             'is_active' => true,
         ]);
 
@@ -87,12 +87,12 @@ class ServerBuildStreamUrlTest extends TestCase
     {
         $server = Server::create([
             'name' => 'Test Server',
-            'base_url' => 'http://localhost:8080/',
+            'base_url' => 'http://localhost/',
             'is_active' => true,
         ]);
 
         // Should not have double slashes
         $result = $server->buildStreamUrl('/live/stream.m3u8');
-        $this->assertEquals('http://localhost:8080/live/stream.m3u8', $result);
+        $this->assertEquals('http://localhost/live/stream.m3u8', $result);
     }
 }

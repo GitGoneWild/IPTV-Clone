@@ -1,8 +1,8 @@
 {
-    "name": "homelabtv/iptv-panel",
+    "name": "streampilot/iptv-panel",
     "type": "project",
-    "description": "HomelabTV - Private IPTV Management Panel for Homelab and Legal Streams",
-    "keywords": ["laravel", "iptv", "homelab", "streaming"],
+    "description": "StreamPilot - Advanced IPTV Management Panel for Streaming and VOD",
+    "keywords": ["laravel", "iptv", "streaming", "vod", "live-tv"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
