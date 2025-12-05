@@ -548,12 +548,12 @@ npm run format:check # Check code formatting
 
 ### Frontend Stack
 
-- **Build Tool**: Vite 5.x
-- **CSS Framework**: Tailwind CSS 3.x
+- **Build Tool**: Vite 7.x
+- **CSS Framework**: Tailwind CSS 4.x (configured via `@theme` directive in CSS)
 - **JavaScript Framework**: Alpine.js 3.x
 - **Admin Panel**: Laravel Controllers & Blade Templates
 
-**Note**: Currently, the application uses CDN-based Tailwind CSS. The Vite configuration is provided for future frontend development and customization.
+**Note**: The application uses Vite to build and bundle Tailwind CSS and Alpine.js. Run `npm run build` to compile assets for production, or `npm run dev` for development with hot reload.
 
 ## 🔒 Security
 
