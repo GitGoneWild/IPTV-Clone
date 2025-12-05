@@ -153,7 +153,7 @@ class HealthCheck extends Command
             'app.key',
             'app.url',
             'database.default',
-            'homelabtv.port',
+            'streampilot.port',
         ];
 
         foreach ($required as $key) {
