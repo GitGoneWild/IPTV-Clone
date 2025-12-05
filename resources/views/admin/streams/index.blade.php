@@ -367,17 +367,6 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-    
-    // Clean up HLS instance if exists
-    if (player._hls) {
-        player._hls.destroy();
-        player._hls = null;
-    }
-    
-    // Hide modal
-    modal.classList.add('hidden');
-}
-
 function checkStream(streamId) {
     // Show modal
     document.getElementById('checkStreamModal').classList.remove('hidden');
