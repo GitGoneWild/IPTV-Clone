@@ -146,4 +146,26 @@ class FormSubmissionsTest extends TestCase
 
         $response->assertRedirect('/dashboard');
     }
+
+    /**
+     * Test that authenticated users are redirected from login page.
+     */
+    public function test_authenticated_users_redirected_from_login(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/login');
+        $response->assertRedirect('/dashboard');
+    }
+
+    /**
+     * Test that authenticated users are redirected from register page.
+     */
+    public function test_authenticated_users_redirected_from_register(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/register');
+        $response->assertRedirect('/dashboard');
+    }
 }
