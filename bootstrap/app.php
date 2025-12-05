@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+            'guest' => \Illuminate\Auth\Middleware\RedirectIfAuthenticated::class,
             'throttle.api' => \App\Http\Middleware\ApiRateLimiter::class,
             'xtream.auth' => \App\Http\Middleware\XtreamAuthentication::class,
             'log.api' => \App\Http\Middleware\LogApiUsage::class,
