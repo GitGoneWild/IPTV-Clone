@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Stream;
 use App\Models\User;
 use Illuminate\View\View;
+use Spatie\Permission\Exceptions\RoleDoesNotExist;
 
 /**
  * Admin Dashboard Controller
@@ -23,9 +24,8 @@ class DashboardController extends AdminController
         $guestUsersCount = 0;
         try {
             $guestUsersCount = User::role('guest')->count();
-        } catch (\Spatie\Permission\Exceptions\RoleDoesNotExist $e) {
-            // Guest role doesn't exist, default to 0
-            $guestUsersCount = 0;
+        } catch (RoleDoesNotExist $e) {
+            // Guest role doesn't exist, use default value of 0
         }
 
         $stats = [
