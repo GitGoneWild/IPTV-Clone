@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -20,34 +22,40 @@ return new class extends Migration
         });
         
         // Generate slugs for existing records
-        $categories = \DB::table('categories')->whereNull('slug')->get();
+        $categories = DB::table('categories')->whereNull('slug')->get();
+        $existingSlugs = [];
+        
         foreach ($categories as $category) {
-            $slug = \Illuminate\Support\Str::slug($category->name);
+            $slug = Str::slug($category->name);
             $count = 1;
             $originalSlug = $slug;
             
-            // Ensure uniqueness
-            while (\DB::table('categories')->where('slug', $slug)->exists()) {
+            // Ensure uniqueness against already processed slugs
+            while (in_array($slug, $existingSlugs) || DB::table('categories')->where('slug', $slug)->exists()) {
                 $slug = $originalSlug . '-' . $count;
                 $count++;
             }
             
-            \DB::table('categories')->where('id', $category->id)->update(['slug' => $slug]);
+            $existingSlugs[] = $slug;
+            DB::table('categories')->where('id', $category->id)->update(['slug' => $slug]);
         }
         
-        $bouquets = \DB::table('bouquets')->whereNull('slug')->get();
+        $bouquets = DB::table('bouquets')->whereNull('slug')->get();
+        $existingSlugs = [];
+        
         foreach ($bouquets as $bouquet) {
-            $slug = \Illuminate\Support\Str::slug($bouquet->name);
+            $slug = Str::slug($bouquet->name);
             $count = 1;
             $originalSlug = $slug;
             
-            // Ensure uniqueness
-            while (\DB::table('bouquets')->where('slug', $slug)->exists()) {
+            // Ensure uniqueness against already processed slugs
+            while (in_array($slug, $existingSlugs) || DB::table('bouquets')->where('slug', $slug)->exists()) {
                 $slug = $originalSlug . '-' . $count;
                 $count++;
             }
             
-            \DB::table('bouquets')->where('id', $bouquet->id)->update(['slug' => $slug]);
+            $existingSlugs[] = $slug;
+            DB::table('bouquets')->where('id', $bouquet->id)->update(['slug' => $slug]);
         }
         
         // Now make the columns unique and non-nullable
