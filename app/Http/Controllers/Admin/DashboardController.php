@@ -19,10 +19,19 @@ class DashboardController extends AdminController
      */
     public function index(): View
     {
+        // Check if guest role exists before querying
+        $guestUsersCount = 0;
+        try {
+            $guestUsersCount = User::role('guest')->count();
+        } catch (\Spatie\Permission\Exceptions\RoleDoesNotExist $e) {
+            // Guest role doesn't exist, default to 0
+            $guestUsersCount = 0;
+        }
+
         $stats = [
             'total_users' => User::count(),
             'active_users' => User::where('is_active', true)->count(),
-            'guest_users' => User::role('guest')->count(),
+            'guest_users' => $guestUsersCount,
             'total_streams' => Stream::count(),
             'online_streams' => Stream::where('last_check_status', 'online')->count(),
             'total_categories' => Category::count(),
