@@ -69,6 +69,16 @@ class Stream extends Model
     }
 
     /**
+     * Get the transcode profiles assigned to this stream.
+     */
+    public function transcodeProfiles(): BelongsToMany
+    {
+        return $this->belongsToMany(TranscodeProfile::class, 'stream_transcode_profiles')
+            ->withPivot('is_default')
+            ->withTimestamps();
+    }
+
+    /**
      * Get EPG programs for this stream.
      */
     public function epgPrograms(): HasMany

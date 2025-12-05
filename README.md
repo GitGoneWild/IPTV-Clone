@@ -95,6 +95,9 @@ Scalable content distribution with automatic load balancing:
 - 🎨 Dark GitHub-style theme with purple accents
 - 🎭 **TMDB Integration**: Automatic metadata import for movies and TV series
 - 🚀 **Production Ready**: CodeQL verified, comprehensive documentation
+- 🔄 **Laravel Horizon**: Advanced queue monitoring and management
+- 🎬 **FFmpeg Transcoding**: Built-in transcode profiles for adaptive streaming
+- 🏎️ **Multi-Queue System**: Optimized task processing (EPG, streams, health checks)
 
 ## 🏗️ Tech Stack
 
@@ -103,8 +106,10 @@ Scalable content distribution with automatic load balancing:
 - **Frontend**: Alpine.js, Tailwind CSS 3
 - **Authentication**: API tokens (recommended) + password fallback for legacy XTREAM Codes compatibility
 - **Database**: MySQL / MariaDB / SQLite
+- **Queue Management**: Laravel Horizon with Redis
+- **Cache**: Redis for high-performance caching
+- **Transcoding**: FFmpeg with customizable profiles
 - **External APIs**: TMDB (The Movie Database)
-- **Cache**: Redis
 - **Containerization**: Docker + docker-compose
 
 ## 🔧 Code Quality
@@ -163,6 +168,12 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
    docker-compose exec app php artisan key:generate
    docker-compose exec app php artisan migrate --seed
    docker-compose exec app php artisan storage:link
+   
+   # Seed transcode profiles
+   docker-compose exec app php artisan db:seed --class=TranscodeProfileSeeder
+   
+   # Start Horizon for queue management
+   docker-compose exec app php artisan horizon
    ```
 
 5. **Generate API tokens for users**
@@ -178,6 +189,7 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
 7. **Access the application**
    - Frontend: http://localhost:8080
    - Admin Panel: http://localhost:8080/admin
+   - Horizon Dashboard: http://localhost:8080/admin/horizon
 
 
 ### Default Credentials
@@ -296,6 +308,41 @@ To enable automatic metadata import for movies and TV series:
    - Download posters, backdrops, and trailers
    - Get genre and content ratings automatically
 
+### FFmpeg & Transcoding Profiles
+
+HomelabTV includes built-in support for FFmpeg transcoding with customizable profiles.
+
+**Prerequisites:**
+- FFmpeg 4.4+ installed on the server
+- Sufficient CPU/GPU resources for transcoding
+
+**Features:**
+- ✅ Adaptive bitrate streaming (HLS)
+- ✅ Multiple quality profiles (1080p, 720p, 480p)
+- ✅ Video codec support (H.264, H.265)
+- ✅ Audio transcoding (AAC, MP3)
+- ✅ Container format conversion (MPEG-TS, HLS, MP4)
+- ✅ Custom FFmpeg arguments
+
+**Default Transcode Profiles:**
+1. **Original (No Transcode)** - Pass through without modification
+2. **1080p H.264 HLS** - Full HD streaming with HLS segmentation
+3. **720p H.264 HLS** - HD streaming optimized for mobile
+4. **480p H.264 HLS** - SD streaming for low bandwidth
+5. **1080p H.265 HLS** - Full HD with HEVC encoding
+6. **MPEG-TS Direct** - Transport stream for IPTV compatibility
+
+**Managing Profiles:**
+1. Login to admin panel
+2. Navigate to **Admin → Transcode Profiles**
+3. Create, edit, or delete profiles
+4. Assign profiles to streams for adaptive bitrate streaming
+
+**Seed Default Profiles:**
+```bash
+php artisan db:seed --class=TranscodeProfileSeeder
+```
+
 ### Health Checks
 
 Run system health checks to verify installation:
@@ -413,7 +460,34 @@ curl "http://localhost:8080/get.php?username=demo&password=YOUR_API_TOKEN&type=m
 curl "http://localhost:8080/xmltv.php?username=demo&password=YOUR_API_TOKEN"
 ```
 
-## 📅 Scheduled Tasks
+## 📅 Scheduled Tasks & Queue Management
+
+### Laravel Horizon
+
+HomelabTV uses Laravel Horizon for advanced queue management and monitoring.
+
+**Features:**
+- 📊 Real-time queue monitoring dashboard
+- 📈 Job metrics and throughput graphs
+- ⚠️ Failed job management and retries
+- ⚖️ Automatic worker load balancing
+- 🎯 Multiple queue priorities
+
+**Access Horizon Dashboard:**
+```
+http://your-domain.com/admin/horizon
+```
+
+Only admin users can access the Horizon dashboard.
+
+**Queue Structure:**
+- **default**: General background jobs
+- **epg**: EPG imports and updates (higher memory)
+- **imports**: Large file imports (XMLTV, M3U)
+- **streams**: Stream health checks
+- **health-checks**: System health monitoring
+
+### Scheduled Tasks
 
 The application includes automated tasks:
 
@@ -530,14 +604,22 @@ This project is open-sourced software licensed under the [MIT license](LICENSE).
 
 ## 📚 Documentation
 
-### API Documentation
+### Complete Guides
+- **[Complete Deployment Guide](docs/DEPLOYMENT_GUIDE.md)** - Production deployment from start to finish
+- **[Complete API Reference](docs/API_REFERENCE.md)** - All APIs documented with examples
+- **[Xtream Codes API Guide](docs/XTREAM_API.md)** - Detailed Xtream API documentation
 - **[Flutter API Guide](docs/FLUTTER_API.md)** - Complete REST API reference for Flutter apps
+- **[User Management & Billing](docs/USER_MANAGEMENT_BILLING.md)** - User workflows and billing system
+
+### Operations & Management
 - **[Load Balancer Deployment](docs/LOAD_BALANCER_DEPLOYMENT.md)** - Setup and configuration guide
 - **[Admin Operations Runbook](docs/ADMIN_OPERATIONS.md)** - Daily operations and troubleshooting
-- **[API Implementation Summary](docs/API_IMPLEMENTATION_SUMMARY.md)** - Technical overview and architecture
+- **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues and solutions
 
-### Additional Resources
-- [CODE_QUALITY.md](CODE_QUALITY.md) - Comprehensive code quality documentation
+### Technical Resources
+- **[CODE_QUALITY.md](CODE_QUALITY.md)** - Comprehensive code quality documentation
+- **[API Implementation Summary](docs/API_IMPLEMENTATION_SUMMARY.md)** - Technical overview and architecture
+- **[Blade Admin Quick Start](docs/BLADE_ADMIN_QUICK_START.md)** - Admin panel development guide
 - [API Documentation](#api-usage) - Legacy API endpoint usage
 - [Security Guide](CODE_QUALITY.md#security-improvements) - Security best practices
 - [Migration Guide](CODE_QUALITY.md#migration-guide) - Upgrade instructions
