@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'HomelabTV - Private IPTV Management')
+@section('title', 'StreamPilot - Private IPTV Management')
 
 @section('content')
 <!-- Hero Section - Compact and Modern -->

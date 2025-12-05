@@ -19,9 +19,9 @@ class SettingsController extends AdminController
     public function integrationSettings(): View
     {
         $settings = [
-            'real_debrid_enabled' => config('homelabtv.integrations.real_debrid.enabled', false),
-            'tmdb_enabled' => config('homelabtv.integrations.tmdb.enabled', false),
-            'epg_enabled' => config('homelabtv.integrations.epg.enabled', true),
+            'real_debrid_enabled' => config('streampilot.integrations.real_debrid.enabled', false),
+            'tmdb_enabled' => config('streampilot.integrations.tmdb.enabled', false),
+            'epg_enabled' => config('streampilot.integrations.epg.enabled', true),
         ];
 
         return view('admin.settings.integration-settings', compact('settings'));

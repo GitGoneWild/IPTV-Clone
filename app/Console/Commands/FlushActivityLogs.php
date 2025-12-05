@@ -10,7 +10,7 @@ class FlushActivityLogs extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'homelabtv:flush-activity-logs {--days=7 : Number of days to keep activity logs}';
+    protected $signature = 'streampilot:flush-activity-logs {--days=7 : Number of days to keep activity logs}';
 
     /**
      * The console command description.

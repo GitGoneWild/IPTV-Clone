@@ -15,7 +15,7 @@ class ApiRateLimiter
     public function handle(Request $request, Closure $next): Response
     {
         $key = $this->resolveRequestSignature($request);
-        $maxAttempts = config('homelabtv.api_rate_limit_per_minute', 100);
+        $maxAttempts = config('streampilot.api_rate_limit_per_minute', 100);
 
         if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
             return response()->json([

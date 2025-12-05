@@ -46,7 +46,7 @@ class StreamVerificationService
 
     public function __construct()
     {
-        $timeout = config('homelabtv.stream_check_timeout', 10);
+        $timeout = config('streampilot.stream_check_timeout', 10);
         // Ensure timeout is within reasonable bounds
         $this->timeout = max(self::MIN_TIMEOUT, min(self::MAX_TIMEOUT, (int) $timeout));
     }

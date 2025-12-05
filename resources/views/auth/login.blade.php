@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Login - HomelabTV')
+@section('title', 'Login - StreamPilot')
 
 @section('content')
 <div class="min-h-[calc(100vh-12rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -15,7 +15,7 @@
                 </div>
             </div>
             <h2 class="mt-6 text-center text-3xl font-extrabold text-white">
-                Sign in to HomelabTV
+                Sign in to StreamPilot
             </h2>
             <p class="mt-2 text-center text-sm text-gh-text-muted">
                 Access your private IPTV dashboard

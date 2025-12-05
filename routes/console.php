@@ -9,23 +9,23 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Schedule EPG import
-Schedule::command('homelabtv:import-epg')
+Schedule::command('streampilot:import-epg')
     ->hourly()
     ->withoutOverlapping()
     ->runInBackground();
 
 // Schedule stream health check
-Schedule::command('homelabtv:check-streams')
+Schedule::command('streampilot:check-streams')
     ->everyMinute()
     ->withoutOverlapping()
     ->runInBackground();
 
 // Clean up old connection logs
-Schedule::command('homelabtv:cleanup-logs')
+Schedule::command('streampilot:cleanup-logs')
     ->daily()
     ->withoutOverlapping();
 
 // Flush activity logs every 6 hours
-Schedule::command('homelabtv:flush-activity-logs --days=7')
+Schedule::command('streampilot:flush-activity-logs --days=7')
     ->everySixHours()
     ->withoutOverlapping();

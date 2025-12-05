@@ -321,7 +321,7 @@ class XtreamService
     {
         return [
             'url' => config('app.url'),
-            'port' => config('homelabtv.port'),
+            'port' => config('streampilot.port'),
             'https_port' => '443',
             'server_protocol' => 'http',
             'rtmp_port' => '1935',

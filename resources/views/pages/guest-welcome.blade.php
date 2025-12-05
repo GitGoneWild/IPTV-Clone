@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Welcome - HomelabTV')
+@section('title', 'Welcome - StreamPilot')
 
 @section('content')
 <div class="min-h-[calc(100vh-12rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <h1 class="text-3xl font-bold text-white mb-2">
-                    Welcome to HomelabTV, {{ $user->name }}! 👋
+                    Welcome to StreamPilot, {{ $user->name }}! 👋
                 </h1>
                 <p class="text-gh-text-muted text-lg">
                     Your account has been successfully created

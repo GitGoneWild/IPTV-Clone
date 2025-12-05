@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Register - HomelabTV')
+@section('title', 'Register - StreamPilot')
 
 @section('content')
 <div class="min-h-[calc(100vh-12rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -18,7 +18,7 @@
                 Create your account
             </h2>
             <p class="mt-2 text-center text-sm text-gh-text-muted">
-                Join HomelabTV to access your private IPTV streams
+                Join StreamPilot to access your private IPTV streams
             </p>
         </div>
 

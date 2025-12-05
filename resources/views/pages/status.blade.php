@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'System Status - HomelabTV')
+@section('title', 'System Status - StreamPilot')
 
 @section('content')
 <div class="py-8">
@@ -220,11 +220,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <h4 class="text-sm font-medium text-gh-text-muted mb-2">Stream Health Check</h4>
-                        <p class="text-white">Streams are checked every {{ config('homelabtv.stream_check_interval', 60) }} seconds</p>
+                        <p class="text-white">Streams are checked every {{ config('streampilot.stream_check_interval', 60) }} seconds</p>
                     </div>
                     <div>
                         <h4 class="text-sm font-medium text-gh-text-muted mb-2">EPG Updates</h4>
-                        <p class="text-white">Program guide updated every {{ config('homelabtv.epg_update_interval', 3600) / 60 }} minutes</p>
+                        <p class="text-white">Program guide updated every {{ config('streampilot.epg_update_interval', 3600) / 60 }} minutes</p>
                     </div>
                     <div>
                         <h4 class="text-sm font-medium text-gh-text-muted mb-2">API Status</h4>

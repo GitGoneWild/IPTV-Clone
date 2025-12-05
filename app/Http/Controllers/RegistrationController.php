@@ -41,7 +41,7 @@ class RegistrationController extends Controller
             'is_active' => true,
             'is_admin' => false,
             'is_reseller' => false,
-            'max_connections' => config('homelabtv.max_connections_per_user', 1),
+            'max_connections' => config('streampilot.max_connections_per_user', 1),
             'allowed_outputs' => ['m3u', 'xtream', 'enigma2'],
         ]);
 

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard - HomelabTV')
+@section('title', 'Dashboard - StreamPilot')
 
 @section('content')
 <div class="py-12">

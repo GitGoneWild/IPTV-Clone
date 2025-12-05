@@ -40,7 +40,7 @@ class AdminController extends Controller
      */
     protected function getOutputFormats(): array
     {
-        return config('homelabtv.output_formats', [
+        return config('streampilot.output_formats', [
             'm3u' => 'M3U Playlist',
             'xtream' => 'Xtream Codes',
             'enigma2' => 'Enigma2',
