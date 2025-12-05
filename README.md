@@ -1,7 +1,6 @@
 # HomelabTV - Private IPTV Management Panel
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat-square&logo=laravel)](https://laravel.com)
-[![Filament](https://img.shields.io/badge/Filament-3.x-FDAE4B?style=flat-square)](https://filamentphp.com)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
 A self-hosted IPTV management panel designed for homelab enthusiasts to manage legal streams, CCTV cameras, and private channels.
@@ -22,7 +21,7 @@ A self-hosted IPTV management panel designed for homelab enthusiasts to manage l
 
 ## ✨ Features
 
-### Admin Panel (FilamentPHP)
+### Admin Panel
 - 🎬 **Stream Management**: Support for HLS, MPEG-TS, RTMP, and HTTP streams
 - 📁 **Categories & Subcategories**: Organize your streams hierarchically
 - 📺 **EPG Import**: XMLTV file upload and URL import with automatic updates
@@ -85,7 +84,7 @@ Scalable content distribution with automatic load balancing:
 - ⚖️ **Smart Routing**: Weight and capacity-based selection
 - 💓 **Health Monitoring**: Automatic heartbeat and health checks
 - 📊 **Real-time Stats**: CPU, memory, connections, bandwidth tracking
-- 🔧 **Admin UI**: Complete Filament integration for management
+- 🔧 **Admin UI**: Complete web-based interface for management
 - 📦 **Easy Deployment**: Docker-based with automated setup
 - **Documentation**: See `/docs/LOAD_BALANCER_DEPLOYMENT.md`
 
@@ -100,8 +99,8 @@ Scalable content distribution with automatic load balancing:
 ## 🏗️ Tech Stack
 
 - **Backend**: Laravel 12, PHP 8.2+
-- **Admin Panel**: Filament 3
-- **Frontend**: Livewire 3, Alpine.js, Tailwind CSS 3
+- **Admin Panel**: Laravel Controllers & Blade Templates
+- **Frontend**: Alpine.js, Tailwind CSS 3
 - **Authentication**: API tokens (recommended) + password fallback for legacy XTREAM Codes compatibility
 - **Database**: MySQL / MariaDB / SQLite
 - **External APIs**: TMDB (The Movie Database)
@@ -435,9 +434,6 @@ To run the scheduler, add this cron entry:
 homelabtv/
 ├── app/
 │   ├── Console/Commands/     # Artisan commands
-│   ├── Filament/             # Admin panel resources
-│   │   ├── Resources/        # CRUD resources
-│   │   └── Widgets/          # Dashboard widgets
 │   ├── Http/
 │   │   ├── Controllers/      # Web & API controllers
 │   │   ├── Middleware/       # Custom middleware
@@ -481,7 +477,7 @@ npm run format:check # Check code formatting
 - **Build Tool**: Vite 5.x
 - **CSS Framework**: Tailwind CSS 3.x
 - **JavaScript Framework**: Alpine.js 3.x
-- **Admin Panel**: Filament 3.x with Livewire 3.x
+- **Admin Panel**: Laravel Controllers & Blade Templates
 
 **Note**: Currently, the application uses CDN-based Tailwind CSS. The Vite configuration is provided for future frontend development and customization.
 
@@ -529,9 +525,8 @@ This project is open-sourced software licensed under the [MIT license](LICENSE).
 ## 🙏 Acknowledgments
 
 - [Laravel](https://laravel.com) - The PHP Framework
-- [Filament](https://filamentphp.com) - Admin Panel
+- [Alpine.js](https://alpinejs.dev) - Minimal JavaScript Framework
 - [Tailwind CSS](https://tailwindcss.com) - Styling
-- [Livewire](https://livewire.laravel.com) - Frontend Components
 
 ## 📚 Documentation
 
