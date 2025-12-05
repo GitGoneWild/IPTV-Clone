@@ -4,9 +4,87 @@ This document provides solutions for common issues you may encounter while runni
 
 ## Table of Contents
 
+- [Livewire Class Not Found Error](#livewire-class-not-found-error)
 - [TMDB API SSL Certificate Error](#tmdb-api-ssl-certificate-error)
 - [Stream Playback Issues](#stream-playback-issues)
 - [Admin Panel Access Problems](#admin-panel-access-problems)
+
+---
+
+## Livewire Class Not Found Error
+
+### Error Message
+```
+Class "Livewire\Mechanisms\ExtendBlade\ExtendBlade" not found
+```
+
+### Cause
+This error occurs when Laravel is trying to load cached Blade template files that contain Livewire directives from a previous version of the application. Livewire is not currently used in this project, so these cached files are outdated.
+
+### Solution
+
+Clear the view cache and other Laravel caches:
+
+```bash
+# Clear view cache
+php artisan view:clear
+
+# Clear all caches
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+
+# Clear compiled files
+php artisan clear-compiled
+```
+
+### For Docker Installations
+
+If you're running in Docker, execute the commands inside the container:
+
+```bash
+docker-compose exec app php artisan view:clear
+docker-compose exec app php artisan cache:clear
+docker-compose exec app php artisan config:clear
+docker-compose exec app php artisan route:clear
+docker-compose exec app php artisan clear-compiled
+```
+
+### Prevention
+
+To prevent this issue in the future:
+
+1. **Always clear caches after updating**: Run cache clearing commands after pulling new code or switching branches
+2. **Use a clear script**: Create a script to automate cache clearing (see below)
+3. **Check .gitignore**: Ensure `storage/framework/views/` is in `.gitignore` (it is by default)
+
+### Quick Clear Script
+
+You can create a helper script to clear all caches at once. Add this to your project root:
+
+**clear-cache.sh**:
+```bash
+#!/bin/bash
+php artisan view:clear
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan clear-compiled
+echo "✅ All caches cleared successfully!"
+```
+
+Make it executable:
+```bash
+chmod +x clear-cache.sh
+./clear-cache.sh
+```
+
+### Verification
+
+After clearing caches, verify the issue is resolved by:
+1. Accessing the homepage or the page that was showing the error
+2. Checking the Laravel logs: `tail -f storage/logs/laravel.log`
+3. Ensuring no Livewire-related errors appear
 
 ---
 
