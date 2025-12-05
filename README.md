@@ -1,11 +1,11 @@
-# HomelabTV - Private IPTV Management Panel
+# StreamPilot - Advanced IPTV Management Panel
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat-square&logo=laravel)](https://laravel.com)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
-A self-hosted IPTV management panel designed for homelab enthusiasts to manage legal streams, CCTV cameras, and private channels.
+A powerful self-hosted IPTV management panel designed for streaming enthusiasts to manage live TV, movies, series, and VOD content.
 
-> ⚠️ **Legal Notice**: This software is intended for private homelab use with legally sourced streams only. Do not use for piracy or illegal content distribution.
+> ⚠️ **Legal Notice**: This software is intended for private use with legally sourced streams only. Do not use for piracy or illegal content distribution.
 
 ## 📋 Table of Contents
 
@@ -23,21 +23,26 @@ A self-hosted IPTV management panel designed for homelab enthusiasts to manage l
 
 ### Admin Panel
 - 🎬 **Stream Management**: Support for HLS, MPEG-TS, RTMP, and HTTP streams
-- 📁 **Categories & Subcategories**: Organize your streams hierarchically
+  - ▶️ **Live Stream Preview**: Built-in video player with play button to preview streams directly in admin panel
+  - 🔍 **Stream Health Check**: Real-time validation of stream availability
+- 📁 **Categories & Subcategories**: Organize content hierarchically with automatic slug generation
 - 📺 **EPG Import**: XMLTV file upload and URL import with automatic updates
 - 🖥️ **Server Management**: Multiple streaming servers with load balancing
 - 📦 **Enhanced Bouquet Management**: 
   - Channel packages organized by category type (Live TV, Movies, Series)
   - Regional categorization (UK, US, etc.)
   - Pre-configured bouquets for UK and US content
+  - Automatic URL-friendly slugs
 - 🎬 **Movie Management**: 
   - Full movie catalog with metadata
   - TMDB integration for automatic metadata import
-  - Poster, backdrop, and trailer support
+  - Poster, backdrop, and trailer support via Spatie Media Library
+  - Local file storage and remote streaming support
 - 📺 **TV Series Management**:
   - Comprehensive series and episode management
   - Season and episode tracking
   - TMDB integration for automatic metadata import
+  - Media management with Spatie Media Library
 
 ### User Management & Role-Based Access
 - 👤 **User Registration**: Public signup with automatic guest role assignment
@@ -96,7 +101,11 @@ Scalable content distribution with automatic load balancing:
 - 🎭 **TMDB Integration**: Automatic metadata import for movies and TV series
 - 🚀 **Production Ready**: CodeQL verified, comprehensive documentation
 - 🔄 **Laravel Horizon**: Advanced queue monitoring and management
-- 🎬 **FFmpeg Transcoding**: Built-in transcode profiles for adaptive streaming
+- 🎬 **FFmpeg Transcoding**: Built-in transcode profiles for adaptive streaming (pbmedia/laravel-ffmpeg)
+- 📸 **Media Management**: Spatie Media Library for posters, backdrops, and trailers
+- 🔗 **Auto Slugs**: Spatie Sluggable for SEO-friendly URLs
+- 👥 **Role-Based Access**: Spatie Laravel Permission for granular access control
+- 🎥 **HLS Support**: achyutn/laravel-hls for adaptive streaming
 - 🏎️ **Multi-Queue System**: Optimized task processing (EPG, streams, health checks)
 
 ## 🏗️ Tech Stack
@@ -108,9 +117,43 @@ Scalable content distribution with automatic load balancing:
 - **Database**: MySQL / MariaDB / SQLite
 - **Queue Management**: Laravel Horizon with Redis
 - **Cache**: Redis for high-performance caching
-- **Transcoding**: FFmpeg with customizable profiles
+- **Transcoding**: FFmpeg with customizable profiles (pbmedia/laravel-ffmpeg)
+- **HLS Streaming**: achyutn/laravel-hls for adaptive streaming
+- **Media Management**: Spatie Media Library for attachments
+- **Permissions**: Spatie Laravel Permission for RBAC
+- **Slugs**: Spatie Sluggable for SEO-friendly URLs
 - **External APIs**: TMDB (The Movie Database)
 - **Containerization**: Docker + docker-compose
+
+### Integrated Packages
+
+StreamPilot leverages powerful Laravel packages for enhanced functionality:
+
+1. **pbmedia/laravel-ffmpeg**: Video transcoding and processing
+   - Adaptive bitrate streaming
+   - Multiple quality profiles
+   - Custom FFmpeg commands
+
+2. **achyutn/laravel-hls**: HLS stream generation
+   - M3U8 playlist creation
+   - Stream segmentation
+   - Encryption support
+
+3. **spatie/laravel-permission**: Role-based access control
+   - 4 user roles (Admin, Reseller, User, Guest)
+   - Granular permissions
+   - Role escalation
+
+4. **spatie/laravel-sluggable**: Automatic slug generation
+   - SEO-friendly URLs for categories
+   - Unique slugs for bouquets
+   - Automatic conflict resolution
+
+5. **spatie/laravel-medialibrary**: Media management
+   - Poster uploads for movies/series
+   - Backdrop images
+   - Trailer management
+   - Automatic image optimization
 
 ## 🔧 Code Quality
 
@@ -148,8 +191,8 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/homelabtv.git
-   cd homelabtv
+   git clone https://github.com/yourusername/streampilot.git
+   cd streampilot
    ```
 
 2. **Copy environment file**
@@ -183,13 +226,13 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
 
 6. **Verify system health**
    ```bash
-   docker-compose exec app php artisan homelabtv:health-check
+   docker-compose exec app php artisan streampilot:health-check
    ```
 
 7. **Access the application**
-   - Frontend: http://localhost:8080
-   - Admin Panel: http://localhost:8080/admin
-   - Horizon Dashboard: http://localhost:8080/admin/horizon
+   - Frontend: http://localhost
+   - Admin Panel: http://localhost/admin
+   - Horizon Dashboard: http://localhost/admin/horizon
 
 
 ### Default Credentials
@@ -198,9 +241,9 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
 
 | User Type | Email | Username | Password | Use Case |
 |-----------|-------|----------|----------|----------|
-| Admin | admin@homelabtv.local | admin | admin123 | Full system access |
-| Demo User | demo@homelabtv.local | demo | demo123 | Testing viewer features |
-| Reseller | reseller@homelabtv.local | reseller | reseller123 | Reseller features testing |
+| Admin | admin@streampilot.local | admin | admin123 | Full system access |
+| Demo User | demo@streampilot.local | demo | demo123 | Testing viewer features |
+| Reseller | reseller@streampilot.local | reseller | reseller123 | Reseller features testing |
 
 **⚠️ Important**: 
 - Change these default passwords after first login!
@@ -219,8 +262,8 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
 
 1. **Clone and install dependencies**
    ```bash
-   git clone https://github.com/yourusername/homelabtv.git
-   cd homelabtv
+   git clone https://github.com/yourusername/streampilot.git
+   cd streampilot
    composer install
    npm install  # Optional: for frontend development
    ```
@@ -236,7 +279,7 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
    DB_PORT=3306
-   DB_DATABASE=homelabtv
+   DB_DATABASE=streampilot
    DB_USERNAME=your_username
    DB_PASSWORD=your_password
    ```
@@ -265,7 +308,7 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
 
 6. **Verify installation**
    ```bash
-   php artisan homelabtv:health-check
+   php artisan streampilot:health-check
    ```
 
 7. **Start development server**
@@ -279,11 +322,11 @@ This project follows **SMART** (Simple, Maintainable, Adaptable, Reliable, Testa
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `HOMELABTV_DEFAULT_PORT` | Default streaming port | 8080 |
-| `HOMELABTV_STREAM_CHECK_INTERVAL` | Stream health check interval (seconds) | 60 |
-| `HOMELABTV_EPG_UPDATE_INTERVAL` | EPG auto-update interval (seconds) | 3600 |
-| `HOMELABTV_MAX_CONNECTIONS_PER_USER` | Default max connections | 1 |
-| `HOMELABTV_ENABLE_RESELLER_SYSTEM` | Enable reseller features | true |
+| `STREAMPILOT_DEFAULT_PORT` | Default streaming port | 80 |
+| `STREAMPILOT_STREAM_CHECK_INTERVAL` | Stream health check interval (seconds) | 60 |
+| `STREAMPILOT_EPG_UPDATE_INTERVAL` | EPG auto-update interval (seconds) | 3600 |
+| `STREAMPILOT_MAX_CONNECTIONS_PER_USER` | Default max connections | 1 |
+| `STREAMPILOT_ENABLE_RESELLER_SYSTEM` | Enable reseller features | true |
 | `RATE_LIMIT_PER_MINUTE` | Web rate limit | 60 |
 | `API_RATE_LIMIT_PER_MINUTE` | API rate limit | 100 |
 | `TMDB_API_KEY` | The Movie Database API key (optional) | - |
@@ -310,7 +353,7 @@ To enable automatic metadata import for movies and TV series:
 
 ### FFmpeg & Transcoding Profiles
 
-HomelabTV includes built-in support for FFmpeg transcoding with customizable profiles.
+StreamPilot includes built-in support for FFmpeg transcoding with customizable profiles.
 
 **Prerequisites:**
 - FFmpeg 4.4+ installed on the server
@@ -348,7 +391,7 @@ php artisan db:seed --class=TranscodeProfileSeeder
 Run system health checks to verify installation:
 
 ```bash
-php artisan homelabtv:health-check
+php artisan streampilot:health-check
 ```
 
 This checks:
@@ -357,6 +400,28 @@ This checks:
 - Storage permissions
 - EPG directory
 - Critical configuration
+
+### Stream Preview
+
+StreamPilot includes a built-in stream preview feature in the admin panel:
+
+**Features:**
+- ▶️ **Play Button**: Click the play icon next to any stream to preview it
+- 🎬 **Modal Player**: Opens a modern video player in a modal overlay
+- 📺 **HLS Support**: Automatically loads HLS.js for M3U8 streams
+- 🎞️ **Multiple Formats**: Supports HLS, HTTP, RTMP, and MPEG-TS streams
+- ⚡ **Instant Playback**: Streams start playing immediately upon opening
+
+**How to Use:**
+1. Navigate to **Admin → Streaming → Streams**
+2. Click the **play button** (▶️) next to any stream
+3. The stream will open in a video player modal
+4. Close the modal when done
+
+**Supported Stream Types:**
+- **HLS (M3U8)**: Uses HLS.js library for adaptive streaming
+- **HTTP/HTTPS**: Direct video files (MP4, WebM, etc.)
+- **Native Formats**: Any format supported by HTML5 video
 
 ## 👥 User Workflows
 
@@ -436,35 +501,35 @@ This system supports both API tokens (recommended) and password authentication.
 ### Getting User Info
 ```bash
 # Using API token (recommended)
-curl "http://localhost:8080/player_api.php?username=demo&password=YOUR_API_TOKEN"
+curl "http://localhost/player_api.php?username=demo&password=YOUR_API_TOKEN"
 
 # Using password (legacy, not recommended for production)
-curl "http://localhost:8080/player_api.php?username=demo&password=demo123"
+curl "http://localhost/player_api.php?username=demo&password=demo123"
 ```
 
 ### Getting Live Streams
 ```bash
 # Using API token (recommended)
-curl "http://localhost:8080/player_api.php?username=demo&password=YOUR_API_TOKEN&action=get_live_streams"
+curl "http://localhost/player_api.php?username=demo&password=YOUR_API_TOKEN&action=get_live_streams"
 ```
 
 ### Getting M3U Playlist
 ```bash
 # Using API token (recommended)
-curl "http://localhost:8080/get.php?username=demo&password=YOUR_API_TOKEN&type=m3u_plus"
+curl "http://localhost/get.php?username=demo&password=YOUR_API_TOKEN&type=m3u_plus"
 ```
 
 ### Getting EPG (XMLTV)
 ```bash
 # Using API token (recommended)
-curl "http://localhost:8080/xmltv.php?username=demo&password=YOUR_API_TOKEN"
+curl "http://localhost/xmltv.php?username=demo&password=YOUR_API_TOKEN"
 ```
 
 ## 📅 Scheduled Tasks & Queue Management
 
 ### Laravel Horizon
 
-HomelabTV uses Laravel Horizon for advanced queue management and monitoring.
+StreamPilot uses Laravel Horizon for advanced queue management and monitoring.
 
 **Features:**
 - 📊 Real-time queue monitoring dashboard
@@ -493,19 +558,19 @@ The application includes automated tasks:
 
 | Task | Schedule | Description |
 |------|----------|-------------|
-| `homelabtv:import-epg` | Hourly | Import EPG data from sources |
-| `homelabtv:check-streams` | Every minute | Check stream health status |
-| `homelabtv:cleanup-logs` | Daily | Clean old connection logs |
+| `streampilot:import-epg` | Hourly | Import EPG data from sources |
+| `streampilot:check-streams` | Every minute | Check stream health status |
+| `streampilot:cleanup-logs` | Daily | Clean old connection logs |
 
 To run the scheduler, add this cron entry:
 ```bash
-* * * * * cd /path-to-homelabtv && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /path-to-streampilot && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 ## 📁 Project Structure
 
 ```
-homelabtv/
+streampilot/
 ├── app/
 │   ├── Console/Commands/     # Artisan commands
 │   ├── Http/
@@ -665,10 +730,10 @@ These scripts clear all Laravel caches and should be run after:
 
 ## 💬 Support
 
-- Open an [issue](https://github.com/yourusername/homelabtv/issues) for bug reports
+- Open an [issue](https://github.com/yourusername/streampilot/issues) for bug reports
 - Check [Troubleshooting Guide](docs/TROUBLESHOOTING.md) for common issues
 - Check [CODE_QUALITY.md](CODE_QUALITY.md) for technical documentation
-- Review [discussions](https://github.com/yourusername/homelabtv/discussions) for questions
+- Review [discussions](https://github.com/yourusername/streampilot/discussions) for questions
 
 ---
 
