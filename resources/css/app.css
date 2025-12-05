@@ -2,6 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tailwind v4 Custom Theme */
+@theme {
+    /* HomelabTV Color Palette */
+    --color-homelab-50: #f5f3ff;
+    --color-homelab-100: #ede9fe;
+    --color-homelab-200: #ddd6fe;
+    --color-homelab-300: #c4b5fd;
+    --color-homelab-400: #a78bfa;
+    --color-homelab-500: #8b5cf6;
+    --color-homelab-600: #7c3aed;
+    --color-homelab-700: #6d28d9;
+    --color-homelab-800: #5b21b6;
+    --color-homelab-900: #4c1d95;
+    --color-homelab-950: #2e1065;
+
+    /* GitHub Dark Theme Colors */
+    --color-gh-bg: #0d1117;
+    --color-gh-bg-secondary: #161b22;
+    --color-gh-bg-tertiary: #21262d;
+    --color-gh-border: #30363d;
+    --color-gh-border-muted: #21262d;
+    --color-gh-text: #c9d1d9;
+    --color-gh-text-muted: #8b949e;
+    --color-gh-accent: #58a6ff;
+    --color-gh-accent-emphasis: #1f6feb;
+    --color-gh-success: #3fb950;
+    --color-gh-warning: #d29922;
+    --color-gh-danger: #f85149;
+}
+
 /* Custom HomelabTV Styles */
 @layer base {
     body {
