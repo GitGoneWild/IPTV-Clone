@@ -116,7 +116,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button onclick="previewStream('{{ $stream->stream_url }}', '{{ $stream->name }}', '{{ $stream->stream_type }}')" 
+                                <button onclick="previewStream(@json($stream->stream_url), @json($stream->name), @json($stream->stream_type))" 
                                         class="text-homelab-500 hover:text-homelab-400 mr-3"
                                         title="Preview Stream">
                                     <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,11 +200,11 @@
 </div>
 
 <!-- Stream Preview Modal -->
-<div id="streamPreviewModal" class="fixed inset-0 bg-black bg-opacity-75 hidden flex items-center justify-center z-50">
+<div id="streamPreviewModal" class="fixed inset-0 bg-black bg-opacity-75 hidden flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="streamPreviewTitle">
     <div class="bg-gh-bg-secondary rounded-lg p-6 max-w-4xl w-full mx-4 border border-gh-border">
         <div class="flex items-center justify-between mb-4">
             <h3 id="streamPreviewTitle" class="text-lg font-semibold text-white">Stream Preview</h3>
-            <button onclick="closePreviewModal()" class="text-gh-text-muted hover:text-white">
+            <button onclick="closePreviewModal()" class="text-gh-text-muted hover:text-white" aria-label="Close modal">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
@@ -218,6 +218,10 @@
             </video>
         </div>
         
+        <div id="streamErrorMessage" class="hidden mt-4 p-4 bg-gh-danger/10 border border-gh-danger text-gh-danger rounded-lg">
+            <p class="text-sm"></p>
+        </div>
+        
         <div class="mt-4 flex justify-between items-center">
             <p id="streamPreviewUrl" class="text-sm text-gh-text-muted truncate max-w-xl"></p>
             <button onclick="closePreviewModal()" 
@@ -229,9 +233,29 @@
 </div>
 
 <script>
+let previousFocusedElement = null;
+
+function showError(message) {
+    const errorDiv = document.getElementById('streamErrorMessage');
+    errorDiv.querySelector('p').textContent = message;
+    errorDiv.classList.remove('hidden');
+}
+
+function hideError() {
+    const errorDiv = document.getElementById('streamErrorMessage');
+    errorDiv.classList.add('hidden');
+}
+
 function previewStream(streamUrl, streamName, streamType) {
+    // Store the currently focused element to return focus later
+    previousFocusedElement = document.activeElement;
+    
     // Show modal
-    document.getElementById('streamPreviewModal').classList.remove('hidden');
+    const modal = document.getElementById('streamPreviewModal');
+    modal.classList.remove('hidden');
+    
+    // Hide any previous error messages
+    hideError();
     
     // Set title and URL
     document.getElementById('streamPreviewTitle').textContent = streamName;
@@ -240,14 +264,25 @@ function previewStream(streamUrl, streamName, streamType) {
     // Get video player
     const player = document.getElementById('streamPreviewPlayer');
     
+    // Focus the close button for keyboard accessibility
+    setTimeout(() => {
+        modal.querySelector('button[aria-label="Close modal"]').focus();
+    }, 100);
+    
     // Load HLS library if needed for HLS streams
     if (streamType === 'hls' && streamUrl.includes('.m3u8')) {
         if (!window.Hls) {
-            // Load HLS.js library
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
-            script.onload = () => loadHlsStream(player, streamUrl);
-            document.head.appendChild(script);
+            // Check if script is already being loaded
+            if (!document.querySelector('script[src*="hls.js"]')) {
+                // Load HLS.js library with pinned version
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.0/dist/hls.min.js';
+                script.onload = () => loadHlsStream(player, streamUrl);
+                script.onerror = () => {
+                    showError('Failed to load HLS player library. Please refresh and try again.');
+                };
+                document.head.appendChild(script);
+            }
         } else {
             loadHlsStream(player, streamUrl);
         }
@@ -257,7 +292,7 @@ function previewStream(streamUrl, streamName, streamType) {
         player.load();
         player.play().catch(err => {
             console.error('Error playing stream:', err);
-            alert('Unable to play this stream. It may not be supported by your browser.');
+            showError('Unable to play this stream. It may not be supported by your browser.');
         });
     }
 }
@@ -273,12 +308,13 @@ function loadHlsStream(player, streamUrl) {
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
             player.play().catch(err => {
                 console.error('Error playing HLS stream:', err);
+                showError('Error starting stream playback: ' + err.message);
             });
         });
         hls.on(Hls.Events.ERROR, (event, data) => {
             if (data.fatal) {
                 console.error('Fatal HLS error:', data);
-                alert('Error loading HLS stream: ' + data.details);
+                showError('Error loading HLS stream: ' + data.details);
             }
         });
         
@@ -290,9 +326,10 @@ function loadHlsStream(player, streamUrl) {
         player.load();
         player.play().catch(err => {
             console.error('Error playing native HLS:', err);
+            showError('Error starting stream playback: ' + err.message);
         });
     } else {
-        alert('HLS streams are not supported in your browser.');
+        showError('HLS streams are not supported in your browser.');
     }
 }
 
@@ -303,6 +340,33 @@ function closePreviewModal() {
     // Stop playback
     player.pause();
     player.src = '';
+    
+    // Clean up HLS instance if exists
+    if (player._hls) {
+        player._hls.destroy();
+        player._hls = null;
+    }
+    
+    // Hide modal
+    modal.classList.add('hidden');
+    
+    // Return focus to the element that opened the modal
+    if (previousFocusedElement) {
+        previousFocusedElement.focus();
+        previousFocusedElement = null;
+    }
+}
+
+// Keyboard support for modal
+document.addEventListener('keydown', function(e) {
+    const modal = document.getElementById('streamPreviewModal');
+    if (!modal.classList.contains('hidden')) {
+        if (e.key === 'Escape') {
+            closePreviewModal();
+        }
+    }
+});
+
     
     // Clean up HLS instance if exists
     if (player._hls) {

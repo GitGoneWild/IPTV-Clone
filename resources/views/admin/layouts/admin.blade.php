@@ -45,7 +45,7 @@
                                 </svg>
                             </button>
                             <div x-show="open" @click.away="open = false" 
-                                 class="absolute left-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50" style="top: 100%;">
+                                 class="absolute left-0 top-full mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
                                 <a href="{{ route('admin.streams.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Streams</a>
                                 <a href="{{ route('admin.servers.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Servers</a>
                                 <a href="{{ route('admin.load-balancers.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Load Balancers</a>
@@ -61,7 +61,7 @@
                                 </svg>
                             </button>
                             <div x-show="open" @click.away="open = false" 
-                                 class="absolute left-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50" style="top: 100%;">
+                                 class="absolute left-0 top-full mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
                                 <a href="{{ route('admin.categories.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Categories</a>
                                 <a href="{{ route('admin.bouquets.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Bouquets</a>
                                 <a href="{{ route('admin.movies.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Movies</a>
@@ -79,7 +79,7 @@
                                 </svg>
                             </button>
                             <div x-show="open" @click.away="open = false" 
-                                 class="absolute left-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50" style="top: 100%;">
+                                 class="absolute left-0 top-full mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
                                 <a href="{{ route('admin.users.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Users</a>
                                 <a href="{{ route('admin.devices.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Devices</a>
                                 <a href="{{ route('admin.geo-restrictions.index') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Geo Restrictions</a>
@@ -100,7 +100,7 @@
                                 </svg>
                             </button>
                             <div x-show="open" @click.away="open = false" 
-                                 class="absolute left-0 mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50" style="top: 100%;">
+                                 class="absolute left-0 top-full mt-2 w-48 bg-gh-bg-secondary border border-gh-border rounded-lg shadow-lg py-1 z-50">
                                 <a href="{{ route('admin.settings.integration-settings') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">Integration Settings</a>
                                 <a href="{{ route('admin.settings.system-management') }}" class="block px-4 py-2 text-sm text-gh-text hover:bg-gh-bg-tertiary">System Management</a>
                             </div>
