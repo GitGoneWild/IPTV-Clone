@@ -184,7 +184,7 @@ class TranscodeProfile extends Model
         }
 
         if ($this->audio_codec !== 'copy') {
-            $channels = $this->audio_channels == 1 ? 'mono' : ($this->audio_channels == 2 ? 'stereo' : "{$this->audio_channels}ch");
+            $channels = $this->audio_channels === 1 ? 'mono' : ($this->audio_channels === 2 ? 'stereo' : "{$this->audio_channels}ch");
             $parts[] = "Audio: {$this->audio_codec} @ {$channels}";
 
             if ($this->audio_bitrate) {

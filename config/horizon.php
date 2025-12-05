@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'name' => env('HORIZON_NAME'),
+    'name' => env('HORIZON_NAME', 'HomelabTV'),
 
     /*
     |--------------------------------------------------------------------------
@@ -28,7 +28,7 @@ return [
     |
     */
 
-    'domain' => env('HORIZON_DOMAIN'),
+    'domain' => env('HORIZON_DOMAIN', null),
 
     /*
     |--------------------------------------------------------------------------
