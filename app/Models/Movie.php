@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Movie extends Model
+class Movie extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'title',
@@ -106,5 +108,23 @@ class Movie extends Model
     public function isDownloading(): bool
     {
         return $this->download_status === 'downloading';
+    }
+
+    /**
+     * Register media collections.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('poster')
+            ->singleFile()
+            ->useDisk('public');
+
+        $this->addMediaCollection('backdrop')
+            ->singleFile()
+            ->useDisk('public');
+
+        $this->addMediaCollection('trailer')
+            ->singleFile()
+            ->useDisk('public');
     }
 }
