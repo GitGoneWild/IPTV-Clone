@@ -385,6 +385,14 @@ class XtreamService
     }
 
     /**
+     * Format cast array to comma-separated string
+     */
+    protected function formatCastArray($cast): string
+    {
+        return is_array($cast) ? implode(', ', $cast) : '';
+    }
+
+    /**
      * Get VOD info for a specific movie
      */
     public function getVodInfo(int $vodId): ?array
@@ -394,6 +402,8 @@ class XtreamService
         if (! $movie) {
             return null;
         }
+
+        $castString = $this->formatCastArray($movie->cast);
 
         return [
             'info' => [
@@ -405,8 +415,8 @@ class XtreamService
                 'releasedate' => $movie->release_date?->format('Y-m-d') ?? '',
                 'youtube_trailer' => $movie->trailer_url ?? '',
                 'director' => $movie->director ?? '',
-                'actors' => is_array($movie->cast) ? implode(', ', $movie->cast) : '',
-                'cast' => $movie->cast ? implode(', ', $movie->cast) : '',
+                'actors' => $castString,
+                'cast' => $castString,
                 'description' => $movie->plot ?? '',
                 'plot' => $movie->plot ?? '',
                 'age' => $movie->rating ?? '',
@@ -472,7 +482,7 @@ class XtreamService
                 'series_id' => $s->id,
                 'cover' => $s->poster_url ?? '',
                 'plot' => $s->plot ?? '',
-                'cast' => is_array($s->cast) ? implode(', ', $s->cast) : '',
+                'cast' => $this->formatCastArray($s->cast),
                 'director' => '',
                 'genre' => $s->genre ?? '',
                 'releaseDate' => $s->release_year ? (string) $s->release_year : '',
@@ -553,7 +563,7 @@ class XtreamService
                 'o_name' => $series->original_title ?? $series->title,
                 'cover' => $series->poster_url ?? '',
                 'plot' => $series->plot ?? '',
-                'cast' => is_array($series->cast) ? implode(', ', $series->cast) : '',
+                'cast' => $this->formatCastArray($series->cast),
                 'director' => '',
                 'genre' => $series->genre ?? '',
                 'releaseDate' => $series->release_year ? (string) $series->release_year : '',
