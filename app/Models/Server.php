@@ -68,9 +68,20 @@ class Server extends Model
 
     /**
      * Build stream URL for this server.
+     *
+     * If the stream path is already an absolute URL (has a scheme),
+     * it will be returned as-is without prepending the server base URL.
+     * This allows streams to use external sources directly.
      */
     public function buildStreamUrl(string $streamPath): string
     {
+        // Check if the stream path is already an absolute URL
+        $parsed = parse_url($streamPath);
+        if ($parsed !== false && isset($parsed['scheme'])) {
+            // It's already an absolute URL, return as-is
+            return $streamPath;
+        }
+
         $baseUrl = rtrim($this->base_url, '/');
         $streamPath = ltrim($streamPath, '/');
 
