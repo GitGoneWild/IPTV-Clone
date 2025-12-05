@@ -2,8 +2,18 @@
 # HomelabTV Cache Clear Script for Docker
 # This script clears all Laravel caches inside the Docker container
 
+# Exit on any error
+set -e
+
 echo "🧹 Clearing HomelabTV caches (Docker)..."
 echo ""
+
+# Check if Docker container is running
+if ! docker-compose ps app | grep -q "Up"; then
+    echo "❌ Error: Docker container 'app' is not running."
+    echo "   Start it with: docker-compose up -d"
+    exit 1
+fi
 
 # Clear view cache (fixes Livewire and other template issues)
 echo "Clearing view cache..."

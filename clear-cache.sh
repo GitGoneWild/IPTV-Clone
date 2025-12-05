@@ -2,6 +2,9 @@
 # HomelabTV Cache Clear Script
 # This script clears all Laravel caches to resolve common issues
 
+# Exit on any error
+set -e
+
 echo "🧹 Clearing HomelabTV caches..."
 echo ""
 

@@ -653,6 +653,11 @@ The project includes helper scripts for clearing caches:
 - `clear-cache.sh` - For standard installations
 - `clear-cache-docker.sh` - For Docker installations
 
+**Note**: Scripts are already executable. If needed, make them executable with:
+```bash
+chmod +x clear-cache.sh clear-cache-docker.sh
+```
+
 These scripts clear all Laravel caches and should be run after:
 - Updating the codebase
 - Switching branches
