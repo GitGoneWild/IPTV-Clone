@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('transcode_profile_id')->constrained()->onDelete('cascade');
             $table->boolean('is_default')->default(false);
             $table->timestamps();
-            
+
             $table->unique(['stream_id', 'transcode_profile_id'], 'stream_profile_unique');
             $table->index('is_default');
         });

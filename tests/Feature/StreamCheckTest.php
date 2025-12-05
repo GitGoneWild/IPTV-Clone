@@ -14,6 +14,7 @@ class StreamCheckTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected Category $category;
 
     protected function setUp(): void

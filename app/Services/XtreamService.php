@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Bouquet;
 use App\Models\Category;
 use App\Models\EpgProgram;
-use App\Models\Episode;
 use App\Models\Movie;
 use App\Models\Series;
 use App\Models\Stream;
@@ -392,6 +391,7 @@ class XtreamService
         if (is_null($cast)) {
             return '';
         }
+
         return is_array($cast) ? implode(', ', $cast) : '';
     }
 
@@ -592,7 +592,7 @@ class XtreamService
 
         return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user) {
             // Check if user has bouquets using exists() to avoid loading all bouquets
-            if (!$user->bouquets()->exists()) {
+            if (! $user->bouquets()->exists()) {
                 return collect([]);
             }
 
@@ -613,7 +613,7 @@ class XtreamService
 
         return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user) {
             // Check if user has bouquets using exists() to avoid loading all bouquets
-            if (!$user->bouquets()->exists()) {
+            if (! $user->bouquets()->exists()) {
                 return collect([]);
             }
 

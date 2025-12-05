@@ -16,9 +16,13 @@ class XtreamApiTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Server $server;
+
     private Category $category;
+
     private Bouquet $bouquet;
+
     private Stream $stream;
 
     protected function setUp(): void

@@ -89,12 +89,11 @@ class TranscodeProfileController extends Controller
     /**
      * Get validation rules for transcode profile.
      *
-     * @param int|null $ignoreId Profile ID to ignore for unique validation
-     * @return array
+     * @param  int|null  $ignoreId  Profile ID to ignore for unique validation
      */
     private function validationRules(?int $ignoreId = null): array
     {
-        $uniqueRule = $ignoreId 
+        $uniqueRule = $ignoreId
             ? 'unique:transcode_profiles,name,'.$ignoreId
             : 'unique:transcode_profiles,name';
 
