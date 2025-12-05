@@ -3,18 +3,20 @@
 namespace App\Traits;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 trait XtreamAuthenticatable
 {
     /**
      * Authenticate user from request credentials.
+     * Supports both query parameters and route parameters.
      */
     protected function authenticateXtreamUser(Request $request): ?User
     {
-        $username = $request->get('username');
-        $password = $request->get('password');
+        // Check query parameters first, then fall back to route parameters
+        $username = $request->get('username') ?? $request->route('username');
+        $password = $request->get('password') ?? $request->route('password');
 
         if (! $username || ! $password) {
             return null;
@@ -36,7 +38,7 @@ trait XtreamAuthenticatable
     /**
      * Generate unauthorized response for Xtream API.
      */
-    protected function unauthorizedXtreamResponse(string $message = 'Invalid credentials'): Response
+    protected function unauthorizedXtreamResponse(string $message = 'Invalid credentials'): JsonResponse
     {
         return response()->json([
             'user_info' => [

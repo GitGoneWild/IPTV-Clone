@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\XtreamService;
 use App\Traits\XtreamAuthenticatable;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response as BaseResponse;
 
 class XtreamController extends Controller
 {
@@ -24,7 +26,7 @@ class XtreamController extends Controller
      * Handle player_api.php requests
      * Main Xtream Codes API endpoint
      */
-    public function playerApi(Request $request): Response
+    public function playerApi(Request $request): JsonResponse|BaseResponse
     {
         $user = $this->authenticateXtreamUser($request);
 
@@ -32,7 +34,7 @@ class XtreamController extends Controller
             return $this->unauthorizedXtreamResponse();
         }
 
-        $action = $request->get('action', 'get_live_streams');
+        $action = $request->get('action');
 
         return match ($action) {
             'get_live_categories' => $this->getLiveCategories($user),
@@ -46,7 +48,7 @@ class XtreamController extends Controller
     /**
      * Handle get.php requests (M3U playlist generation)
      */
-    public function getPlaylist(Request $request): Response
+    public function getPlaylist(Request $request): Response|BaseResponse
     {
         $user = $this->authenticateXtreamUser($request);
 
@@ -67,7 +69,7 @@ class XtreamController extends Controller
     /**
      * Handle panel_api.php requests
      */
-    public function panelApi(Request $request): Response
+    public function panelApi(Request $request): JsonResponse|BaseResponse
     {
         $user = $this->authenticateXtreamUser($request);
 
@@ -81,7 +83,7 @@ class XtreamController extends Controller
     /**
      * Handle xmltv.php requests (EPG data)
      */
-    public function xmltv(Request $request): Response
+    public function xmltv(Request $request): Response|BaseResponse
     {
         $user = $this->authenticateXtreamUser($request);
 
@@ -98,7 +100,7 @@ class XtreamController extends Controller
     /**
      * Handle enigma2.php requests
      */
-    public function enigma2(Request $request): Response
+    public function enigma2(Request $request): Response|BaseResponse
     {
         $user = $this->authenticateXtreamUser($request);
 
@@ -116,7 +118,7 @@ class XtreamController extends Controller
     /**
      * Handle direct stream URL: /{username}/{password}/{stream_id}
      */
-    public function stream(Request $request, string $username, string $password, int $streamId): Response
+    public function stream(Request $request, string $username, string $password, int $streamId): Response|BaseResponse
     {
         $user = User::where('username', $username)->first();
 
@@ -140,7 +142,7 @@ class XtreamController extends Controller
     /**
      * Get user info response
      */
-    protected function getUserInfo(User $user): Response
+    protected function getUserInfo(User $user): JsonResponse
     {
         $userInfo = $this->xtreamService->getUserInfoArray($user);
         $userInfo['message'] = 'Welcome to HomelabTV';
@@ -154,7 +156,7 @@ class XtreamController extends Controller
     /**
      * Get live categories
      */
-    protected function getLiveCategories(User $user): Response
+    protected function getLiveCategories(User $user): JsonResponse
     {
         $categories = $this->xtreamService->getLiveCategories($user);
 
@@ -164,7 +166,7 @@ class XtreamController extends Controller
     /**
      * Get live streams
      */
-    protected function getLiveStreams(User $user, Request $request): Response
+    protected function getLiveStreams(User $user, Request $request): JsonResponse
     {
         $categoryId = $request->get('category_id');
         $streams = $this->xtreamService->getLiveStreams($user, $categoryId);
@@ -175,7 +177,7 @@ class XtreamController extends Controller
     /**
      * Get short EPG
      */
-    protected function getShortEpg(Request $request): Response
+    protected function getShortEpg(Request $request): JsonResponse
     {
         $streamId = $request->get('stream_id');
         $limit = $request->get('limit', 4);
@@ -187,7 +189,7 @@ class XtreamController extends Controller
     /**
      * Get simple data table
      */
-    protected function getSimpleDataTable(User $user): Response
+    protected function getSimpleDataTable(User $user): JsonResponse
     {
         return response()->json($this->xtreamService->getSimpleDataTable($user));
     }
