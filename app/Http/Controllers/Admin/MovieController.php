@@ -24,7 +24,8 @@ class MovieController extends AdminController
         // Search functionality
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('original_title', 'like', "%{$search}%")
                     ->orWhere('imdb_id', 'like', "%{$search}%");
             });
         }
@@ -56,15 +57,26 @@ class MovieController extends AdminController
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'],
+            'original_title' => ['nullable', 'string', 'max:255'],
             'stream_url' => ['required', 'url', 'max:2048'],
             'category_id' => ['required', 'exists:categories,id'],
-            'cover_url' => ['nullable', 'url', 'max:2048'],
+            'poster_url' => ['nullable', 'url', 'max:2048'],
+            'backdrop_url' => ['nullable', 'url', 'max:2048'],
+            'trailer_url' => ['nullable', 'url', 'max:2048'],
             'plot' => ['nullable', 'string'],
             'imdb_id' => ['nullable', 'string', 'max:255'],
-            'rating' => ['nullable', 'numeric', 'min:0', 'max:10'],
+            'tmdb_id' => ['nullable', 'integer'],
+            'director' => ['nullable', 'string', 'max:255'],
+            'genre' => ['nullable', 'string', 'max:255'],
+            'cast' => ['nullable', 'array'],
+            'rating' => ['nullable', 'string', 'max:255'],
+            'tmdb_rating' => ['nullable', 'numeric', 'min:0', 'max:10'],
             'release_year' => ['nullable', 'integer', 'min:1900', 'max:'.(date('Y') + 5)],
-            'duration_minutes' => ['nullable', 'integer', 'min:0'],
+            'release_date' => ['nullable', 'date'],
+            'runtime' => ['nullable', 'integer', 'min:0'],
+            'stream_type' => ['nullable', 'string', 'in:hls,http,rtmp,mpegts'],
+            'is_active' => ['boolean'],
         ]);
 
         $movie = Movie::create($validated);
@@ -94,15 +106,26 @@ class MovieController extends AdminController
     public function update(Request $request, Movie $movie): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'],
+            'original_title' => ['nullable', 'string', 'max:255'],
             'stream_url' => ['required', 'url', 'max:2048'],
             'category_id' => ['required', 'exists:categories,id'],
-            'cover_url' => ['nullable', 'url', 'max:2048'],
+            'poster_url' => ['nullable', 'url', 'max:2048'],
+            'backdrop_url' => ['nullable', 'url', 'max:2048'],
+            'trailer_url' => ['nullable', 'url', 'max:2048'],
             'plot' => ['nullable', 'string'],
             'imdb_id' => ['nullable', 'string', 'max:255'],
-            'rating' => ['nullable', 'numeric', 'min:0', 'max:10'],
+            'tmdb_id' => ['nullable', 'integer'],
+            'director' => ['nullable', 'string', 'max:255'],
+            'genre' => ['nullable', 'string', 'max:255'],
+            'cast' => ['nullable', 'array'],
+            'rating' => ['nullable', 'string', 'max:255'],
+            'tmdb_rating' => ['nullable', 'numeric', 'min:0', 'max:10'],
             'release_year' => ['nullable', 'integer', 'min:1900', 'max:'.(date('Y') + 5)],
-            'duration_minutes' => ['nullable', 'integer', 'min:0'],
+            'release_date' => ['nullable', 'date'],
+            'runtime' => ['nullable', 'integer', 'min:0'],
+            'stream_type' => ['nullable', 'string', 'in:hls,http,rtmp,mpegts'],
+            'is_active' => ['boolean'],
         ]);
 
         $movie->update($validated);
@@ -121,7 +144,7 @@ class MovieController extends AdminController
      */
     public function destroy(Movie $movie): RedirectResponse
     {
-        $movieName = $movie->name;
+        $movieName = $movie->title;
         $movie->delete();
 
         activity()

@@ -55,6 +55,12 @@ class XtreamController extends Controller
         return match ($action) {
             'get_live_categories' => $this->getLiveCategories($user),
             'get_live_streams' => $this->getLiveStreams($user, $request),
+            'get_vod_categories' => $this->getVodCategories($user),
+            'get_vod_streams' => $this->getVodStreams($user, $request),
+            'get_vod_info' => $this->getVodInfo($request),
+            'get_series_categories' => $this->getSeriesCategories($user),
+            'get_series' => $this->getSeries($user, $request),
+            'get_series_info' => $this->getSeriesInfo($request),
             'get_short_epg' => $this->getShortEpg($request),
             'get_simple_data_table' => $this->getSimpleDataTable($user),
             default => $this->getUserInfo($user),
@@ -241,6 +247,82 @@ class XtreamController extends Controller
         $epg = $this->xtreamService->getShortEpg($streamId, $limit);
 
         return response()->json(['epg_listings' => $epg]);
+    }
+
+    /**
+     * Get VOD categories
+     */
+    protected function getVodCategories(User $user): JsonResponse
+    {
+        $categories = $this->xtreamService->getVodCategories($user);
+
+        return response()->json($categories);
+    }
+
+    /**
+     * Get VOD streams (movies)
+     */
+    protected function getVodStreams(User $user, Request $request): JsonResponse
+    {
+        $categoryId = $request->get('category_id');
+        $streams = $this->xtreamService->getVodStreams($user, $categoryId);
+
+        return response()->json($streams);
+    }
+
+    /**
+     * Get VOD info for a specific movie
+     */
+    protected function getVodInfo(Request $request): JsonResponse
+    {
+        $request->validate(['vod_id' => ['required', 'integer']]);
+        $vodId = $request->get('vod_id');
+        $info = $this->xtreamService->getVodInfo($vodId);
+
+        if (! $info) {
+            return response()->json(['error' => 'VOD not found'], 404);
+        }
+
+        return response()->json($info);
+    }
+
+    /**
+     * Get series categories
+     */
+    protected function getSeriesCategories(User $user): JsonResponse
+    {
+        $categories = $this->xtreamService->getSeriesCategories($user);
+
+        return response()->json($categories);
+    }
+
+    /**
+     * Get series list
+     */
+    protected function getSeries(User $user, Request $request): JsonResponse
+    {
+        $categoryId = $request->get('category_id');
+        $series = $this->xtreamService->getSeries($user, $categoryId);
+
+        return response()->json($series);
+    }
+
+    /**
+     * Get series info with episodes
+     */
+    protected function getSeriesInfo(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'series_id' => ['required', 'integer'],
+        ]);
+        $seriesId = $validated['series_id'];
+        $info = $this->xtreamService->getSeriesInfo($seriesId);
+
+        if (! $info) {
+            return response()->json(['error' => 'Series not found'], 404);
+        }
+
+        return response()->json($info);
     }
 
     /**

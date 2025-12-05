@@ -116,6 +116,13 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button onclick="checkStream({{ $stream->id }})" 
+                                        class="text-gh-accent hover:text-homelab-400 mr-3"
+                                        title="Check Stream">
+                                    <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </button>
                                 <a href="{{ route('admin.streams.edit', $stream) }}" 
                                    class="text-homelab-500 hover:text-homelab-400 mr-3">
                                     Edit
@@ -151,4 +158,121 @@
         @endif
     </div>
 </div>
+
+<!-- Check Stream Modal -->
+<div id="checkStreamModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-gh-bg-secondary rounded-lg p-6 max-w-md w-full mx-4 border border-gh-border">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-white">Stream Health Check</h3>
+            <button onclick="closeCheckModal()" class="text-gh-text-muted hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <div id="checkStreamContent" class="py-4">
+            <!-- Content will be loaded here -->
+            <div class="flex items-center justify-center">
+                <svg class="animate-spin h-8 w-8 text-homelab-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="ml-3 text-gh-text-muted">Checking stream...</span>
+            </div>
+        </div>
+        
+        <div class="mt-4 flex justify-end">
+            <button onclick="closeCheckModal()" 
+                    class="px-4 py-2 bg-gh-bg-tertiary hover:bg-gh-border text-gh-text rounded-lg transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function checkStream(streamId) {
+    // Show modal
+    document.getElementById('checkStreamModal').classList.remove('hidden');
+    
+    // Reset content
+    document.getElementById('checkStreamContent').innerHTML = `
+        <div class="flex items-center justify-center">
+            <svg class="animate-spin h-8 w-8 text-homelab-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="ml-3 text-gh-text-muted">Checking stream...</span>
+        </div>
+    `;
+    
+    // Make AJAX request
+    fetch(`/admin/streams/${streamId}/check`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        let statusBgClass = 'bg-gh-success/20';
+        let statusTextClass = 'text-gh-success';
+        let statusIcon = `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+        
+        if (data.status === 'offline') {
+            statusBgClass = 'bg-gh-danger/20';
+            statusTextClass = 'text-gh-danger';
+            statusIcon = `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+        } else if (data.status === 'unknown' || data.status === 'error' || data.status === 'valid_url') {
+            statusBgClass = 'bg-gh-warning/20';
+            statusTextClass = 'text-gh-warning';
+            statusIcon = `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
+        }
+        
+        let html = `
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full ${statusBgClass} mb-4">
+                    <div class="${statusTextClass}">
+                        ${statusIcon}
+                    </div>
+                </div>
+                <h4 class="text-xl font-semibold text-white mb-2">${data.status.charAt(0).toUpperCase() + data.status.slice(1).replace('_', ' ')}</h4>
+                <p class="text-gh-text-muted mb-4">${data.message}</p>
+                <div class="bg-gh-bg rounded-lg p-3 text-left space-y-1 text-sm">
+                    ${data.http_code ? `<div class="flex justify-between"><span class="text-gh-text-muted">HTTP Code:</span><span class="text-white">${data.http_code}</span></div>` : ''}
+                    <div class="flex justify-between"><span class="text-gh-text-muted">Checked at:</span><span class="text-white">${new Date(data.checked_at).toLocaleString()}</span></div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('checkStreamContent').innerHTML = html;
+    })
+    .catch(error => {
+        document.getElementById('checkStreamContent').innerHTML = `
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gh-danger/20 mb-4">
+                    <svg class="w-12 h-12 text-gh-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h4 class="text-xl font-semibold text-white mb-2">Error</h4>
+                <p class="text-gh-text-muted">Failed to check stream: ${error.message}</p>
+            </div>
+        `;
+    });
+}
+
+function closeCheckModal() {
+    document.getElementById('checkStreamModal').classList.add('hidden');
+}
+
+// Close modal when clicking outside
+document.getElementById('checkStreamModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCheckModal();
+    }
+});
+</script>
 @endsection

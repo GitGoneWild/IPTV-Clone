@@ -5,6 +5,9 @@ namespace App\Services;
 use App\Models\Bouquet;
 use App\Models\Category;
 use App\Models\EpgProgram;
+use App\Models\Episode;
+use App\Models\Movie;
+use App\Models\Series;
 use App\Models\Stream;
 use App\Models\User;
 
@@ -327,5 +330,298 @@ class XtreamService
             'timestamp_now' => now()->timestamp,
             'time_now' => now()->format('Y-m-d H:i:s'),
         ];
+    }
+
+    /**
+     * Get VOD (movie) categories for user
+     */
+    public function getVodCategories(User $user): array
+    {
+        $movies = $this->getUserMovies($user);
+        $categoryIds = $movies->pluck('category_id')->filter()->unique();
+
+        $categories = Category::whereIn('id', $categoryIds)
+            ->where('is_active', true)
+            ->where('category_type', 'movie')
+            ->orderBy('sort_order')
+            ->get();
+
+        return $categories->map(function ($category) {
+            return [
+                'category_id' => (string) $category->id,
+                'category_name' => $category->name,
+                'parent_id' => $category->parent_id ? (string) $category->parent_id : '0',
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Get VOD streams (movies) for user
+     */
+    public function getVodStreams(User $user, ?string $categoryId = null): array
+    {
+        $movies = $this->getUserMovies($user);
+
+        if ($categoryId) {
+            $movies = $movies->where('category_id', $categoryId);
+        }
+
+        return $movies->map(function ($movie) {
+            return [
+                'num' => $movie->id,
+                'name' => $movie->title,
+                'stream_type' => 'movie',
+                'stream_id' => $movie->id,
+                'stream_icon' => $movie->poster_url ?? '',
+                'rating' => $movie->tmdb_rating ? (string) $movie->tmdb_rating : '0',
+                'rating_5based' => $movie->tmdb_rating ? (string) ($movie->tmdb_rating / 2) : '0',
+                'added' => $movie->created_at->timestamp,
+                'category_id' => (string) ($movie->category_id ?? ''),
+                'container_extension' => 'mp4',
+                'custom_sid' => '',
+                'direct_source' => '',
+            ];
+        })->values()->toArray();
+    }
+
+    /**
+     * Format cast array to comma-separated string
+     */
+    protected function formatCastArray($cast): string
+    {
+        if (is_null($cast)) {
+            return '';
+        }
+        return is_array($cast) ? implode(', ', $cast) : '';
+    }
+
+    /**
+     * Get VOD info for a specific movie
+     */
+    public function getVodInfo(int $vodId): ?array
+    {
+        $movie = Movie::with('category')->find($vodId);
+
+        if (! $movie) {
+            return null;
+        }
+
+        $castString = $this->formatCastArray($movie->cast);
+
+        return [
+            'info' => [
+                'tmdb_id' => $movie->tmdb_id,
+                'name' => $movie->title,
+                'o_name' => $movie->original_title ?? $movie->title,
+                'cover_big' => $movie->backdrop_url ?? '',
+                'movie_image' => $movie->poster_url ?? '',
+                'releasedate' => $movie->release_date?->format('Y-m-d') ?? '',
+                'youtube_trailer' => $movie->trailer_url ?? '',
+                'director' => $movie->director ?? '',
+                'actors' => $castString,
+                'cast' => $castString,
+                'description' => $movie->plot ?? '',
+                'plot' => $movie->plot ?? '',
+                'age' => $movie->rating ?? '',
+                'country' => '',
+                'genre' => $movie->genre ?? '',
+                'duration' => $movie->runtime ? ($movie->runtime.' min') : '',
+                'duration_secs' => $movie->runtime ? ($movie->runtime * 60) : 0,
+                'rating' => $movie->tmdb_rating ?? 0,
+                'rating_5based' => $movie->tmdb_rating ? ($movie->tmdb_rating / 2) : 0,
+                'backdrop_path' => [$movie->backdrop_url ?? ''],
+                'category_id' => (string) ($movie->category_id ?? ''),
+            ],
+            'movie_data' => [
+                'stream_id' => $movie->id,
+                'name' => $movie->title,
+                'added' => $movie->created_at->timestamp,
+                'category_id' => (string) ($movie->category_id ?? ''),
+                'container_extension' => 'mp4',
+                'custom_sid' => '',
+                'direct_source' => $movie->stream_url ?? '',
+            ],
+        ];
+    }
+
+    /**
+     * Get series categories for user
+     */
+    public function getSeriesCategories(User $user): array
+    {
+        $series = $this->getUserSeries($user);
+        $categoryIds = $series->pluck('category_id')->filter()->unique();
+
+        $categories = Category::whereIn('id', $categoryIds)
+            ->where('is_active', true)
+            ->where('category_type', 'series')
+            ->orderBy('sort_order')
+            ->get();
+
+        return $categories->map(function ($category) {
+            return [
+                'category_id' => (string) $category->id,
+                'category_name' => $category->name,
+                'parent_id' => $category->parent_id ? (string) $category->parent_id : '0',
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Get series list for user
+     */
+    public function getSeries(User $user, ?string $categoryId = null): array
+    {
+        $series = $this->getUserSeries($user);
+
+        if ($categoryId) {
+            $series = $series->where('category_id', $categoryId);
+        }
+
+        return $series->map(function ($s) {
+            return [
+                'num' => $s->id,
+                'name' => $s->title,
+                'series_id' => $s->id,
+                'cover' => $s->poster_url ?? '',
+                'plot' => $s->plot ?? '',
+                'cast' => $this->formatCastArray($s->cast),
+                'director' => '',
+                'genre' => $s->genre ?? '',
+                'releaseDate' => $s->release_year ? (string) $s->release_year : '',
+                'last_modified' => $s->updated_at->timestamp,
+                'rating' => $s->tmdb_rating ?? 0,
+                'rating_5based' => $s->tmdb_rating ? ($s->tmdb_rating / 2) : 0,
+                'backdrop_path' => [$s->backdrop_url ?? ''],
+                'youtube_trailer' => '',
+                'episode_run_time' => '',
+                'category_id' => (string) ($s->category_id ?? ''),
+            ];
+        })->values()->toArray();
+    }
+
+    /**
+     * Get series info with episodes
+     */
+    public function getSeriesInfo(int $seriesId): ?array
+    {
+        $series = Series::with(['category', 'episodes' => function ($query) {
+            $query->where('is_active', true)->orderBy('season_number')->orderBy('episode_number');
+        }])->find($seriesId);
+
+        if (! $series) {
+            return null;
+        }
+
+        // Group episodes by season
+        $seasons = [];
+        $episodesBySeason = $series->episodes->groupBy('season_number');
+
+        foreach ($episodesBySeason as $seasonNum => $episodes) {
+            $seasonData = [
+                'air_date' => $episodes->first()->air_date?->format('Y-m-d') ?? '',
+                'episode_count' => $episodes->count(),
+                'id' => $seasonNum,
+                'name' => 'Season '.$seasonNum,
+                'overview' => '',
+                'season_number' => $seasonNum,
+                'cover' => $series->poster_url ?? '',
+                'cover_big' => $series->backdrop_url ?? '',
+            ];
+            $seasons[] = $seasonData;
+        }
+
+        // Format episodes
+        $episodesData = [];
+        foreach ($series->episodes as $episode) {
+            $episodesData[] = [
+                'id' => $episode->id,
+                'episode_num' => $episode->episode_number,
+                'title' => $episode->title,
+                'container_extension' => 'mp4',
+                'info' => [
+                    'tmdb_id' => $episode->tmdb_id,
+                    'name' => $episode->title,
+                    'overview' => $episode->plot ?? '',
+                    'plot' => $episode->plot ?? '',
+                    'air_date' => $episode->air_date?->format('Y-m-d') ?? '',
+                    'rating' => 0,
+                    'duration' => $episode->runtime ? ($episode->runtime.' min') : '',
+                    'duration_secs' => $episode->runtime ? ($episode->runtime * 60) : 0,
+                    'movie_image' => $episode->still_url ?? '',
+                    'season' => $episode->season_number,
+                    'episode_num' => $episode->episode_number,
+                ],
+                'custom_sid' => '',
+                'added' => $episode->created_at->timestamp,
+                'season' => $episode->season_number,
+                'direct_source' => $episode->stream_url ?? '',
+            ];
+        }
+
+        return [
+            'seasons' => $seasons,
+            'info' => [
+                'name' => $series->title,
+                'o_name' => $series->original_title ?? $series->title,
+                'cover' => $series->poster_url ?? '',
+                'plot' => $series->plot ?? '',
+                'cast' => $this->formatCastArray($series->cast),
+                'director' => '',
+                'genre' => $series->genre ?? '',
+                'releaseDate' => $series->release_year ? (string) $series->release_year : '',
+                'last_modified' => $series->updated_at->timestamp,
+                'rating' => $series->tmdb_rating ?? 0,
+                'rating_5based' => $series->tmdb_rating ? ($series->tmdb_rating / 2) : 0,
+                'backdrop_path' => [$series->backdrop_url ?? ''],
+                'youtube_trailer' => '',
+                'episode_run_time' => '',
+                'category_id' => (string) ($series->category_id ?? ''),
+                'tmdb_id' => $series->tmdb_id,
+            ],
+            'episodes' => $episodesData,
+        ];
+    }
+
+    /**
+     * Get movies available to user
+     */
+    protected function getUserMovies(User $user)
+    {
+        $cacheKey = "user_movies_{$user->id}";
+
+        return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user) {
+            // Check if user has bouquets using exists() to avoid loading all bouquets
+            if (!$user->bouquets()->exists()) {
+                return collect([]);
+            }
+
+            // Return all active movies if user has any bouquets
+            return Movie::with('category')
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->get();
+        });
+    }
+
+    /**
+     * Get series available to user
+     */
+    protected function getUserSeries(User $user)
+    {
+        $cacheKey = "user_series_{$user->id}";
+
+        return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user) {
+            // Check if user has bouquets using exists() to avoid loading all bouquets
+            if (!$user->bouquets()->exists()) {
+                return collect([]);
+            }
+
+            // Return all active series if user has any bouquets
+            return Series::with('category')
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->get();
+        });
     }
 }

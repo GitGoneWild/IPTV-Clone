@@ -42,6 +42,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Stream Management
     Route::resource('streams', \App\Http\Controllers\Admin\StreamController::class);
+    Route::post('streams/{stream}/check', [\App\Http\Controllers\Admin\StreamController::class, 'check'])->name('streams.check');
 
     // Category Management
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
