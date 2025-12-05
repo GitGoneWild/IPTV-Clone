@@ -201,7 +201,6 @@
                     @click="showCredentials = !showCredentials"
                     class="flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
                     :class="showCredentials ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-homelab-600 text-white'"
-                    :aria-pressed="(!showCredentials).toString()"
                     aria-label="Toggle credential visibility"
                 >
                     <svg x-show="showCredentials" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

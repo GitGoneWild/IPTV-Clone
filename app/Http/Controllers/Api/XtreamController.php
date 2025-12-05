@@ -48,6 +48,8 @@ class XtreamController extends Controller
             return $this->unauthorizedXtreamResponse();
         }
 
+        // Get action parameter (null if not provided)
+        // When no action is specified, the default case returns user_info as per Xtream API spec
         $action = $request->get('action');
 
         return match ($action) {
