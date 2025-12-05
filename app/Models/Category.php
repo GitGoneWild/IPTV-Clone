@@ -17,6 +17,7 @@ class Category extends Model
         'sort_order',
         'is_active',
         'icon',
+        'category_type',
     ];
 
     protected function casts(): array
