@@ -25,6 +25,20 @@ class XtreamController extends Controller
     /**
      * Handle player_api.php requests
      * Main Xtream Codes API endpoint
+     *
+     * This method handles the primary Xtream Codes API endpoint that IPTV players use.
+     * It authenticates the user and dispatches to the appropriate action handler based on
+     * the 'action' parameter. If no action is specified, it returns user information.
+     *
+     * Supported actions:
+     * - get_live_categories: Returns list of available categories
+     * - get_live_streams: Returns list of live streams (optionally filtered by category)
+     * - get_short_epg: Returns abbreviated EPG data for a stream
+     * - get_simple_data_table: Returns combined categories and streams data
+     * - (default): Returns user account information and server details
+     *
+     * @param Request $request The HTTP request containing username, password, and optional action
+     * @return JsonResponse|BaseResponse JSON response with requested data or error
      */
     public function playerApi(Request $request): JsonResponse|BaseResponse
     {
@@ -47,6 +61,15 @@ class XtreamController extends Controller
 
     /**
      * Handle get.php requests (M3U playlist generation)
+     *
+     * Generates an M3U or M3U8 playlist file containing all streams available to the user.
+     * This is the most commonly used endpoint for IPTV players like VLC, Kodi, and TiviMate.
+     *
+     * The playlist includes XMLTV EPG URL reference and supports different output formats
+     * (ts, m3u8) based on the user's preferences and player compatibility.
+     *
+     * @param Request $request The HTTP request containing username and password (query or route params)
+     * @return Response|BaseResponse M3U playlist file with Content-Type: audio/x-mpegurl
      */
     public function getPlaylist(Request $request): Response|BaseResponse
     {
@@ -82,6 +105,17 @@ class XtreamController extends Controller
 
     /**
      * Handle xmltv.php requests (EPG data)
+     *
+     * Generates an XMLTV-formatted Electronic Program Guide (EPG) XML file containing
+     * channel and program information for all streams available to the user.
+     *
+     * The XMLTV format is widely supported by IPTV players and includes:
+     * - Channel definitions with names, IDs, and logos
+     * - Program schedules with titles, descriptions, and time ranges
+     * - 7-day look-ahead window for program data
+     *
+     * @param Request $request The HTTP request containing username and password
+     * @return Response|BaseResponse XMLTV XML file with Content-Type: application/xml
      */
     public function xmltv(Request $request): Response|BaseResponse
     {
@@ -99,6 +133,15 @@ class XtreamController extends Controller
 
     /**
      * Handle enigma2.php requests
+     *
+     * Generates an Enigma2-compatible bouquet file for satellite receivers and
+     * set-top boxes that use the Enigma2 software (Dreambox, VU+, etc.).
+     *
+     * The bouquet file contains service definitions that point to the user's
+     * available streams in a format compatible with Enigma2 devices.
+     *
+     * @param Request $request The HTTP request containing username and password
+     * @return Response|BaseResponse Enigma2 bouquet file with Content-Type: text/plain
      */
     public function enigma2(Request $request): Response|BaseResponse
     {
@@ -116,7 +159,19 @@ class XtreamController extends Controller
     }
 
     /**
-     * Handle direct stream URL: /{username}/{password}/{stream_id}
+     * Handle direct stream URL: /live/{username}/{password}/{stream_id}
+     *
+     * Provides direct access to a specific stream by redirecting to its actual URL.
+     * This endpoint supports multiple format extensions (.ts, .m3u8) for player compatibility.
+     *
+     * The stream ID corresponds to the internal database stream ID. Access is granted
+     * only if the user is authenticated and the stream is part of their assigned bouquets.
+     *
+     * @param Request $request The HTTP request
+     * @param string $username The user's username (from route parameter)
+     * @param string $password The user's API token or password (from route parameter)
+     * @param int $streamId The internal stream ID to access
+     * @return Response|BaseResponse HTTP 302 redirect to actual stream URL, or 401/403/404 on error
      */
     public function stream(Request $request, string $username, string $password, int $streamId): Response|BaseResponse
     {
