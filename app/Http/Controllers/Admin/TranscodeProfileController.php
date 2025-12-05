@@ -94,8 +94,12 @@ class TranscodeProfileController extends Controller
      */
     private function validationRules(?int $ignoreId = null): array
     {
+        $uniqueRule = $ignoreId 
+            ? 'unique:transcode_profiles,name,'.$ignoreId
+            : 'unique:transcode_profiles,name';
+
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:transcode_profiles,name,'.($ignoreId ?? 'NULL')],
+            'name' => ['required', 'string', 'max:255', $uniqueRule],
             'description' => ['nullable', 'string', 'max:500'],
             'video_codec' => ['required', 'string', 'in:libx264,libx265,copy'],
             'video_bitrate' => ['nullable', 'string', 'max:20'],
