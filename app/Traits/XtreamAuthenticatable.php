@@ -36,7 +36,7 @@ trait XtreamAuthenticatable
      * This dual support ensures compatibility with various IPTV player implementations
      * that may use either URL format.
      *
-     * @param Request $request The HTTP request containing credentials
+     * @param  Request  $request  The HTTP request containing credentials
      * @return User|null Authenticated user model or null if authentication fails
      */
     protected function authenticateXtreamUser(Request $request): ?User
@@ -69,7 +69,7 @@ trait XtreamAuthenticatable
      * The response format matches Xtream Codes API specification to ensure
      * compatibility with IPTV players expecting this format.
      *
-     * @param string $message Optional custom error message
+     * @param  string  $message  Optional custom error message
      * @return JsonResponse JSON response with auth=0 and status=Disabled (HTTP 401)
      */
     protected function unauthorizedXtreamResponse(string $message = 'Invalid credentials'): JsonResponse

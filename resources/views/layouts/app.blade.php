@@ -6,87 +6,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'HomelabTV')</title>
 
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        'homelab': {
-                            50: '#f5f3ff',
-                            100: '#ede9fe',
-                            200: '#ddd6fe',
-                            300: '#c4b5fd',
-                            400: '#a78bfa',
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
-                            800: '#5b21b6',
-                            900: '#4c1d95',
-                        },
-                        // GitHub Copilot inspired colors
-                        'gh': {
-                            'bg': '#0d1117',
-                            'bg-secondary': '#161b22',
-                            'bg-tertiary': '#21262d',
-                            'border': '#30363d',
-                            'border-muted': '#21262d',
-                            'text': '#c9d1d9',
-                            'text-muted': '#8b949e',
-                            'accent': '#58a6ff',
-                            'accent-emphasis': '#1f6feb',
-                            'success': '#3fb950',
-                            'warning': '#d29922',
-                            'danger': '#f85149',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
     <!-- Inter Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Alpine.js for interactive components -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
-
     <!-- HLS.js for stream playback -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.14/dist/hls.min.js"></script>
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0d1117;
-        }
-        /* GitHub Copilot style scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #161b22;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #30363d;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #484f58;
-        }
-        /* Glowing accent effect */
-        .glow-accent {
-            box-shadow: 0 0 20px rgba(88, 166, 255, 0.15);
-        }
-        /* Alpine.js cloak */
-        [x-cloak] {
-            display: none !important;
-        }
-    </style>
+    <!-- Vite Assets -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')
 </head>
@@ -105,6 +34,9 @@
                 </div>
 
                 <div class="flex items-center space-x-4">
+                    <!-- Live Clock -->
+                    @include('components.live-clock')
+                    
                     @auth
                         <a href="{{ route('dashboard') }}" class="text-gh-text-muted hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Dashboard</a>
                         <a href="{{ route('status') }}" class="text-gh-text-muted hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Status</a>

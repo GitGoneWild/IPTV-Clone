@@ -16,8 +16,11 @@ class XtreamVodApiTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Bouquet $bouquet;
+
     protected Category $movieCategory;
+
     protected Category $seriesCategory;
 
     protected function setUp(): void

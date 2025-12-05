@@ -6,59 +6,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Panel') - HomelabTV</title>
 
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        'homelab': {
-                            50: '#f5f3ff',
-                            100: '#ede9fe',
-                            200: '#ddd6fe',
-                            300: '#c4b5fd',
-                            400: '#a78bfa',
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
-                            800: '#5b21b6',
-                            900: '#4c1d95',
-                        },
-                        'gh': {
-                            'bg': '#0d1117',
-                            'bg-secondary': '#161b22',
-                            'bg-tertiary': '#21262d',
-                            'border': '#30363d',
-                            'border-muted': '#21262d',
-                            'text': '#c9d1d9',
-                            'text-muted': '#8b949e',
-                            'accent': '#58a6ff',
-                            'accent-emphasis': '#1f6feb',
-                            'success': '#3fb950',
-                            'warning': '#d29922',
-                            'danger': '#f85149',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
     <!-- Inter Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Heroicons -->
-    <script src="https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/outline/index.js"></script>
-
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
+    <!-- Vite Assets -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')
 </head>
@@ -156,6 +110,9 @@
 
                 <!-- Right side navigation -->
                 <div class="flex items-center space-x-4">
+                    <!-- Live Clock -->
+                    @include('components.live-clock')
+                    
                     <!-- User Portal Link -->
                     <a href="{{ route('dashboard') }}" class="text-sm text-gh-text-muted hover:text-gh-accent">
                         View Site

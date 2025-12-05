@@ -76,8 +76,6 @@ class TranscodeProfile extends Model
 
     /**
      * Generate FFmpeg command arguments from this profile.
-     *
-     * @return array
      */
     public function toFFmpegArgs(): array
     {
@@ -168,8 +166,6 @@ class TranscodeProfile extends Model
 
     /**
      * Get a human-readable description of the profile settings.
-     *
-     * @return string
      */
     public function getSettingsDescription(): string
     {

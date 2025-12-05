@@ -169,8 +169,8 @@ class StreamController extends AdminController
 
     /**
      * Check stream health status (AJAX endpoint)
-     * 
-     * @param Stream $stream The stream to check
+     *
+     * @param  Stream  $stream  The stream to check
      * @return JsonResponse Returns JSON with status, message, checked_at, and optionally http_code or error fields
      */
     public function check(Stream $stream): JsonResponse
@@ -195,7 +195,7 @@ class StreamController extends AdminController
     /**
      * Check health status of a stream.
      *
-     * @param Stream $stream The stream to check.
+     * @param  Stream  $stream  The stream to check.
      * @return array Returns an array with keys:
      *               - status: string ('online', 'offline', or 'error')
      *               - message: string (status message)
