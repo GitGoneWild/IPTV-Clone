@@ -8,6 +8,7 @@
         "php": "^8.2",
         "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^12.0",
+        "laravel/horizon": "^5.40",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "spatie/laravel-activitylog": "^4.10",

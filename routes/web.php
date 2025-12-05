@@ -74,6 +74,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Series Management
     Route::resource('series', \App\Http\Controllers\Admin\SeriesController::class);
 
+    // Transcode Profile Management
+    Route::resource('transcode-profiles', \App\Http\Controllers\Admin\TranscodeProfileController::class);
+
     // Settings
     Route::get('/settings/integration-settings', [\App\Http\Controllers\Admin\SettingsController::class, 'integrationSettings'])->name('settings.integration-settings');
     Route::post('/settings/integration-settings', [\App\Http\Controllers\Admin\SettingsController::class, 'updateIntegrationSettings'])->name('settings.update-integration-settings');
