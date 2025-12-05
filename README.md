@@ -624,9 +624,44 @@ This project is open-sourced software licensed under the [MIT license](LICENSE).
 - [Security Guide](CODE_QUALITY.md#security-improvements) - Security best practices
 - [Migration Guide](CODE_QUALITY.md#migration-guide) - Upgrade instructions
 
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Livewire Class Not Found Error**
+
+If you see errors like `Class "Livewire\Mechanisms\ExtendBlade\ExtendBlade" not found`, clear your Laravel caches:
+
+```bash
+# Standard installation
+./clear-cache.sh
+
+# Docker installation
+./clear-cache-docker.sh
+
+# Or manually:
+php artisan view:clear
+php artisan cache:clear
+php artisan config:clear
+```
+
+**For more troubleshooting help**, see the [Troubleshooting Guide](docs/TROUBLESHOOTING.md).
+
+### Cache Clearing Scripts
+
+The project includes helper scripts for clearing caches:
+- `clear-cache.sh` - For standard installations
+- `clear-cache-docker.sh` - For Docker installations
+
+These scripts clear all Laravel caches and should be run after:
+- Updating the codebase
+- Switching branches
+- Encountering view/cache-related errors
+
 ## 💬 Support
 
 - Open an [issue](https://github.com/yourusername/homelabtv/issues) for bug reports
+- Check [Troubleshooting Guide](docs/TROUBLESHOOTING.md) for common issues
 - Check [CODE_QUALITY.md](CODE_QUALITY.md) for technical documentation
 - Review [discussions](https://github.com/yourusername/homelabtv/discussions) for questions
 
