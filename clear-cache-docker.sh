@@ -9,7 +9,7 @@ echo "🧹 Clearing HomelabTV caches (Docker)..."
 echo ""
 
 # Check if Docker container is running
-if ! docker-compose ps app | grep -q "Up"; then
+if ! docker-compose ps app 2>/dev/null | grep -q "Up[[:space:]]"; then
     echo "❌ Error: Docker container 'app' is not running."
     echo "   Start it with: docker-compose up -d"
     exit 1
