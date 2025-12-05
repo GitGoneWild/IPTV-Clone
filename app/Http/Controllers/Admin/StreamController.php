@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Category;
 use App\Models\Server;
 use App\Models\Stream;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -164,5 +165,120 @@ class StreamController extends AdminController
 
         return redirect()->route('admin.streams.index')
             ->with('success', 'Stream deleted successfully.');
+    }
+
+    /**
+     * Check stream health status (AJAX endpoint)
+     */
+    public function check(Stream $stream): JsonResponse
+    {
+        $result = $this->checkStreamHealth($stream);
+
+        // Update stream status
+        $stream->update([
+            'last_check_at' => now(),
+            'last_check_status' => $result['status'],
+        ]);
+
+        activity()
+            ->performedOn($stream)
+            ->causedBy(auth()->user())
+            ->withProperties($result)
+            ->log('Stream checked via admin panel');
+
+        return response()->json($result);
+    }
+
+    /**
+     * Check health status of a stream
+     */
+    protected function checkStreamHealth(Stream $stream): array
+    {
+        $url = $stream->getEffectiveUrl();
+        $timeout = config('homelabtv.stream_check_timeout', 10);
+
+        try {
+            // Determine check method based on stream type
+            $streamType = $stream->stream_type ?? 'http';
+
+            if (in_array($streamType, ['hls', 'http'])) {
+                $response = \Illuminate\Support\Facades\Http::timeout($timeout)->head($url);
+
+                if ($response->successful()) {
+                    return [
+                        'status' => 'online',
+                        'message' => 'Stream is accessible',
+                        'http_code' => $response->status(),
+                        'checked_at' => now()->toIso8601String(),
+                    ];
+                } else {
+                    return [
+                        'status' => 'offline',
+                        'message' => 'Stream returned error code: '.$response->status(),
+                        'http_code' => $response->status(),
+                        'checked_at' => now()->toIso8601String(),
+                    ];
+                }
+            }
+
+            // For RTMP, validate URL structure
+            if ($streamType === 'rtmp') {
+                $parsed = parse_url($url);
+
+                if ($parsed !== false && isset($parsed['scheme'], $parsed['host'])) {
+                    return [
+                        'status' => 'online',
+                        'message' => 'RTMP URL structure is valid',
+                        'checked_at' => now()->toIso8601String(),
+                    ];
+                } else {
+                    return [
+                        'status' => 'offline',
+                        'message' => 'Invalid RTMP URL structure',
+                        'checked_at' => now()->toIso8601String(),
+                    ];
+                }
+            }
+
+            // For MPEG-TS, try a HEAD request
+            if ($streamType === 'mpegts') {
+                $response = \Illuminate\Support\Facades\Http::timeout($timeout)->head($url);
+
+                return [
+                    'status' => $response->successful() ? 'online' : 'offline',
+                    'message' => $response->successful() ? 'Stream is accessible' : 'Stream is not accessible',
+                    'http_code' => $response->status(),
+                    'checked_at' => now()->toIso8601String(),
+                ];
+            }
+
+            return [
+                'status' => 'unknown',
+                'message' => 'Unknown stream type: '.$streamType,
+                'checked_at' => now()->toIso8601String(),
+            ];
+
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            return [
+                'status' => 'offline',
+                'message' => 'Connection error: '.$e->getMessage(),
+                'error' => 'connection_failed',
+                'checked_at' => now()->toIso8601String(),
+            ];
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            return [
+                'status' => 'offline',
+                'message' => 'Request error: '.$e->getMessage(),
+                'error' => 'request_failed',
+                'checked_at' => now()->toIso8601String(),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => 'error',
+                'message' => 'Error checking stream: '.$e->getMessage(),
+                'error' => 'unknown_error',
+                'checked_at' => now()->toIso8601String(),
+            ];
+        }
     }
 }
