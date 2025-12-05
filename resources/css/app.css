@@ -3,3 +3,37 @@
 @tailwind utilities;
 
 /* Custom HomelabTV Styles */
+@layer base {
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #0d1117;
+    }
+}
+
+/* GitHub Copilot style scrollbar */
+@layer utilities {
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #161b22;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #30363d;
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #484f58;
+    }
+
+    /* Glowing accent effect */
+    .glow-accent {
+        box-shadow: 0 0 20px rgba(88, 166, 255, 0.15);
+    }
+
+    /* Alpine.js cloak */
+    [x-cloak] {
+        display: none !important;
+    }
+}
