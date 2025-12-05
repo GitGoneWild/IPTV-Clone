@@ -46,6 +46,8 @@ If you're running in Docker, execute the commands inside the container:
 docker-compose exec app php artisan view:clear
 docker-compose exec app php artisan cache:clear
 docker-compose exec app php artisan config:clear
+docker-compose exec app php artisan route:clear
+docker-compose exec app php artisan clear-compiled
 ```
 
 ### Prevention

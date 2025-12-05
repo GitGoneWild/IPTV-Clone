@@ -32,3 +32,5 @@ echo "If you're still experiencing issues, try:"
 echo "  - Restarting your web server"
 echo "  - Running: php artisan optimize"
 echo "  - Checking storage/logs/laravel.log for errors"
+
+exit 0

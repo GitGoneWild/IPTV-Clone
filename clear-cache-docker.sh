@@ -32,3 +32,5 @@ echo "If you're still experiencing issues, try:"
 echo "  - Restarting the container: docker-compose restart app"
 echo "  - Running: docker-compose exec app php artisan optimize"
 echo "  - Checking logs: docker-compose logs app"
+
+exit 0
