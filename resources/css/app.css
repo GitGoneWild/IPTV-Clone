@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 /* Configure content sources for Tailwind v4 */
-@source "../../resources/**/*.blade.php";
-@source "../../resources/**/*.js";
-@source "../../resources/**/*.vue";
+@source "resources/**/*.blade.php";
+@source "resources/**/*.js";
+@source "resources/**/*.vue";
 
 /* Tailwind v4 Custom Theme */
 @theme {
